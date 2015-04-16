@@ -1,0 +1,3 @@
+[submodule "includes/lib/php-lce"]
+	path = includes/lib/php-lce
+	url = git@github.com:myflyingbox/php-lce.git
