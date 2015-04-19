@@ -19,14 +19,24 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Load plugin class files
-require_once( 'includes/class-my-flying-box.php' );
-require_once( 'includes/class-my-flying-box-settings.php' );
 
-// Load plugin libraries
-require_once( 'includes/lib/class-my-flying-box-admin-api.php' );
-require_once( 'includes/lib/class-my-flying-box-post-type.php' );
-require_once( 'includes/lib/class-my-flying-box-taxonomy.php' );
+/**
+ * Check if WooCommerce is active
+ **/
+if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) :
+
+  require_once (dirname(__FILE__).'/../woocommerce/woocommerce.php');
+
+
+  // Load plugin class files
+  require_once( 'includes/class-my-flying-box.php' );
+  require_once( 'includes/class-my-flying-box-settings.php' );
+
+  // Load plugin libraries
+  require_once( 'includes/class-my-flying-box-admin-api.php' );
+  require_once( 'includes/class-my-flying-box-post-type.php' );
+  require_once( 'includes/class-my-flying-box-taxonomy.php' );
+
 
 /**
  * Returns the main instance of My_Flying_Box to prevent the need to use globals.
@@ -34,16 +44,13 @@ require_once( 'includes/lib/class-my-flying-box-taxonomy.php' );
  * @since  1.0.0
  * @return object My_Flying_Box
  */
-function My_Flying_Box () {
+function MFB() {
+  
 	$instance = My_Flying_Box::instance( __FILE__, '1.0.0' );
-
-	if ( is_null( $instance->settings ) ) {
-		$instance->settings = My_Flying_Box_Settings::instance( $instance );
-	}
 
 	return $instance;
 }
 
-My_Flying_Box();
+MFB();
 
-My_Flying_Box()->register_post_type( 'mfb_shipment', __( 'Shipments', 'my-flying-box' ), __( 'Shipment', 'my-flying-box' ) );
+endif;

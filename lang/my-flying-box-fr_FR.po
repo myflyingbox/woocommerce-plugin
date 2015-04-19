@@ -1,0 +1,697 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: My Flying Box v0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2015-04-19 18:36:56+0000\n"
+"Last-Translator: thomas <thomas@lce.io>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+"X-Generator: CSL v1.x\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: includes/class-my-flying-box-settings.php:53
+#@ my-flying-box
+msgid "Action failed. Please refresh the page and retry."
+msgstr ""
+
+#: includes/class-my-flying-box-settings.php:64
+#@ my-flying-box
+msgid "Your settings have been saved."
+msgstr ""
+
+#: includes/class-my-flying-box-settings.php:118
+#@ woocommerce
+msgid "The changes you made will be lost if you navigate away from this page."
+msgstr ""
+
+#: includes/class-my-flying-box-settings.php:487
+#@ woocommerce
+msgid "The settings of this image size have been disabled because its values are being overwritten by a filter."
+msgstr ""
+
+#: includes/class-my-flying-box-settings.php:496
+#@ woocommerce
+msgid "Hard Crop?"
+msgstr ""
+
+#: includes/class-my-flying-box-settings.php:523
+#@ woocommerce
+msgid "Select a page&hellip;"
+msgstr ""
+
+#: includes/class-my-flying-box-settings.php:545
+#@ woocommerce
+msgid "Choose a country&hellip;"
+msgstr ""
+
+#: includes/class-my-flying-box-settings.php:545
+#: includes/class-my-flying-box-settings.php:570
+#: includes/settings/class-mfb-settings-shipper.php:89
+#@ woocommerce
+#@ my-flying-box
+msgid "Country"
+msgstr "Pays"
+
+#: includes/class-my-flying-box-settings.php:570
+#@ woocommerce
+msgid "Choose countries&hellip;"
+msgstr ""
+
+#: includes/class-my-flying-box-settings.php:578
+#@ woocommerce
+msgid "Select all"
+msgstr ""
+
+#: includes/class-my-flying-box-settings.php:578
+#@ woocommerce
+msgid "Select none"
+msgstr ""
+
+#: includes/class-my-flying-box.php:305
+#: includes/class-my-flying-box.php:314
+#@ default
+msgid "Cheatin&#8217; huh?"
+msgstr ""
+
+#. translators: plugin header field 'Name'
+#: includes/class-mfb-admin-menus.php:24
+#: my-flying-box.php:0
+#@ my-flying-box
+msgid "My Flying Box"
+msgstr "My Flying Box"
+
+#: includes/class-my-flying-box-admin-api.php:159
+#@ my-flying-box
+msgid "Upload an image"
+msgstr ""
+
+#: includes/class-my-flying-box-admin-api.php:159
+#@ my-flying-box
+msgid "Use image"
+msgstr ""
+
+#: includes/class-my-flying-box-admin-api.php:159
+#@ my-flying-box
+msgid "Upload new image"
+msgstr ""
+
+#: includes/class-my-flying-box-admin-api.php:160
+#@ my-flying-box
+msgid "Remove image"
+msgstr "Supprimer l'image"
+
+#: includes/class-my-flying-box-post-type.php:69
+#: includes/class-my-flying-box-taxonomy.php:70
+#, php-format
+#@ my-flying-box
+msgid "Add New %s"
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:70
+#: includes/class-my-flying-box-taxonomy.php:67
+#, php-format
+#@ my-flying-box
+msgid "Edit %s"
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:71
+#, php-format
+#@ my-flying-box
+msgid "New %s"
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:72
+#: includes/class-my-flying-box-taxonomy.php:66
+#, php-format
+#@ my-flying-box
+msgid "All %s"
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:73
+#: includes/class-my-flying-box-taxonomy.php:68
+#, php-format
+#@ my-flying-box
+msgid "View %s"
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:74
+#: includes/class-my-flying-box-taxonomy.php:74
+#, php-format
+#@ my-flying-box
+msgid "Search %s"
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:75
+#, php-format
+#@ my-flying-box
+msgid "No %s Found"
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:76
+#, php-format
+#@ my-flying-box
+msgid "No %s Found In Trash"
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:77
+#: includes/class-my-flying-box-taxonomy.php:72
+#, php-format
+#@ default
+#@ my-flying-box
+msgid "Parent %s"
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:114
+#, php-format
+#@ my-flying-box
+msgid "%1$s updated. %2$sView %3$s%4$s."
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:115
+#@ my-flying-box
+msgid "Custom field updated."
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:116
+#@ my-flying-box
+msgid "Custom field deleted."
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:117
+#, php-format
+#@ my-flying-box
+msgid "%1$s updated."
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:118
+#, php-format
+#@ my-flying-box
+msgid "%1$s restored to revision from %2$s."
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:119
+#, php-format
+#@ my-flying-box
+msgid "%1$s published. %2$sView %3$s%4s."
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:120
+#, php-format
+#@ my-flying-box
+msgid "%1$s saved."
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:121
+#, php-format
+#@ my-flying-box
+msgid "%1$s submitted. %2$sPreview post%3$s%4$s."
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:122
+#, php-format
+#@ my-flying-box
+msgid "%1$s scheduled for: %2$s. %3$sPreview %4$s%5$s."
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:122
+#@ my-flying-box
+msgid "M j, Y @ G:i"
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:123
+#, php-format
+#@ my-flying-box
+msgid "%1$s draft updated. %2$sPreview %3$s%4$s."
+msgstr ""
+
+#: includes/class-my-flying-box-post-type.php:138
+#, php-format
+#@ my-flying-box
+msgid "%1$s %2$s updated."
+msgid_plural "%1$s %3$s updated."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-my-flying-box-post-type.php:139
+#, php-format
+#@ my-flying-box
+msgid "%1$s %2$s not updated, somebody is editing it."
+msgid_plural "%1$s %3$s not updated, somebody is editing them."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-my-flying-box-post-type.php:140
+#, php-format
+#@ my-flying-box
+msgid "%1$s %2$s permanently deleted."
+msgid_plural "%1$s %3$s permanently deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-my-flying-box-post-type.php:141
+#, php-format
+#@ my-flying-box
+msgid "%1$s %2$s moved to the Trash."
+msgid_plural "%1$s %3$s moved to the Trash."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-my-flying-box-post-type.php:142
+#, php-format
+#@ my-flying-box
+msgid "%1$s %2$s restored from the Trash."
+msgid_plural "%1$s %3$s restored from the Trash."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-my-flying-box-taxonomy.php:69
+#, php-format
+#@ my-flying-box
+msgid "Update %s"
+msgstr ""
+
+#: includes/class-my-flying-box-taxonomy.php:71
+#, php-format
+#@ my-flying-box
+msgid "New %s Name"
+msgstr ""
+
+#: includes/class-my-flying-box-taxonomy.php:73
+#, php-format
+#@ my-flying-box
+msgid "Parent %s:"
+msgstr ""
+
+#: includes/class-my-flying-box-taxonomy.php:75
+#, php-format
+#@ my-flying-box
+msgid "Popular %s"
+msgstr ""
+
+#: includes/class-my-flying-box-taxonomy.php:76
+#, php-format
+#@ my-flying-box
+msgid "Separate %s with commas"
+msgstr ""
+
+#: includes/class-my-flying-box-taxonomy.php:77
+#, php-format
+#@ my-flying-box
+msgid "Add or remove %s"
+msgstr ""
+
+#: includes/class-my-flying-box-taxonomy.php:78
+#, php-format
+#@ my-flying-box
+msgid "Choose from the most used %s"
+msgstr ""
+
+#: includes/class-my-flying-box-taxonomy.php:79
+#, php-format
+#@ my-flying-box
+msgid "No %s found"
+msgstr ""
+
+#: includes/settings/class-mfb-settings-account.php:21
+#@ my-flying-box
+msgid "Account settings"
+msgstr "Paramètres du compte"
+
+#: includes/settings/class-mfb-settings-account.php:37
+#@ my-flying-box
+msgid "API account"
+msgstr "Compte API"
+
+#: includes/settings/class-mfb-settings-account.php:41
+#@ my-flying-box
+msgid "Login"
+msgstr "Identifiant"
+
+#: includes/settings/class-mfb-settings-account.php:42
+#@ my-flying-box
+msgid "Your API login."
+msgstr "Votre identifiant d'API"
+
+#: includes/settings/class-mfb-settings-account.php:45
+#@ my-flying-box
+msgid "API login"
+msgstr "Identifiant API"
+
+#: includes/settings/class-mfb-settings-account.php:51
+#: includes/settings/class-mfb-settings-account.php:55
+#@ my-flying-box
+msgid "API password"
+msgstr "Mot de passe API"
+
+#: includes/settings/class-mfb-settings-account.php:52
+#@ my-flying-box
+msgid "Put your API password, corresponding to selected environment."
+msgstr "Renseignez votre mot de passe d'API pour l'environnement correspondant."
+
+#: includes/settings/class-mfb-settings-account.php:61
+#@ my-flying-box
+msgid "API Environment"
+msgstr "Environnement API"
+
+#: includes/settings/class-mfb-settings-account.php:62
+#@ my-flying-box
+msgid "Orders in test mode are not taken into account."
+msgstr "Les commandes en mode test seront ignorées."
+
+#: includes/settings/class-mfb-settings-shipper.php:21
+#@ my-flying-box
+msgid "Shipper settings"
+msgstr "Paramètres expéditeur"
+
+#: includes/settings/class-mfb-settings-shipper.php:37
+#@ my-flying-box
+msgid "Shipper information"
+msgstr "Informations expéditeur"
+
+#: includes/settings/class-mfb-settings-shipper.php:41
+#@ my-flying-box
+msgid "Shipper name"
+msgstr "Nom de l'expéditeur"
+
+#: includes/settings/class-mfb-settings-shipper.php:49
+#@ my-flying-box
+msgid "Shipper company"
+msgstr "Entreprise"
+
+#: includes/settings/class-mfb-settings-shipper.php:57
+#@ my-flying-box
+msgid "Street"
+msgstr "Adresse"
+
+#: includes/settings/class-mfb-settings-shipper.php:58
+#@ my-flying-box
+msgid "Two lines maximum!"
+msgstr "Deux lignes maximum !"
+
+#: includes/settings/class-mfb-settings-shipper.php:66
+#@ my-flying-box
+msgid "City"
+msgstr "Ville"
+
+#: includes/settings/class-mfb-settings-shipper.php:74
+#@ my-flying-box
+msgid "State"
+msgstr "Etat"
+
+#: includes/settings/class-mfb-settings-shipper.php:81
+#@ my-flying-box
+msgid "Postal code"
+msgstr "Code postal"
+
+#: includes/settings/class-mfb-settings-shipper.php:98
+#@ my-flying-box
+msgid "Phone number"
+msgstr "Numéro de téléphone"
+
+#: includes/settings/class-mfb-settings-shipper.php:106
+#@ my-flying-box
+msgid "Email"
+msgstr "Email"
+
+#: includes/views/html-admin-carriers-list.php:11
+#@ my-flying-box
+msgid "Reload carriers from API"
+msgstr ""
+
+#: includes/views/html-admin-carriers-list.php:12
+#@ my-flying-box
+msgid "By clicking on this link, you ensure the carrier list is up to date."
+msgstr ""
+
+#: includes/views/html-admin-carriers-list.php:22
+#@ my-flying-box
+msgid "Offers"
+msgstr ""
+
+#: includes/class-mfb-shipping-method.php:64
+#: includes/views/html-admin-carriers-list.php:24
+#@ my-flying-box
+msgid "Description"
+msgstr ""
+
+#: includes/views/html-admin-carriers-list.php:26
+#@ my-flying-box
+msgid "Status"
+msgstr ""
+
+#: includes/views/html-admin-carriers-list.php:28
+#@ my-flying-box
+msgid "Edition"
+msgstr ""
+
+#: includes/views/html-admin-carriers-list.php:54
+#@ my-flying-box
+msgid "Edit"
+msgstr ""
+
+#: includes/settings/class-mfb-settings-carriers.php:38
+#@ my-flying-box
+msgid "Weight Options"
+msgstr ""
+
+#: includes/views/html-admin-settings.php:32
+#@ my-flying-box
+msgid "Save changes"
+msgstr "Enregistrer"
+
+#: includes/class-my-flying-box.php:256
+#: includes/class-my-flying-box.php:257
+#@ my-flying-box
+msgid "Carrier"
+msgstr ""
+
+#. translators: plugin header field 'PluginURI'
+#: my-flying-box.php:0
+#@ my-flying-box
+msgid "http://www.myflyingbox.com"
+msgstr "http://www.myflyingbox.com"
+
+#. translators: plugin header field 'Description'
+#: my-flying-box.php:0
+#@ my-flying-box
+msgid "Integrated Shipping services through My Flying Box API."
+msgstr "Services intégrés d'expédition expresse à travers l'API My Flying Box"
+
+#. translators: plugin header field 'Author'
+#: my-flying-box.php:0
+#@ my-flying-box
+msgid "Thomas Belliard (My Flying Box)"
+msgstr ""
+
+#. translators: plugin header field 'AuthorURI'
+#: my-flying-box.php:0
+#@ my-flying-box
+msgid "http://github.com/tbelliard"
+msgstr ""
+
+#. translators: plugin header field 'Version'
+#: my-flying-box.php:0
+#@ my-flying-box
+msgid "0.1"
+msgstr ""
+
+#: includes/class-my-flying-box.php:255
+#@ my-flying-box
+msgid "Shipments"
+msgstr "Expéditions"
+
+#: includes/class-my-flying-box.php:255
+#@ my-flying-box
+msgid "Shipment"
+msgstr "Expédition"
+
+#: includes/class-mfb-shipping-method.php:51
+#@ my-flying-box
+msgid "Enable"
+msgstr ""
+
+#: includes/class-mfb-shipping-method.php:53
+#@ my-flying-box
+msgid "Enable this service"
+msgstr ""
+
+#: includes/class-mfb-shipping-method.php:57
+#@ my-flying-box
+msgid "Title"
+msgstr ""
+
+#: includes/class-mfb-shipping-method.php:59
+#@ my-flying-box
+msgid "This controls the title which the user sees during checkout."
+msgstr ""
+
+#: includes/class-my-flying-box.php:256
+#: includes/settings/class-mfb-settings-carriers.php:21
+#@ my-flying-box
+msgid "Carriers"
+msgstr ""
+
+#: includes/class-my-flying-box.php:257
+#@ my-flying-box
+msgid "Dimensions"
+msgstr ""
+
+#: includes/class-my-flying-box.php:262
+#@ default
+msgctxt "my-flying-box"
+msgid "Disabled"
+msgstr ""
+
+#: includes/class-my-flying-box.php:267
+#, php-format
+#@ my-flying-box
+msgid "Disabled <span class=\"count\">(%s)</span>"
+msgid_plural "Disabled <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-my-flying-box.php:271
+#@ default
+msgctxt "my-flying-box"
+msgid "Enabled"
+msgstr ""
+
+#: includes/class-my-flying-box.php:276
+#, php-format
+#@ my-flying-box
+msgid "Enabled <span class=\"count\">(%s)</span>"
+msgid_plural "Enabled <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-mfb-shipping-method.php:66
+#@ my-flying-box
+msgid "This controls the description of this shipping method, which the user sees during checkout."
+msgstr ""
+
+#: includes/class-my-flying-box.php:400
+#@ my-flying-box
+msgid "Please select a delivery location"
+msgstr ""
+
+#: includes/class-my-flying-box.php:461
+#@ my-flying-box
+msgid "Choose a location"
+msgstr ""
+
+#: includes/class-my-flying-box.php:462
+#@ my-flying-box
+msgid "Selected "
+msgstr ""
+
+#: includes/class-my-flying-box.php:475
+#@ my-flying-box
+msgid "Unable to load parcel points"
+msgstr ""
+
+#: includes/class-my-flying-box.php:476
+#@ my-flying-box
+msgid "Select this location"
+msgstr ""
+
+#: includes/class-my-flying-box.php:477
+#@ my-flying-box
+msgid "Monday"
+msgstr ""
+
+#: includes/class-my-flying-box.php:478
+#@ my-flying-box
+msgid "Tuesday"
+msgstr ""
+
+#: includes/class-my-flying-box.php:479
+#@ my-flying-box
+msgid "Wednesday"
+msgstr ""
+
+#: includes/class-my-flying-box.php:480
+#@ my-flying-box
+msgid "Thursday"
+msgstr ""
+
+#: includes/class-my-flying-box.php:481
+#@ my-flying-box
+msgid "Friday"
+msgstr ""
+
+#: includes/class-my-flying-box.php:482
+#@ my-flying-box
+msgid "Saturday"
+msgstr ""
+
+#: includes/class-my-flying-box.php:483
+#@ my-flying-box
+msgid "Sunday"
+msgstr ""
+
+#: includes/class-my-flying-box.php:550
+#@ my-flying-box
+msgid "Hide map"
+msgstr ""
+
+#: includes/settings/class-mfb-settings-carriers.php:37
+#@ my-flying-box
+msgid "List of carriers"
+msgstr ""
+
+#: includes/settings/class-mfb-settings-carriers.php:148
+#@ my-flying-box
+msgid "The list of services has been successfully updated."
+msgstr ""
+
+#: includes/views/html-admin-carriers-list.php:14
+#@ my-flying-box
+msgid "Carrier services"
+msgstr ""
+
+#: includes/views/html-admin-carriers-list.php:15
+#@ my-flying-box
+msgid "Some of these services require the use of dimensional weight. You can define a table to associate a set of dimensions based on the total weight of a cart in the tab \"Weight options\". Indicate dimensions that match your usual parcels. Please note that if the dimensions and weight are lower than reality, you may be invoiced extra charges."
+msgstr ""
+
+#: includes/views/html-admin-carriers-weight-table.php:11
+#@ my-flying-box
+msgid "Weight/dimensions"
+msgstr ""
+
+#: includes/views/html-admin-carriers-weight-table.php:12
+#@ my-flying-box
+msgid "When requesting a quote for a shipment, most carriers need parcel dimensions. The MyFlyingBox woocommerce shipping module uses this table to compute dimensions based on the total weight of the cart. There is no way for the module to automatically guess your final packaging based on a customer cart, so it is very important that you customize this table based on your product, average cart, and usual packaging strategy."
+msgstr ""
+
+#: includes/views/html-admin-carriers-weight-table.php:20
+#@ my-flying-box
+msgid "Weight (up to)"
+msgstr ""
+
+#: includes/views/html-admin-carriers-weight-table.php:22
+#@ my-flying-box
+msgid "length"
+msgstr ""
+
+#: includes/views/html-admin-carriers-weight-table.php:24
+#@ my-flying-box
+msgid "width"
+msgstr ""
+
+#: includes/views/html-admin-carriers-weight-table.php:26
+#@ my-flying-box
+msgid "height"
+msgstr ""
+

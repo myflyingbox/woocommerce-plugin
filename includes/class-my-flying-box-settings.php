@@ -1,376 +1,786 @@
 <?php
+/**
+ * MyFlyingBox Settings Class.
+ *
+ */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
+if ( ! class_exists( 'My_Flying_Box_Settings' ) ) :
+
+/**
+ * WC_Admin_Settings
+ */
 class My_Flying_Box_Settings {
 
-	/**
-	 * The single instance of My_Flying_Box_Settings.
-	 * @var 	object
-	 * @access  private
-	 * @since 	1.0.0
-	 */
-	private static $_instance = null;
+	private static $settings = array();
+	private static $errors   = array();
+	private static $messages = array();
+  private static $setting_instances = array();
 
 	/**
-	 * The main plugin object.
-	 * @var 	object
-	 * @access  public
-	 * @since 	1.0.0
+	 * Include the settings page classes
 	 */
-	public $parent = null;
+	public static function get_settings_pages() {
+		if ( empty( self::$settings ) ) {
+			$settings = array();
 
-	/**
-	 * Prefix for plugin settings.
-	 * @var     string
-	 * @access  public
-	 * @since   1.0.0
-	 */
-	public $base = '';
+			include_once( 'settings/class-mfb-settings-page.php' );
 
-	/**
-	 * Available settings for plugin.
-	 * @var     array
-	 * @access  public
-	 * @since   1.0.0
-	 */
-	public $settings = array();
+			$settings[] = include( 'settings/class-mfb-settings-account.php' );
+      $settings[] = include( 'settings/class-mfb-settings-shipper.php' );
+      $settings[] = include( 'settings/class-mfb-settings-carriers.php' );
+      
+      self::$setting_instances['account'] = new MFB_Settings_Account();
+      self::$setting_instances['shipper'] = new MFB_Settings_Shipper();
+      self::$setting_instances['carriers'] = new MFB_Settings_Carriers();
 
-	public function __construct ( $parent ) {
-		$this->parent = $parent;
+			self::$settings = apply_filters( 'woocommerce_get_settings_pages', $settings );
+		}
 
-		$this->base = 'wpt_';
-
-		// Initialise settings
-		add_action( 'init', array( $this, 'init_settings' ), 11 );
-
-		// Register plugin settings
-		add_action( 'admin_init' , array( $this, 'register_settings' ) );
-
-		// Add settings page to menu
-		add_action( 'admin_menu' , array( $this, 'add_menu_item' ) );
-
-		// Add settings link to plugins page
-		add_filter( 'plugin_action_links_' . plugin_basename( $this->parent->file ) , array( $this, 'add_settings_link' ) );
+		return self::$settings;
 	}
 
 	/**
-	 * Initialise settings
-	 * @return void
+	 * Save the settings
 	 */
-	public function init_settings () {
-		$this->settings = $this->settings_fields();
+	public static function save() {
+		global $current_tab;
+
+		if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'woocommerce-settings' ) ) {
+			die( __( 'Action failed. Please refresh the page and retry.', 'my-flying-box' ) );
+		}
+
+		// Trigger actions
+		do_action( 'woocommerce_settings_save_' . $current_tab );
+		do_action( 'woocommerce_update_options_' . $current_tab );
+		do_action( 'woocommerce_update_options' );
+
+		// Clear any unwanted data
+		delete_transient( 'woocommerce_cache_excluded_uris' );
+
+		self::add_message( __( 'Your settings have been saved.', 'my-flying-box' ) );
+
+		flush_rewrite_rules();
+
+		do_action( 'woocommerce_settings_saved' );
 	}
 
 	/**
-	 * Add settings page to admin menu
-	 * @return void
+	 * Add a message
+	 * @param string $text
 	 */
-	public function add_menu_item () {
-		$page = add_options_page( __( 'Plugin Settings', 'my-flying-box' ) , __( 'Plugin Settings', 'my-flying-box' ) , 'manage_options' , $this->parent->_token . '_settings' ,  array( $this, 'settings_page' ) );
-		add_action( 'admin_print_styles-' . $page, array( $this, 'settings_assets' ) );
+	public static function add_message( $text ) {
+		self::$messages[] = $text;
 	}
 
 	/**
-	 * Load settings JS & CSS
-	 * @return void
+	 * Add an error
+	 * @param string $text
 	 */
-	public function settings_assets () {
-
-		// We're including the farbtastic script & styles here because they're needed for the colour picker
-		// If you're not including a colour picker field then you can leave these calls out as well as the farbtastic dependency for the wpt-admin-js script below
-		wp_enqueue_style( 'farbtastic' );
-    	wp_enqueue_script( 'farbtastic' );
-
-    	// We're including the WP media scripts here because they're needed for the image upload field
-    	// If you're not including an image upload then you can leave this function call out
-    	wp_enqueue_media();
-
-    	wp_register_script( $this->parent->_token . '-settings-js', $this->parent->assets_url . 'js/settings' . $this->parent->script_suffix . '.js', array( 'farbtastic', 'jquery' ), '1.0.0' );
-    	wp_enqueue_script( $this->parent->_token . '-settings-js' );
+	public static function add_error( $text ) {
+		self::$errors[] = $text;
 	}
 
 	/**
-	 * Add settings link to plugin list table
-	 * @param  array $links Existing links
-	 * @return array 		Modified links
+	 * Output messages + errors
+	 * @return string
 	 */
-	public function add_settings_link ( $links ) {
-		$settings_link = '<a href="options-general.php?page=' . $this->parent->_token . '_settings">' . __( 'Settings', 'my-flying-box' ) . '</a>';
-  		array_push( $links, $settings_link );
-  		return $links;
+	public static function show_messages() {
+		if ( sizeof( self::$errors ) > 0 ) {
+			foreach ( self::$errors as $error ) {
+				echo '<div id="message" class="error fade"><p><strong>' . esc_html( $error ) . '</strong></p></div>';
+			}
+		} elseif ( sizeof( self::$messages ) > 0 ) {
+			foreach ( self::$messages as $message ) {
+				echo '<div id="message" class="updated fade"><p><strong>' . esc_html( $message ) . '</strong></p></div>';
+			}
+		}
 	}
 
 	/**
-	 * Build settings fields
-	 * @return array Fields to be displayed on settings page
+	 * Settings page.
+	 *
+	 * Handles the display of the main woocommerce settings page in admin.
 	 */
-	private function settings_fields () {
+	public static function output() {
+		global $current_section, $current_tab;
 
-		$settings['standard'] = array(
-			'title'					=> __( 'Standard', 'my-flying-box' ),
-			'description'			=> __( 'These are fairly standard form input fields.', 'my-flying-box' ),
-			'fields'				=> array(
-				array(
-					'id' 			=> 'text_field',
-					'label'			=> __( 'Some Text' , 'my-flying-box' ),
-					'description'	=> __( 'This is a standard text field.', 'my-flying-box' ),
-					'type'			=> 'text',
-					'default'		=> '',
-					'placeholder'	=> __( 'Placeholder text', 'my-flying-box' )
-				),
-				array(
-					'id' 			=> 'password_field',
-					'label'			=> __( 'A Password' , 'my-flying-box' ),
-					'description'	=> __( 'This is a standard password field.', 'my-flying-box' ),
-					'type'			=> 'password',
-					'default'		=> '',
-					'placeholder'	=> __( 'Placeholder text', 'my-flying-box' )
-				),
-				array(
-					'id' 			=> 'secret_text_field',
-					'label'			=> __( 'Some Secret Text' , 'my-flying-box' ),
-					'description'	=> __( 'This is a secret text field - any data saved here will not be displayed after the page has reloaded, but it will be saved.', 'my-flying-box' ),
-					'type'			=> 'text_secret',
-					'default'		=> '',
-					'placeholder'	=> __( 'Placeholder text', 'my-flying-box' )
-				),
-				array(
-					'id' 			=> 'text_block',
-					'label'			=> __( 'A Text Block' , 'my-flying-box' ),
-					'description'	=> __( 'This is a standard text area.', 'my-flying-box' ),
-					'type'			=> 'textarea',
-					'default'		=> '',
-					'placeholder'	=> __( 'Placeholder text for this textarea', 'my-flying-box' )
-				),
-				array(
-					'id' 			=> 'single_checkbox',
-					'label'			=> __( 'An Option', 'my-flying-box' ),
-					'description'	=> __( 'A standard checkbox - if you save this option as checked then it will store the option as \'on\', otherwise it will be an empty string.', 'my-flying-box' ),
-					'type'			=> 'checkbox',
-					'default'		=> ''
-				),
-				array(
-					'id' 			=> 'select_box',
-					'label'			=> __( 'A Select Box', 'my-flying-box' ),
-					'description'	=> __( 'A standard select box.', 'my-flying-box' ),
-					'type'			=> 'select',
-					'options'		=> array( 'drupal' => 'Drupal', 'joomla' => 'Joomla', 'wordpress' => 'WordPress' ),
-					'default'		=> 'wordpress'
-				),
-				array(
-					'id' 			=> 'radio_buttons',
-					'label'			=> __( 'Some Options', 'my-flying-box' ),
-					'description'	=> __( 'A standard set of radio buttons.', 'my-flying-box' ),
-					'type'			=> 'radio',
-					'options'		=> array( 'superman' => 'Superman', 'batman' => 'Batman', 'ironman' => 'Iron Man' ),
-					'default'		=> 'batman'
-				),
-				array(
-					'id' 			=> 'multiple_checkboxes',
-					'label'			=> __( 'Some Items', 'my-flying-box' ),
-					'description'	=> __( 'You can select multiple items and they will be stored as an array.', 'my-flying-box' ),
-					'type'			=> 'checkbox_multi',
-					'options'		=> array( 'square' => 'Square', 'circle' => 'Circle', 'rectangle' => 'Rectangle', 'triangle' => 'Triangle' ),
-					'default'		=> array( 'circle', 'triangle' )
-				)
-			)
-		);
+		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		$settings['extra'] = array(
-			'title'					=> __( 'Extra', 'my-flying-box' ),
-			'description'			=> __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'my-flying-box' ),
-			'fields'				=> array(
-				array(
-					'id' 			=> 'number_field',
-					'label'			=> __( 'A Number' , 'my-flying-box' ),
-					'description'	=> __( 'This is a standard number field - if this field contains anything other than numbers then the form will not be submitted.', 'my-flying-box' ),
-					'type'			=> 'number',
-					'default'		=> '',
-					'placeholder'	=> __( '42', 'my-flying-box' )
-				),
-				array(
-					'id' 			=> 'colour_picker',
-					'label'			=> __( 'Pick a colour', 'my-flying-box' ),
-					'description'	=> __( 'This uses WordPress\' built-in colour picker - the option is stored as the colour\'s hex code.', 'my-flying-box' ),
-					'type'			=> 'color',
-					'default'		=> '#21759B'
-				),
-				array(
-					'id' 			=> 'an_image',
-					'label'			=> __( 'An Image' , 'my-flying-box' ),
-					'description'	=> __( 'This will upload an image to your media library and store the attachment ID in the option field. Once you have uploaded an imge the thumbnail will display above these buttons.', 'my-flying-box' ),
-					'type'			=> 'image',
-					'default'		=> '',
-					'placeholder'	=> ''
-				),
-				array(
-					'id' 			=> 'multi_select_box',
-					'label'			=> __( 'A Multi-Select Box', 'my-flying-box' ),
-					'description'	=> __( 'A standard multi-select box - the saved data is stored as an array.', 'my-flying-box' ),
-					'type'			=> 'select_multi',
-					'options'		=> array( 'linux' => 'Linux', 'mac' => 'Mac', 'windows' => 'Windows' ),
-					'default'		=> array( 'linux' )
-				)
-			)
-		);
+		do_action( 'woocommerce_settings_start' );
 
-		$settings = apply_filters( $this->parent->_token . '_settings_fields', $settings );
+		wp_enqueue_script( 'woocommerce_settings', WC()->plugin_url() . '/assets/js/admin/settings' . $suffix . '.js', array( 'jquery', 'jquery-ui-datepicker', 'jquery-ui-sortable', 'iris', 'select2' ), WC()->version, true );
 
-		return $settings;
+		wp_localize_script( 'woocommerce_settings', 'woocommerce_settings_params', array(
+			'i18n_nav_warning' => __( 'The changes you made will be lost if you navigate away from this page.', 'woocommerce' )
+		) );
+
+		// Include settings pages
+		self::get_settings_pages();
+
+		// Get current tab/section
+		$current_tab     = empty( $_GET['tab'] ) ? 'account' : sanitize_title( $_GET['tab'] );
+		$current_section = empty( $_REQUEST['section'] ) ? '' : sanitize_title( $_REQUEST['section'] );
+
+		// Save settings if data has been posted
+		if ( ! empty( $_POST ) ) {
+			self::save();
+		}
+
+		// Add any posted messages
+		if ( ! empty( $_GET['wc_error'] ) ) {
+			self::add_error( stripslashes( $_GET['wc_error'] ) );
+		}
+
+		if ( ! empty( $_GET['wc_message'] ) ) {
+			self::add_message( stripslashes( $_GET['wc_message'] ) );
+		}
+
+		self::show_messages();
+
+		// Get tabs for the settings page
+		$tabs = apply_filters( 'woocommerce_settings_tabs_array', array() );
+
+		include 'views/html-admin-settings.php';
 	}
 
 	/**
-	 * Register plugin settings
-	 * @return void
+	 * Get a setting from the settings API.
+	 *
+	 * @param mixed $option_name
+	 * @return string
 	 */
-	public function register_settings () {
-		if ( is_array( $this->settings ) ) {
+	public static function get_option( $option_name, $default = '' ) {
+		// Array value
+		if ( strstr( $option_name, '[' ) ) {
 
-			// Check posted/selected tab
-			$current_section = '';
-			if ( isset( $_POST['tab'] ) && $_POST['tab'] ) {
-				$current_section = $_POST['tab'];
+			parse_str( $option_name, $option_array );
+
+			// Option name is first key
+			$option_name = current( array_keys( $option_array ) );
+
+			// Get value
+			$option_values = get_option( $option_name, '' );
+
+			$key = key( $option_array[ $option_name ] );
+
+			if ( isset( $option_values[ $key ] ) ) {
+				$option_value = $option_values[ $key ];
 			} else {
-				if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
-					$current_section = $_GET['tab'];
-				}
+				$option_value = null;
 			}
 
-			foreach ( $this->settings as $section => $data ) {
-
-				if ( $current_section && $current_section != $section ) continue;
-
-				// Add section to page
-				add_settings_section( $section, $data['title'], array( $this, 'settings_section' ), $this->parent->_token . '_settings' );
-
-				foreach ( $data['fields'] as $field ) {
-
-					// Validation callback for field
-					$validation = '';
-					if ( isset( $field['callback'] ) ) {
-						$validation = $field['callback'];
-					}
-
-					// Register field
-					$option_name = $this->base . $field['id'];
-					register_setting( $this->parent->_token . '_settings', $option_name, $validation );
-
-					// Add field to page
-					add_settings_field( $field['id'], $field['label'], array( $this->parent->admin, 'display_field' ), $this->parent->_token . '_settings', $section, array( 'field' => $field, 'prefix' => $this->base ) );
-				}
-
-				if ( ! $current_section ) break;
-			}
+		// Single value
+		} else {
+			$option_value = get_option( $option_name, null );
 		}
-	}
 
-	public function settings_section ( $section ) {
-		$html = '<p> ' . $this->settings[ $section['id'] ]['description'] . '</p>' . "\n";
-		echo $html;
+		if ( is_array( $option_value ) ) {
+			$option_value = array_map( 'stripslashes', $option_value );
+		} elseif ( ! is_null( $option_value ) ) {
+			$option_value = stripslashes( $option_value );
+		}
+
+		return $option_value === null ? $default : $option_value;
 	}
 
 	/**
-	 * Load settings page content
-	 * @return void
+	 * Output admin fields.
+	 *
+	 * Loops though the woocommerce options array and outputs each field.
+	 *
+	 * @param array $options Opens array to output
 	 */
-	public function settings_page () {
-
-		// Build page HTML
-		$html = '<div class="wrap" id="' . $this->parent->_token . '_settings">' . "\n";
-			$html .= '<h2>' . __( 'Plugin Settings' , 'my-flying-box' ) . '</h2>' . "\n";
-
-			$tab = '';
-			if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
-				$tab .= $_GET['tab'];
+	public static function output_fields( $options ) {
+		foreach ( $options as $value ) {
+			if ( ! isset( $value['type'] ) ) {
+				continue;
+			}
+			if ( ! isset( $value['id'] ) ) {
+				$value['id'] = '';
+			}
+			if ( ! isset( $value['title'] ) ) {
+				$value['title'] = isset( $value['name'] ) ? $value['name'] : '';
+			}
+			if ( ! isset( $value['class'] ) ) {
+				$value['class'] = '';
+			}
+			if ( ! isset( $value['css'] ) ) {
+				$value['css'] = '';
+			}
+			if ( ! isset( $value['default'] ) ) {
+				$value['default'] = '';
+			}
+			if ( ! isset( $value['desc'] ) ) {
+				$value['desc'] = '';
+			}
+			if ( ! isset( $value['desc_tip'] ) ) {
+				$value['desc_tip'] = false;
+			}
+			if ( ! isset( $value['placeholder'] ) ) {
+				$value['placeholder'] = '';
 			}
 
-			// Show page tabs
-			if ( is_array( $this->settings ) && 1 < count( $this->settings ) ) {
+			// Custom attribute handling
+			$custom_attributes = array();
 
-				$html .= '<h2 class="nav-tab-wrapper">' . "\n";
+			if ( ! empty( $value['custom_attributes'] ) && is_array( $value['custom_attributes'] ) ) {
+				foreach ( $value['custom_attributes'] as $attribute => $attribute_value ) {
+					$custom_attributes[] = esc_attr( $attribute ) . '="' . esc_attr( $attribute_value ) . '"';
+				}
+			}
 
-				$c = 0;
-				foreach ( $this->settings as $section => $data ) {
+			// Description handling
+			$field_description = self::get_field_description( $value );
+			extract( $field_description );
 
-					// Set tab class
-					$class = 'nav-tab';
-					if ( ! isset( $_GET['tab'] ) ) {
-						if ( 0 == $c ) {
-							$class .= ' nav-tab-active';
-						}
+			// Switch based on type
+			switch ( $value['type'] ) {
+
+				// Section Titles
+				case 'title':
+					if ( ! empty( $value['title'] ) ) {
+						echo '<h3>' . esc_html( $value['title'] ) . '</h3>';
+					}
+					if ( ! empty( $value['desc'] ) ) {
+						echo wpautop( wptexturize( wp_kses_post( $value['desc'] ) ) );
+					}
+					echo '<table class="form-table">'. "\n\n";
+					if ( ! empty( $value['id'] ) ) {
+						do_action( 'woocommerce_settings_' . sanitize_title( $value['id'] ) );
+					}
+					break;
+
+				// Section Ends
+				case 'sectionend':
+					if ( ! empty( $value['id'] ) ) {
+						do_action( 'woocommerce_settings_' . sanitize_title( $value['id'] ) . '_end' );
+					}
+					echo '</table>';
+					if ( ! empty( $value['id'] ) ) {
+						do_action( 'woocommerce_settings_' . sanitize_title( $value['id'] ) . '_after' );
+					}
+					break;
+
+				// Standard text inputs and subtypes like 'number'
+				case 'text':
+				case 'email':
+				case 'number':
+				case 'color' :
+				case 'password' :
+
+					$type         = $value['type'];
+					$option_value = self::get_option( $value['id'], $value['default'] );
+
+					if ( $value['type'] == 'color' ) {
+						$type = 'text';
+						$value['class'] .= 'colorpick';
+						$description .= '<div id="colorPickerDiv_' . esc_attr( $value['id'] ) . '" class="colorpickdiv" style="z-index: 100;background:#eee;border:1px solid #ccc;position:absolute;display:none;"></div>';
+					}
+
+					?><tr valign="top">
+						<th scope="row" class="titledesc">
+							<label for="<?php echo esc_attr( $value['id'] ); ?>"><?php echo esc_html( $value['title'] ); ?></label>
+							<?php echo $tooltip_html; ?>
+						</th>
+						<td class="forminp forminp-<?php echo sanitize_title( $value['type'] ) ?>">
+							<input
+								name="<?php echo esc_attr( $value['id'] ); ?>"
+								id="<?php echo esc_attr( $value['id'] ); ?>"
+								type="<?php echo esc_attr( $type ); ?>"
+								style="<?php echo esc_attr( $value['css'] ); ?>"
+								value="<?php echo esc_attr( $option_value ); ?>"
+								class="<?php echo esc_attr( $value['class'] ); ?>"
+								placeholder="<?php echo esc_attr( $value['placeholder'] ); ?>"
+								<?php echo implode( ' ', $custom_attributes ); ?>
+								/> <?php echo $description; ?>
+						</td>
+					</tr><?php
+					break;
+
+				// Textarea
+				case 'textarea':
+
+					$option_value = self::get_option( $value['id'], $value['default'] );
+
+					?><tr valign="top">
+						<th scope="row" class="titledesc">
+							<label for="<?php echo esc_attr( $value['id'] ); ?>"><?php echo esc_html( $value['title'] ); ?></label>
+							<?php echo $tooltip_html; ?>
+						</th>
+						<td class="forminp forminp-<?php echo sanitize_title( $value['type'] ) ?>">
+							<?php echo $description; ?>
+
+							<textarea
+								name="<?php echo esc_attr( $value['id'] ); ?>"
+								id="<?php echo esc_attr( $value['id'] ); ?>"
+								style="<?php echo esc_attr( $value['css'] ); ?>"
+								class="<?php echo esc_attr( $value['class'] ); ?>"
+								placeholder="<?php echo esc_attr( $value['placeholder'] ); ?>"
+								<?php echo implode( ' ', $custom_attributes ); ?>
+								><?php echo esc_textarea( $option_value );  ?></textarea>
+						</td>
+					</tr><?php
+					break;
+
+				// Select boxes
+				case 'select' :
+				case 'multiselect' :
+
+					$option_value = self::get_option( $value['id'], $value['default'] );
+
+					?><tr valign="top">
+						<th scope="row" class="titledesc">
+							<label for="<?php echo esc_attr( $value['id'] ); ?>"><?php echo esc_html( $value['title'] ); ?></label>
+							<?php echo $tooltip_html; ?>
+						</th>
+						<td class="forminp forminp-<?php echo sanitize_title( $value['type'] ) ?>">
+							<select
+								name="<?php echo esc_attr( $value['id'] ); ?><?php if ( $value['type'] == 'multiselect' ) echo '[]'; ?>"
+								id="<?php echo esc_attr( $value['id'] ); ?>"
+								style="<?php echo esc_attr( $value['css'] ); ?>"
+								class="<?php echo esc_attr( $value['class'] ); ?>"
+								<?php echo implode( ' ', $custom_attributes ); ?>
+								<?php echo ( 'multiselect' == $value['type'] ) ? 'multiple="multiple"' : ''; ?>
+								>
+								<?php
+									foreach ( $value['options'] as $key => $val ) {
+										?>
+										<option value="<?php echo esc_attr( $key ); ?>" <?php
+
+											if ( is_array( $option_value ) ) {
+												selected( in_array( $key, $option_value ), true );
+											} else {
+												selected( $option_value, $key );
+											}
+
+										?>><?php echo $val ?></option>
+										<?php
+									}
+								?>
+						   </select> <?php echo $description; ?>
+						</td>
+					</tr><?php
+					break;
+
+				// Radio inputs
+				case 'radio' :
+
+					$option_value = self::get_option( $value['id'], $value['default'] );
+
+					?><tr valign="top">
+						<th scope="row" class="titledesc">
+							<label for="<?php echo esc_attr( $value['id'] ); ?>"><?php echo esc_html( $value['title'] ); ?></label>
+							<?php echo $tooltip_html; ?>
+						</th>
+						<td class="forminp forminp-<?php echo sanitize_title( $value['type'] ) ?>">
+							<fieldset>
+								<?php echo $description; ?>
+								<ul>
+								<?php
+									foreach ( $value['options'] as $key => $val ) {
+										?>
+										<li>
+											<label><input
+												name="<?php echo esc_attr( $value['id'] ); ?>"
+												value="<?php echo $key; ?>"
+												type="radio"
+												style="<?php echo esc_attr( $value['css'] ); ?>"
+												class="<?php echo esc_attr( $value['class'] ); ?>"
+												<?php echo implode( ' ', $custom_attributes ); ?>
+												<?php checked( $key, $option_value ); ?>
+												/> <?php echo $val ?></label>
+										</li>
+										<?php
+									}
+								?>
+								</ul>
+							</fieldset>
+						</td>
+					</tr><?php
+					break;
+
+				// Checkbox input
+				case 'checkbox' :
+
+					$option_value    = self::get_option( $value['id'], $value['default'] );
+					$visbility_class = array();
+
+					if ( ! isset( $value['hide_if_checked'] ) ) {
+						$value['hide_if_checked'] = false;
+					}
+					if ( ! isset( $value['show_if_checked'] ) ) {
+						$value['show_if_checked'] = false;
+					}
+					if ( 'yes' == $value['hide_if_checked'] || 'yes' == $value['show_if_checked'] ) {
+						$visbility_class[] = 'hidden_option';
+					}
+					if ( 'option' == $value['hide_if_checked'] ) {
+						$visbility_class[] = 'hide_options_if_checked';
+					}
+					if ( 'option' == $value['show_if_checked'] ) {
+						$visbility_class[] = 'show_options_if_checked';
+					}
+
+					if ( ! isset( $value['checkboxgroup'] ) || 'start' == $value['checkboxgroup'] ) {
+						?>
+							<tr valign="top" class="<?php echo esc_attr( implode( ' ', $visbility_class ) ); ?>">
+								<th scope="row" class="titledesc"><?php echo esc_html( $value['title'] ) ?></th>
+								<td class="forminp forminp-checkbox">
+									<fieldset>
+						<?php
 					} else {
-						if ( isset( $_GET['tab'] ) && $section == $_GET['tab'] ) {
-							$class .= ' nav-tab-active';
-						}
+						?>
+							<fieldset class="<?php echo esc_attr( implode( ' ', $visbility_class ) ); ?>">
+						<?php
 					}
 
-					// Set tab link
-					$tab_link = add_query_arg( array( 'tab' => $section ) );
-					if ( isset( $_GET['settings-updated'] ) ) {
-						$tab_link = remove_query_arg( 'settings-updated', $tab_link );
+					if ( ! empty( $value['title'] ) ) {
+						?>
+							<legend class="screen-reader-text"><span><?php echo esc_html( $value['title'] ) ?></span></legend>
+						<?php
 					}
 
-					// Output tab
-					$html .= '<a href="' . $tab_link . '" class="' . esc_attr( $class ) . '">' . esc_html( $data['title'] ) . '</a>' . "\n";
+					?>
+						<label for="<?php echo $value['id'] ?>">
+							<input
+								name="<?php echo esc_attr( $value['id'] ); ?>"
+								id="<?php echo esc_attr( $value['id'] ); ?>"
+								type="checkbox"
+								value="1"
+								<?php checked( $option_value, 'yes'); ?>
+								<?php echo implode( ' ', $custom_attributes ); ?>
+							/> <?php echo $description ?>
+						</label> <?php echo $tooltip_html; ?>
+					<?php
 
-					++$c;
-				}
+					if ( ! isset( $value['checkboxgroup'] ) || 'end' == $value['checkboxgroup'] ) {
+									?>
+									</fieldset>
+								</td>
+							</tr>
+						<?php
+					} else {
+						?>
+							</fieldset>
+						<?php
+					}
+					break;
 
-				$html .= '</h2>' . "\n";
+				// Image width settings
+				case 'image_width' :
+
+					$image_size = str_replace( '_image_size', '', $value[ 'id' ] );
+					$size   = wc_get_image_size( $image_size );
+					$width  = isset( $size[ 'width' ] )  ? $size[ 'width' ]  : $value[ 'default' ][ 'width' ];
+					$height = isset( $size[ 'height' ] ) ? $size[ 'height' ] : $value[ 'default' ][ 'height' ];
+					$crop   = isset( $size[ 'crop' ] )   ? $size[ 'crop' ]   : $value[ 'default' ][ 'crop' ];
+
+					$disabled_attr    = '';
+					$disabled_message = '';
+
+					if ( has_filter( 'woocommerce_get_image_size_' . $image_size ) ) {
+						$disabled_attr = 'disabled="disabled"';
+						$disabled_message = "<p><small>" . __( 'The settings of this image size have been disabled because its values are being overwritten by a filter.', 'woocommerce' ) . "</small></p>";
+					}
+
+					?><tr valign="top">
+						<th scope="row" class="titledesc"><?php echo esc_html( $value['title'] ) ?> <?php echo $tooltip_html; echo $disabled_message; ?></th>
+						<td class="forminp image_width_settings">
+
+							<input name="<?php echo esc_attr( $value['id'] ); ?>[width]" <?php echo $disabled_attr; ?> id="<?php echo esc_attr( $value['id'] ); ?>-width" type="text" size="3" value="<?php echo $width; ?>" /> &times; <input name="<?php echo esc_attr( $value['id'] ); ?>[height]" <?php echo $disabled_attr; ?> id="<?php echo esc_attr( $value['id'] ); ?>-height" type="text" size="3" value="<?php echo $height; ?>" />px
+
+							<label><input name="<?php echo esc_attr( $value['id'] ); ?>[crop]" <?php echo $disabled_attr; ?> id="<?php echo esc_attr( $value['id'] ); ?>-crop" type="checkbox" value="1" <?php checked( 1, $crop ); ?> /> <?php _e( 'Hard Crop?', 'woocommerce' ); ?></label>
+
+							</td>
+					</tr><?php
+					break;
+
+				// Single page selects
+				case 'single_select_page' :
+
+					$args = array(
+						'name'             => $value['id'],
+						'id'               => $value['id'],
+						'sort_column'      => 'menu_order',
+						'sort_order'       => 'ASC',
+						'show_option_none' => ' ',
+						'class'            => $value['class'],
+						'echo'             => false,
+						'selected'         => absint( self::get_option( $value['id'] ) )
+					);
+
+					if ( isset( $value['args'] ) ) {
+						$args = wp_parse_args( $value['args'], $args );
+					}
+
+					?><tr valign="top" class="single_select_page">
+						<th scope="row" class="titledesc"><?php echo esc_html( $value['title'] ) ?> <?php echo $tooltip_html; ?></th>
+						<td class="forminp">
+							<?php echo str_replace(' id=', " data-placeholder='" . __( 'Select a page&hellip;', 'woocommerce' ) .  "' style='" . $value['css'] . "' class='" . $value['class'] . "' id=", wp_dropdown_pages( $args ) ); ?> <?php echo $description; ?>
+						</td>
+					</tr><?php
+					break;
+
+				// Single country selects
+				case 'single_select_country' :
+					$country_setting = (string) self::get_option( $value['id'] );
+
+					if ( strstr( $country_setting, ':' ) ) {
+						$country_setting = explode( ':', $country_setting );
+						$country         = current( $country_setting );
+						$state           = end( $country_setting );
+					} else {
+						$country = $country_setting;
+						$state   = '*';
+					}
+					?><tr valign="top">
+						<th scope="row" class="titledesc">
+							<label for="<?php echo esc_attr( $value['id'] ); ?>"><?php echo esc_html( $value['title'] ); ?></label>
+							<?php echo $tooltip_html; ?>
+						</th>
+						<td class="forminp"><select name="<?php echo esc_attr( $value['id'] ); ?>" style="<?php echo esc_attr( $value['css'] ); ?>" data-placeholder="<?php _e( 'Choose a country&hellip;', 'woocommerce' ); ?>" title="<?php _e( 'Country', 'woocommerce' ) ?>" class="wc-enhanced-select">
+							<?php WC()->countries->country_dropdown_options( $country, $state ); ?>
+						</select> <?php echo $description; ?>
+						</td>
+					</tr><?php
+					break;
+
+				// Country multiselects
+				case 'multi_select_countries' :
+
+					$selections = (array) self::get_option( $value['id'] );
+
+					if ( ! empty( $value['options'] ) ) {
+						$countries = $value['options'];
+					} else {
+						$countries = WC()->countries->countries;
+					}
+
+					asort( $countries );
+					?><tr valign="top">
+						<th scope="row" class="titledesc">
+							<label for="<?php echo esc_attr( $value['id'] ); ?>"><?php echo esc_html( $value['title'] ); ?></label>
+							<?php echo $tooltip_html; ?>
+						</th>
+						<td class="forminp">
+							<select multiple="multiple" name="<?php echo esc_attr( $value['id'] ); ?>[]" style="width:350px" data-placeholder="<?php _e( 'Choose countries&hellip;', 'woocommerce' ); ?>" title="<?php _e( 'Country', 'woocommerce' ) ?>" class="wc-enhanced-select">
+								<?php
+									if ( $countries ) {
+										foreach ( $countries as $key => $val ) {
+											echo '<option value="' . esc_attr( $key ) . '" ' . selected( in_array( $key, $selections ), true, false ).'>' . $val . '</option>';
+										}
+									}
+								?>
+							</select> <?php echo ( $description ) ? $description : ''; ?> </br><a class="select_all button" href="#"><?php _e( 'Select all', 'woocommerce' ); ?></a> <a class="select_none button" href="#"><?php _e( 'Select none', 'woocommerce' ); ?></a>
+						</td>
+					</tr><?php
+					break;
+
+				// Default: run an action
+				default:
+					do_action( 'woocommerce_admin_field_' . $value['type'], $value );
+					break;
 			}
-
-			$html .= '<form method="post" action="options.php" enctype="multipart/form-data">' . "\n";
-
-				// Get settings fields
-				ob_start();
-				settings_fields( $this->parent->_token . '_settings' );
-				do_settings_sections( $this->parent->_token . '_settings' );
-				$html .= ob_get_clean();
-
-				$html .= '<p class="submit">' . "\n";
-					$html .= '<input type="hidden" name="tab" value="' . esc_attr( $tab ) . '" />' . "\n";
-					$html .= '<input name="Submit" type="submit" class="button-primary" value="' . esc_attr( __( 'Save Settings' , 'my-flying-box' ) ) . '" />' . "\n";
-				$html .= '</p>' . "\n";
-			$html .= '</form>' . "\n";
-		$html .= '</div>' . "\n";
-
-		echo $html;
+		}
 	}
 
 	/**
-	 * Main My_Flying_Box_Settings Instance
+	 * Helper function to get the formated description and tip HTML for a
+	 * given form field. Plugins can call this when implementing their own custom
+	 * settings types.
 	 *
-	 * Ensures only one instance of My_Flying_Box_Settings is loaded or can be loaded.
-	 *
-	 * @since 1.0.0
-	 * @static
-	 * @see My_Flying_Box()
-	 * @return Main My_Flying_Box_Settings instance
+	 * @param array $value The form field value array
+	 * @returns array The description and tip as a 2 element array
 	 */
-	public static function instance ( $parent ) {
-		if ( is_null( self::$_instance ) ) {
-			self::$_instance = new self( $parent );
+	public static function get_field_description( $value ) {
+		$description  = '';
+		$tooltip_html = '';
+
+		if ( true === $value['desc_tip'] ) {
+			$tooltip_html = $value['desc'];
+		} elseif ( ! empty( $value['desc_tip'] ) ) {
+			$description  = $value['desc'];
+			$tooltip_html = $value['desc_tip'];
+		} elseif ( ! empty( $value['desc'] ) ) {
+			$description  = $value['desc'];
 		}
-		return self::$_instance;
-	} // End instance()
+
+		if ( $description && in_array( $value['type'], array( 'textarea', 'radio' ) ) ) {
+			$description = '<p style="margin-top:0">' . wp_kses_post( $description ) . '</p>';
+		} elseif ( $description && in_array( $value['type'], array( 'checkbox' ) ) ) {
+			$description =  wp_kses_post( $description );
+		} elseif ( $description ) {
+			$description = '<span class="description">' . wp_kses_post( $description ) . '</span>';
+		}
+
+		if ( $tooltip_html && in_array( $value['type'], array( 'checkbox' ) ) ) {
+			$tooltip_html = '<p class="description">' . $tooltip_html . '</p>';
+		} elseif ( $tooltip_html ) {
+			$tooltip_html = '<img class="help_tip" data-tip="' . esc_attr( $tooltip_html ) . '" src="' . WC()->plugin_url() . '/assets/images/help.png" height="16" width="16" />';
+		}
+
+		return array(
+			'description'  => $description,
+			'tooltip_html' => $tooltip_html
+		);
+	}
 
 	/**
-	 * Cloning is forbidden.
+	 * Save admin fields.
 	 *
-	 * @since 1.0.0
+	 * Loops though the woocommerce options array and outputs each field.
+	 *
+	 * @param array $options Opens array to output
+	 * @return bool
 	 */
-	public function __clone () {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?' ), $this->parent->_version );
-	} // End __clone()
+	public static function save_fields( $options ) {
+		if ( empty( $_POST ) ) {
+			return false;
+		}
+
+		// Options to update will be stored here
+		$update_options = array();
+
+		// Loop options and get values to save
+		foreach ( $options as $value ) {
+			if ( ! isset( $value['id'] ) || ! isset( $value['type'] ) ) {
+				continue;
+			}
+
+			// Get posted value
+			if ( strstr( $value['id'], '[' ) ) {
+				parse_str( $value['id'], $option_name_array );
+
+				$option_name  = current( array_keys( $option_name_array ) );
+				$setting_name = key( $option_name_array[ $option_name ] );
+
+				$option_value = isset( $_POST[ $option_name ][ $setting_name ] ) ? wp_unslash( $_POST[ $option_name ][ $setting_name ] ) : null;
+			} else {
+				$option_name  = $value['id'];
+				$setting_name = '';
+				$option_value = isset( $_POST[ $value['id'] ] ) ? wp_unslash( $_POST[ $value['id'] ] ) : null;
+			}
+
+			// Format value
+			switch ( sanitize_title( $value['type'] ) ) {
+				case 'checkbox' :
+					$option_value = is_null( $option_value ) ? 'no' : 'yes';
+					break;
+				case 'textarea' :
+					$option_value = wp_kses_post( trim( $option_value ) );
+					break;
+				case 'text' :
+				case 'email':
+				case 'number':
+				case 'select' :
+				case 'color' :
+				case 'password' :
+				case 'single_select_page' :
+				case 'single_select_country' :
+				case 'radio' :
+					if ( in_array( $value['id'], array( 'woocommerce_price_thousand_sep', 'woocommerce_price_decimal_sep' ) ) ) {
+						$option_value = wp_kses_post( $option_value );
+
+					} elseif ( 'woocommerce_price_num_decimals' == $value['id'] ) {
+						$option_value = is_null( $option_value ) ? 2 : absint( $option_value );
+
+					} elseif ( 'woocommerce_hold_stock_minutes' == $value['id'] ) {
+						$option_value = ! empty( $option_value ) ? absint( $option_value ) : ''; // Allow > 0 or set to ''
+
+						wp_clear_scheduled_hook( 'woocommerce_cancel_unpaid_orders' );
+
+						if ( '' !== $option_value ) {
+							wp_schedule_single_event( time() + ( absint( $option_value ) * 60 ), 'woocommerce_cancel_unpaid_orders' );
+						}
+
+					} else {
+						$option_value = wc_clean( $option_value );
+					}
+					break;
+				case 'multiselect' :
+				case 'multi_select_countries' :
+					$option_value = array_filter( array_map( 'wc_clean', (array) $option_value ) );
+					break;
+				case 'image_width' :
+					if ( isset( $option_value['width'] ) ) {
+						$update_options[ $value['id'] ]['width']  = wc_clean( $option_value['width'] );
+						$update_options[ $value['id'] ]['height'] = wc_clean( $option_value['height'] );
+						$update_options[ $value['id'] ]['crop']   = isset( $option_value['crop'] ) ? 1 : 0;
+					} else {
+						$update_options[ $value['id'] ]['width']  = $value['default']['width'];
+						$update_options[ $value['id'] ]['height'] = $value['default']['height'];
+						$update_options[ $value['id'] ]['crop']   = $value['default']['crop'];
+					}
+					break;
+				default :
+					do_action( 'woocommerce_update_option_' . sanitize_title( $value['type'] ), $value );
+					break;
+			}
+
+			if ( ! is_null( $option_value ) ) {
+				// Check if option is an array
+				if ( $option_name && $setting_name ) {
+					// Get old option value
+					if ( ! isset( $update_options[ $option_name ] ) ) {
+						$update_options[ $option_name ] = get_option( $option_name, array() );
+					}
+
+					if ( ! is_array( $update_options[ $option_name ] ) ) {
+						$update_options[ $option_name ] = array();
+					}
+
+					$update_options[ $option_name ][ $setting_name ] = $option_value;
+
+				// Single value
+				} else {
+					$update_options[ $option_name ] = $option_value;
+				}
+			}
+
+			// Custom handling
+			do_action( 'woocommerce_update_option', $value );
+		}
+
+		// Now save the options
+		foreach ( $update_options as $name => $value ) {
+			update_option( $name, $value );
+		}
+
+		return true;
+	}
 
 	/**
-	 * Unserializing instances of this class is forbidden.
+	 * Checks which method we're using to serve downloads
 	 *
-	 * @since 1.0.0
+	 * If using force or x-sendfile, this ensures the .htaccess is in place
 	 */
-	public function __wakeup () {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?' ), $this->parent->_version );
-	} // End __wakeup()
+	public static function check_download_folder_protection() {
+		$upload_dir      = wp_upload_dir();
+		$downloads_url   = $upload_dir['basedir'] . '/woocommerce_uploads';
+		$download_method = get_option('woocommerce_file_download_method');
 
+		if ( 'redirect' == $download_method ) {
+
+			// Redirect method - don't protect
+			if ( file_exists( $downloads_url . '/.htaccess' ) ) {
+				unlink( $downloads_url . '/.htaccess' );
+			}
+
+		} else {
+
+			// Force method - protect, add rules to the htaccess file
+			if ( ! file_exists( $downloads_url . '/.htaccess' ) ) {
+				if ( $file_handle = @fopen( $downloads_url . '/.htaccess', 'w' ) ) {
+					fwrite( $file_handle, 'deny from all' );
+					fclose( $file_handle );
+				}
+			}
+		}
+	}
 }
+
+endif;

@@ -36,7 +36,7 @@ class My_Flying_Box_Post_Type {
 	 */
 	public $description;
 
-	public function __construct ( $post_type = '', $plural = '', $single = '', $description = '' ) {
+	public function __construct ( $post_type = '', $plural = '', $single = '', $description = '', $in_menu = false ) {
 
 		if ( ! $post_type || ! $plural || ! $single ) return;
 
@@ -45,8 +45,9 @@ class My_Flying_Box_Post_Type {
 		$this->plural = $plural;
 		$this->single = $single;
 		$this->description = $description;
+    $this->in_menu = $in_menu;
 
-		// Regsiter post type
+		// Register post type
 		add_action( 'init' , array( $this, 'register_post_type' ) );
 
 		// Display custom update messages for posts edits
@@ -84,8 +85,8 @@ class My_Flying_Box_Post_Type {
 			'publicly_queryable' => true,
 			'exclude_from_search' => false,
 			'show_ui' => true,
-			'show_in_menu' => true,
-			'show_in_nav_menus' => true,
+			'show_in_menu' => $this->in_menu,
+			'show_in_nav_menus' => $this->in_menu,
 			'query_var' => true,
 			'can_export' => true,
 			'rewrite' => true,
