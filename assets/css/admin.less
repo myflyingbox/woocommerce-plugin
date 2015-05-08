@@ -1,0 +1,249 @@
+.ir() {
+	display: block;
+	text-indent: -9999px;
+	position: relative;
+	height: 1em;
+	width: 1em;
+}
+
+.icon( @glyph: "\e001" ) {
+	font-family: 'WooCommerce';
+	speak: none;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	margin: 0;
+	text-indent: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	content: @glyph;
+}
+
+#myflyingbox-order-shipping {
+	.inside {
+		margin: 0;
+		padding: 0;
+		background: #fefefe;
+	}
+
+	.delete-shipment {
+		.ir();
+		display: inline-block;
+		margin: 0;
+
+		&:before {
+			.icon;
+			content: "\e013";
+			color: #999;
+		}
+
+		&:hover {
+			&:before {
+				color: $red;
+			}
+		}
+	}
+
+	.mfb_shipments_wrapper {
+		margin: 0;
+		overflow: auto;
+
+		table.mfb_order_shipments {
+			width: 100%;
+			background: #fff;
+
+			thead th {
+				background: #f8f8f8;
+				padding: 8px;
+				font-size: 11px;
+				text-align: left;
+				color: #555;
+				-webkit-touch-callout: none;
+					-webkit-user-select: none;
+					-khtml-user-select: none;
+					-moz-user-select: none;
+					-ms-user-select: none;
+					user-select: none;
+				&:last-child {
+					padding-right: 12px;
+				}
+
+				&:first-child {
+					padding-left: 12px;
+				}
+				&.sortable {
+					cursor: pointer;
+				}
+			}
+
+			tbody th, td {
+				padding: 8px;
+				text-align: left;
+				line-height: 26px;
+				vertical-align: top;
+				border-bottom: 1px dotted #ececec;
+
+				textarea {
+					width: 100%;
+				}
+
+				select {
+					width: 50%;
+				}
+
+				input, textarea {
+					font-size: 14px;
+					padding: 4px;
+					color: #555;
+				}
+
+				&:last-child {
+					padding-right: 12px;
+				}
+
+				&:first-child {
+					padding-left: 12px;
+				}
+			}
+
+			tbody tr:last-child td {
+				border-bottom: 1px solid #dfdfdf;
+			}
+
+			tbody tr:first-child td {
+				border-top: 8px solid #f8f8f8;
+			}
+
+			tbody#order_line_items tr:first-child td {
+				border-top: none;
+			}
+
+			td.check-column {
+				padding: 8px 8px 8px 12px;
+				width: 1%;
+			}
+
+			.item {
+				min-width: 200px;
+			}
+
+			.center,
+			.variation-id {
+				text-align: center;
+			}
+
+			.thumb {
+				text-align: left;
+				width: 27px;
+
+				a {
+					display: block;
+				}
+
+				img {
+					padding: 1px;
+					margin: 0;
+					border: 1px solid #dfdfdf;
+					vertical-align: middle;
+					width: 21px;
+					height: 21px;
+				}
+			}
+
+			.refund_by {
+				border-bottom: 1px dotted #999;
+			}
+
+			tr.fee {
+				.thumb div {
+					.ir();
+					font-size: 14px;
+					margin: 6px;
+
+					&:before {
+						.icon( "\e007" );
+						color: #bbbbbb;
+					}
+				}
+			}
+
+			tr.refund {
+				.thumb div {
+					.ir();
+					font-size: 14px;
+					margin: 6px;
+
+					&:before {
+						.icon( "\e014" );
+						color: #bbbbbb;
+					}
+				}
+			}
+
+			tr.shipping {
+				.thumb div {
+					.ir();
+					font-size: 14px;
+					margin: 6px;
+
+					&:before {
+						.icon( "\e01a" );
+						color: #bbbbbb;
+					}
+				}
+			}
+
+			th.line_tax {
+				white-space: nowrap;
+			}
+
+			th.line_tax,
+			td.line_tax {
+				padding: 8px 16px 8px 8px;
+
+				.delete-order-tax {
+					.ir();
+					font-size: 12px;
+					visibility: hidden;
+					float: right;
+					margin: 2px -16px 0 0;
+
+					&:before {
+						.icon( "\e013" );
+						color: white;
+						background-color: #000;
+						-webkit-border-radius: 100%;
+						border-radius: 100%;
+						border: 1px solid #000;
+						box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+					}
+
+					&:hover:before {
+						border-color: $red;
+						background-color: $red;
+					}
+				}
+
+				&:hover {
+					.delete-order-tax {
+						visibility: visible;
+					}
+				}
+			}
+
+			small.refunded {
+				display: block;
+				color: $red;
+				white-space: nowrap;
+			}
+		}
+	}
+
+
+}

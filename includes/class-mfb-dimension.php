@@ -71,7 +71,7 @@ class MFB_Dimension {
     $all_dimensions = get_posts( array(
 			'posts_per_page'=> -1,
 			'post_type' 	=> 'mfb_dimension',
-      'post_status' => 'publish',
+      'post_status' => 'private',
       'field' => 'ids',
       'orderby'  => array( 'meta_value_num' => 'ASC' ),
       'meta_key' => '_index'
@@ -108,7 +108,7 @@ class MFB_Dimension {
   public static function create($index, $from, $to, $length, $width, $height) {
     $dimension = array(
       'post_type' => 'mfb_dimension',
-      'post_status' => 'publish',
+      'post_status' => 'private',
       'ping_status' => 'closed',
       'comment_status' => 'closed',
       'post_author' => 1,
@@ -117,6 +117,9 @@ class MFB_Dimension {
     );
 
     $dimension_id = wp_insert_post( $dimension, true );
+    echo '<pre>';
+    print_r($dimension_id);
+    echo '</pre>';
 
     if ( ! $dimension_id || is_wp_error( $dimension_id ) ) {
       return $dimension_id;

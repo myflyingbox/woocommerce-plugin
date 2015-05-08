@@ -19,12 +19,14 @@ You will need a My Flying Box account to use this plugin. Contact us at info@myf
 
 == Installation ==
 
-Installing "My Flying Box" can be done either by searching for "My Flying Box" via the "Plugins > Add New" screen in your WordPress dashboard, or by using the following steps:
+Installing "My Flying Box" can only be done from source at the moment:
 
-1. Download the plugin on github: http://github.com/myflyingbox/mfb-woocommerce/releases
-1. Upload the ZIP file through the 'Plugins > Add New > Upload' screen in your WordPress dashboard
-1. Activate the plugin through the 'Plugins' menu in WordPress
-
+1. Go to your Wordpress plugin folder (WP_ROOT/wp-content/plugins/)
+2. git clone --recursive https://github.com/myflyingbox/woocommerce-plugin.git my-flying-box
+3. cd my-flying-box/includes/lib/php-lce
+4. curl -s http://getcomposer.org/installer | php
+5. php composer.phar install
+6. Open WordPress admin panel, and activate the module
 
 == Changelog ==
 

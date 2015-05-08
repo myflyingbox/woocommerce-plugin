@@ -37,6 +37,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
   require_once( 'includes/class-my-flying-box-post-type.php' );
   require_once( 'includes/class-my-flying-box-taxonomy.php' );
 
+  // Load view elements
+  require_once( 'includes/meta-boxes/class-mfb-meta-box-order-shipping.php' );
 
 /**
  * Returns the main instance of My_Flying_Box to prevent the need to use globals.

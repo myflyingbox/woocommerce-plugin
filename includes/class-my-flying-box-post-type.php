@@ -81,8 +81,8 @@ class My_Flying_Box_Post_Type {
 		$args = array(
 			'labels' => apply_filters( $this->post_type . '_labels', $labels ),
 			'description' => $this->description,
-			'public' => true,
-			'publicly_queryable' => true,
+			'public' => false,
+			'publicly_queryable' => false,
 			'exclude_from_search' => false,
 			'show_ui' => true,
 			'show_in_menu' => $this->in_menu,
@@ -91,9 +91,9 @@ class My_Flying_Box_Post_Type {
 			'can_export' => true,
 			'rewrite' => true,
 			'capability_type' => 'post',
-			'has_archive' => true,
-			'hierarchical' => true,
-			'supports' => array( 'title', 'editor', 'excerpt', 'comments', 'thumbnail' ),
+			'has_archive' => false,
+			'hierarchical' => false,
+			'supports' => array( 'title', 'comments', 'custom-fields' ),
 			'menu_position' => 5,
 			'menu_icon' => 'dashicons-admin-post',
 		);
