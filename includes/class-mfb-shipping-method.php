@@ -12,6 +12,11 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	public $description = null;
 	public $enabled = false;
 	public $carrier = null;
+	
+	public $included_destinations = array();
+	public $excluded_destinations = array();
+	
+	public $flat_rates = array();
 
 	public function __construct() {
 		$this->id = get_called_class();    
@@ -36,10 +41,89 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		
 		$this->method_title       = $this->title;
 		$this->method_description = $this->description;
+		
+		$this->load_destination_restrictions();
+		$this->load_flat_rates();
 
 		// Actions
 		add_filter( 'woocommerce_calculated_shipping',  array( $this, 'calculate_shipping'));
 		add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
+	}
+
+	private function load_destination_restrictions() {
+		// Loading included destinations first
+		$rules = array();
+		foreach( explode(',', $this->settings['included_postcodes']) as $part1) {
+			foreach( explode('\r\n', $part1) as $part2 ) {
+				$rules[] = $part2;
+			}
+		}
+		foreach( $rules as $rule ) {
+			$split = explode('-', $rule);
+			$country = trim($split[0]);
+			if ( count($split) == 2) {
+				$postcode = trim($split[1]);
+			} else {
+				$postcode = false;
+			}
+			// Now we have the country and the (optional) postcode for this rule
+			if ( ! array_key_exists($country, $this->included_destinations) && !empty( $country ) ) {
+				$this->included_destinations[$country] = array();
+			}
+			if ( $postcode ) {
+				$this->included_destinations[$country][] = $postcode;
+			}
+		}
+		
+		
+		// Loading excluded destinations
+		$rules = array();
+		foreach( explode(',', $this->settings['excluded_postcodes']) as $part1) {
+			foreach( explode("\n", $part1) as $part2 ) {
+				$rules[] = $part2;
+			}
+		}
+		foreach( $rules as $rule ) {
+			$split = explode('-', $rule);
+			$country = trim($split[0]);
+			if ( count($split) == 2) {
+				$postcode = trim($split[1]);
+			} else {
+				$postcode = false;
+			}
+			// Now we have the country and the (optional) postcode for this rule
+			if ( ! array_key_exists($country, $this->excluded_destinations) && !empty( $country )  ) {
+				$this->excluded_destinations[$country] = array();
+			}
+			if ( $postcode ) {
+				$this->excluded_destinations[$country][] = $postcode;
+			}
+		}
+	}
+	
+	public function load_flat_rates() {
+		$this->flat_rates = array();
+		$rates = array();
+		foreach( explode(',', $this->settings['flatrate_prices']) as $part1) {
+			foreach( explode(PHP_EOL, $part1) as $part2 ) {
+				$rates[] = $part2;
+			}
+		}
+		$previous_weight = 0;
+		foreach( $rates as $rate ) {
+			$split = explode('|', $rate);
+			if ( count($split) == 2) {
+				$weight = trim($split[0]);
+				$price = trim($split[1]);
+				$this->flat_rates[] = array( $previous_weight, (float)$weight, (float)$price );
+				$previous_weight = $weight;
+			}
+		}
+		// Sorting by weight
+		foreach($this->flat_rates as $key => $value){
+			$weights[$key] = $value[1];
+		}
+		array_multisort($weights, SORT_ASC, $this->flat_rates);
 	}
 
 	/**
@@ -66,7 +150,37 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				'description' => __( 'This controls the description of this shipping method, which the user sees during checkout.', 'my-flying-box' ),
 				'default'     => '',
 				'desc_tip'    => true,
-			)
+			),
+			'included_postcodes' => array(
+				'title'       => __( 'Included postcodes', 'my-flying-box' ),
+				'type'        => 'textarea',
+				'description' => __( 'Limits the service only to these postcodes. One rule per line (or same line and separated by a comma), using the following format: XX-YYYYY (XX = alpha2 country code, YYYYY = full postcode or prefix). Whitespaces will be ignored. You can also specify country codes without postcodes (just "XX"). Leave blank to apply no limitation.', 'my-flying-box' ),
+				'default'     => '',
+				'placeholder' => 'FR, ES-28...',
+				'desc_tip'    => true,
+			),
+			'excluded_postcodes' => array(
+				'title'       => __( 'Excluded postcodes', 'my-flying-box' ),
+				'type'        => 'textarea',
+				'description' => __( 'Excludes postcodes matching this list. One rule per line, using the following format: XX-YYYYY (XX = alpha2 country code, YYYYY = full postcode or just beginning). Whitespaces will be ignored. You can also specify country codes without postcodes (just "XX").', 'my-flying-box' ),
+				'default'     => '',
+				'placeholder' => 'FR-75, FR-974...',
+				'desc_tip'    => true,
+			),
+			'flatrate_pricing' => array(
+				'title'   => __( 'Flat-rate pricing', 'my-flying-box' ),
+				'type'    => 'checkbox',
+				'label'   => __( 'Check to enable pricing based on flat-rate pricing table, as defined below. When enabled, the prices returned by the API will not be used.', 'my-flying-box' ),
+				'default' => 'no'
+			),
+			'flatrate_prices' => array(
+				'title'       => __( 'Flat-rate prices', 'my-flying-box' ),
+				'type'        => 'textarea',
+				'description' => __( 'Prices are based on weight, so you can define as many rules as you want in the following format: Weight (up to, in kg, e.g. 6 or 7.5) | Price (float with dot as separator, e.g. 3.54). One rule per line.', 'my-flying-box' ),
+				'default'     => '',
+				'placeholder' => '6 | 3.5',
+				'desc_tip'    => true,
+			),
 		);
 	}
 
@@ -75,31 +189,32 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	 */
 	public function calculate_shipping( $package = array() ) {
 		if ( ! $this->enabled ) return false;
-		
+
+		// Extracting total weight from the WC CART
+		$weight = 0;
+		foreach ( WC()->cart->get_cart() as $item_id => $values ) {
+			$product = $values['data'];
+			if( $product->needs_shipping() ) {
+				$product_weight = $product->get_weight() ? wc_format_decimal( wc_get_weight($product->get_weight(),'kg'), 2 ) : 0;
+				$weight += ($product_weight*$values['quantity']);
+			}
+		}
+		if ( 0 == $weight)
+			$weight = 0.2;
+
+
 		// Loading existing quote, if available, so as not to send useless requests to the API
 		$saved_quote_id = WC()->session->get('myflyingbox_shipment_quote_id');
 		$quote_request_time = WC()->session->get('myflyingbox_shipment_quote_timestamp');
 		
 		if ( $saved_quote_id && $quote_request_time && $quote_request_time == $_SERVER['REQUEST_TIME'] ) {
 			$quote = MFB_Quote::get( $saved_quote_id );
-
 		} else {
 
-			// Extracting total weight from the WC CART
-			$weight = 0;
-			foreach ( WC()->cart->get_cart() as $item_id => $values ) {
-				$product = $values['data'];
-				if( $product->needs_shipping() ) {
-					$product_weight = $product->get_weight() ? wc_format_decimal( wc_get_weight($product->get_weight(),'kg'), 2 ) : 0;
-					$weight += $product_weight;
-				}
-			}
-			if ( 0 == $weight)
-				$weight = 0.2;
-
-			// Next, we get the computed dimensions based on this total weight      
+			// We get the computed dimensions based on the total weight      
 			$dimension = MFB_Dimension::get_for_weight( $weight );
 
+		
 			if ( ! $dimension ) return false;
 			
 			// We need destination info to be able to send a quote
@@ -122,6 +237,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 					array('length' => $dimension->length, 'height' => $dimension->height, 'width' => $dimension->width, 'weight' => $weight)
 				)
 			);
+			
 			
 			$api_quote = Lce\Resource\Quote::request($params);
 			
@@ -155,12 +271,26 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		WC()->session->set( 'myflyingbox_shipment_quote_timestamp', $_SERVER['REQUEST_TIME'] );
 		
 		if ( isset($quote->offers[$this->id]) ) {
-			$rate = array(
-				'id' 		=> $this->id,
-				'label' 	=> $this->title,
-				'cost' => $quote->offers[$this->id]->base_price_in_cents / 100
-			);
-			$this->add_rate( $rate );
+			if ( $this->destination_supported( $package['destination']['postcode'], $package['destination']['country']) ) {
+				$price = $quote->offers[$this->id]->base_price_in_cents / 100;
+				
+				// Overriding the API price is we use flatrate pricing
+				if ( $this->settings['flatrate_pricing'] == 'yes') {
+					$price = $this->get_flatrate_price( $weight );
+				}
+				$rate = array(
+					'id' 		=> $this->id,
+					'label' 	=> $this->title,
+					'cost' => $price
+				);
+				$this->add_rate( $rate );
+			}
+		}
+	}
+
+	private function get_flatrate_price( $weight ) {
+		foreach( $this->flat_rates as $rate ) {
+			if ( $weight > $rate[0] && $weight < $rate[1] ) return $rate[2];
 		}
 	}
 
@@ -168,4 +298,50 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	public function is_available( $package ) {
 		return $this->enabled;
 	}
+	
+	public function destination_supported( $postal_code, $country ) {
+		// First, checking if inclusion restrictions apply
+		if ( count($this->included_destinations) > 0 ) {
+			if ( ! array_key_exists($country, $this->included_destinations) ) {
+				// The country is not included, we can get out now.
+				return false;
+			} else {
+				// Country is included, let's check the postcodes, if necessary
+				if (count($this->included_destinations[$country]) > 0 ) {
+					$included = false;
+					foreach( $this->included_destinations[$country] as $included_postcode ) {
+						if( strrpos($postal_code, $included_postcode, -strlen($postal_code)) !== FALSE ) { // This code checks whether postal code starts with the characters from excluded_postcode
+							$included = true;
+						}
+					}
+					if ( ! $included ) return false; // The postal code was not included in any way, so we just get out.
+				}
+			}
+		}
+		
+		// If arrive here, it means that either there is no inclusion restriction, or we have passed
+		// all inclusion rules.
+		// We now check that there is no applicable exclusion rule.
+		// If any exclusion rule matches, we return false.
+		if ( count($this->excluded_destinations) > 0 ) {
+			if ( array_key_exists($country, $this->excluded_destinations) ) {
+				// The country has some exclusion rules, let's check the postcodes, if necessary
+				if (count($this->excluded_destinations[$country]) > 0 ) {
+					foreach( $this->excluded_destinations[$country] as $excluded_postcode ) {
+						// Checks whether postal code starts with the characters from excluded_postcode
+						// If any match, we return false.
+						if( strrpos($postal_code, $excluded_postcode, -strlen($postal_code)) !== FALSE ) {
+							return false;
+						}
+					}
+				} else {
+					// There are no postcode exclusion rules, so the whole country is excluded.
+					return false;
+				}
+			}
+		}
+		// We made it through without any exclusion match, we can return true!
+		return true;
+	}
+	
 }
