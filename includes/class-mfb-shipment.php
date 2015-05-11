@@ -157,7 +157,9 @@ class MFB_Shipment {
 		$shipment->recipient->name          = $order->shipping_first_name . ' ' . $order->shipping_last_name;
 		$shipment->recipient->company       = $order->shipping_company;
 		$shipment->recipient->street        = $order->shipping_address_1;
-		if ( ! empty( trim( $order->shipping_address_2 ))) $shipment->recipient->street .= "\n" . $order->shipping_address_2;
+		
+		$ship_addr2 = trim( $order->shipping_address_2 );
+		if ( ! empty($ship_addr2) ) $shipment->recipient->street .= "\n" . $ship_addr2;
 		
 		$shipment->recipient->city          = $order->shipping_city;
 		$shipment->recipient->postal_code   = $order->shipping_postcode;
