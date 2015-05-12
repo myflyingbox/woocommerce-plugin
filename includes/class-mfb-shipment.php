@@ -331,7 +331,7 @@ class MFB_Shipment {
 					'city'         => $this->recipient->city,
 					'postal_code'  => $this->recipient->postal_code,
 					'country'      => $this->recipient->country_code,
-					'is_a_company' => !empty(trim($this->company))
+					'is_a_company' => !empty($this->recipient->company)
 				),
 				'parcels' => $parcels
 			);
