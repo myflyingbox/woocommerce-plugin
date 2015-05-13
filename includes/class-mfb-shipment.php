@@ -205,7 +205,8 @@ class MFB_Shipment {
 			$shipment->offer = null;
 			// Auto-setting the offer based on what the customer has chosen
 			if ( count($order->get_shipping_methods()) == 1 ) {
-				$chosen_method = array_pop($order->get_shipping_methods())['item_meta']['method_id'][0];
+				$methods = array_pop($order->get_shipping_methods());
+				$chosen_method = $methods['item_meta']['method_id'][0];
 				if ( $quote->offers[$chosen_method] ) {
 					$shipment->offer = $quote->offers[$chosen_method];
 				}
@@ -275,11 +276,12 @@ class MFB_Shipment {
 	
 	public function formatted_address( $address_type ) {
 		// Formatted Addresses
+		$street = explode("\n", $this->$address_type->street, 2);
 		$address = array(
 			'last_name'     => $this->$address_type->name,
 			'company'       => $this->$address_type->company,
-			'address_1'     => explode("\n", $this->$address_type->street, 2)[0],
-			'address_2'     => explode("\n", $this->$address_type->street, 2)[1],
+			'address_1'     => $street[0],
+			'address_2'     => $street[1],
 			'city'          => $this->$address_type->city,
 			'state'         => $this->$address_type->state,
 			'postcode'      => $this->$address_type->postal_code,
