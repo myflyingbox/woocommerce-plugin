@@ -11,10 +11,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'MFB_Settings_Page' ) ) :
 
+if ( ! class_exists( 'WC_Settings_Page' ) ) {
+	require_once (dirname(__FILE__) . '/../../../woocommerce/includes/admin/settings/class-wc-settings-page.php');
+}
+
 /**
  * MFB_Settings_Page
  */
-abstract class MFB_Settings_Page {
+abstract class MFB_Settings_Page extends WC_Settings_Page {
 
 	protected $id    = '';
 	protected $label = '';
