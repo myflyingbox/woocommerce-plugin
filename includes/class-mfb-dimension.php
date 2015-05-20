@@ -117,9 +117,6 @@ class MFB_Dimension {
     );
 
     $dimension_id = wp_insert_post( $dimension, true );
-    echo '<pre>';
-    print_r($dimension_id);
-    echo '</pre>';
 
     if ( ! $dimension_id || is_wp_error( $dimension_id ) ) {
       return $dimension_id;

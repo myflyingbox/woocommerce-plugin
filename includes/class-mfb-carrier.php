@@ -257,9 +257,7 @@ class MFB_Carrier extends WC_Shipping_Method {
 			$carrier_data['post_content']   = $api_service->details->fr;
 
 			$carrier_id = wp_insert_post( $carrier_data, true );
-			echo '<pre>';
-			print_r($carrier_id);
-			echo '</pre>';
+
 			if ( !$carrier_id || is_wp_error( $carrier_id ) ) {
 				return $carrier_id;
 			} else {
