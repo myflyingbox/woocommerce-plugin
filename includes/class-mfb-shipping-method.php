@@ -120,10 +120,11 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			}
 		}
 		// Sorting by weight
+		$weights = array();
 		foreach($this->flat_rates as $key => $value){
 			$weights[$key] = $value[1];
 		}
-		array_multisort($weights, SORT_ASC, $this->flat_rates);
+		array_multisort($weights, SORT_ASC, SORT_NUMERIC, $this->flat_rates);
 	}
 
 	/**
