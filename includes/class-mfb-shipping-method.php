@@ -208,7 +208,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		$saved_quote_id = WC()->session->get('myflyingbox_shipment_quote_id');
 		$quote_request_time = WC()->session->get('myflyingbox_shipment_quote_timestamp');
 		
-		if ( $saved_quote_id && $quote_request_time && $quote_request_time == $_SERVER['REQUEST_TIME'] ) {
+		if ( is_numeric( $saved_quote_id ) && $quote_request_time && $quote_request_time == $_SERVER['REQUEST_TIME'] ) {
 			$quote = MFB_Quote::get( $saved_quote_id );
 		} else {
 

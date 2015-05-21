@@ -490,7 +490,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 			if ($carrier->shop_delivery) {
 
 				// Initializing currently valid quote; We need the offer's uuid to request the locations
-				$quote = MFB_Quote::get( WC()->session->get('myflyingbox_shipment_quote') );
+				$quote = MFB_Quote::get( WC()->session->get('myflyingbox_shipment_quote_id') );
 
 				$full_label .=  '<br/><span class="select-location" id="locationselector__'.$method->id.'__'.$quote->offers[$method->id]->api_offer_uuid.'">'.__( 'Choose a location', 'my-flying-box' ).'</span>';
 				$full_label .=  '<br/><span>'.__( 'Selected ', 'my-flying-box' ).' : <span id="mfb-location-client"></span></span>';

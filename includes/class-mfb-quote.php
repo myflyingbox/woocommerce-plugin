@@ -28,8 +28,14 @@ class MFB_Quote {
 			$instance->post = get_post( $instance->id );
       $instance->shipment_id = $instance->post->post_parent;
       $instance->populate();
+      
+      return $instance;
+      
+    } else {
+    
+      return false;
     }
-    return $instance;
+
 	}  
 
   public function populate() {
