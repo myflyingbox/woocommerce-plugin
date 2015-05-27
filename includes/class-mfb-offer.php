@@ -36,6 +36,8 @@ class MFB_Offer {
 			$instance->id   = absint( $offer_id );
 			$instance->post = get_post( $instance->id );
 			$instance->populate();
+		} else {
+			$instance = null;
 		}
 		return $instance;
 	}

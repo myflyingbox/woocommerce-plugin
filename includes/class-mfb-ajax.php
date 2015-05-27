@@ -18,8 +18,14 @@ class MFB_AJAX {
 			'get_delivery_locations'                          => true,
 			'create_shipment'                                 => false,
 			'book_offer'                                      => false,
-			'delete_shipment'                                 => false
-			
+			'delete_shipment'                                 => false,
+			'update_shipper'                                  => false,
+			'update_recipient'                                => false,
+			'add_parcel'                                      => false,
+			'edit_parcel'                                     => false,
+			'update_parcel'                                   => false,
+			'update_selected_offer'                           => false,
+			'download_labels'                                 => false
 		);
 		foreach ( $ajax_events as $ajax_event => $nopriv ) {
 			add_action( 'wp_ajax_mfb_' . $ajax_event, array( __CLASS__, $ajax_event ) );
@@ -87,22 +93,44 @@ class MFB_AJAX {
 		$shipment = MFB_Shipment::get( $shipment_id );
 		
 		$offer_id = intval( $_POST['offer_id'] );
+		$offer = MFB_Offer::get( $offer_id );
+		
 		$error = false;
 		
-		if ( $shipment->offer->id == $offer_id ) {
-			$shipment->place_booking();
+		if ( $offer && $shipment->quote->offers[$offer->product_code] ) {
+			$shipment->offer = $offer;
+			if ( $offer->pickup ) {
+				$shipment->collection_date = $_POST['pickup_date'];
+			}
+			if ( $offer->relay ) {
+				$shipment->delivery_location_code = $_POST['relay_code'];
+			}
+			$shipment->save();
+			try {
+				$shipment->place_booking();
+			} catch ( Lce\Exception\LceException $e) {
+				$error = true;
+				$error_message = $e->getMessage();
+			}
 		} else {
 			$error = true;
+			$error_message = 'Selected offer does not match any available offer in the quotation';
 		}
 		
 		if ( ! $error ) {
 			$response['data'] = 'success';
 		} else {
 			$response['data'] = 'error';
+			$response['message'] = $error_message;
 		}
 		
 		// Whatever the outcome, send the Response back
-		wp_send_json( $response );
+		if ( $error ) {
+			wp_send_json_error( $response );
+		} else {
+			wp_send_json_success( $response );
+		}
+		
 	}
 	
 	
@@ -124,7 +152,107 @@ class MFB_AJAX {
 		// Whatever the outcome, send the Response back
 		wp_send_json( $response );
 	}
+
+	public static function update_selected_offer () {
 	
+		$shipment_id = intval( $_POST['shipment_id'] );
+		$shipment = MFB_Shipment::get( $shipment_id );
+		
+		$offer_id = intval( $_POST['offer_id'] );
+		$offer = MFB_Offer::get( $offer_id );
+		
+		if ( $offer && $shipment->quote->offers[$offer->product_code] ) {
+			$shipment->offer = $offer;
+			$shipment->save();
+		}
+	}
+
+	public static function update_recipient () {
+	
+		$shipment_id = intval( $_POST['shipment_id'] );
+		$shipment = MFB_Shipment::get( $shipment_id );
+		
+		foreach( MFB_Shipment::$address_fields as $fieldname) {
+			if ( isset($_POST['_shipment_recipient_'.$fieldname]) ) $shipment->recipient->$fieldname = wp_kses_post( $_POST['_shipment_recipient_'.$fieldname] );
+		}
+		
+		$shipment->get_new_quote();
+		$res = $shipment->save();
+		
+		if ( $res ) {
+			$response['data'] = 'success';
+			$response['shipment'] = $shipment;
+		} else {
+			$response['data'] = 'error';
+		}
+		
+		// Whatever the outcome, send the Response back
+		wp_send_json( $response );
+	}
+
+	public static function update_shipper () {
+	
+		$shipment_id = intval( $_POST['shipment_id'] );
+		$shipment = MFB_Shipment::get( $shipment_id );
+		
+		foreach( MFB_Shipment::$address_fields as $fieldname) {
+			if ( isset($_POST['_shipment_shipper_'.$fieldname]) ) $shipment->shipper->$fieldname = wp_kses_post( $_POST['_shipment_shipper_'.$fieldname] );
+		}
+		
+		$shipment->get_new_quote();
+		$res = $shipment->save();
+		
+		if ( $res ) {
+			$response['data'] = 'success';
+			$response['shipment'] = $shipment;
+		} else {
+			$response['data'] = 'error';
+		}
+		
+		// Whatever the outcome, send the Response back
+		wp_send_json( $response );
+	}
+	public static function update_parcel () {
+	
+		$shipment_id = intval( $_POST['shipment_id'] );
+		$shipment = MFB_Shipment::get( $shipment_id );
+		
+		$parcel_index = intval( $_POST['parcel_index'] );
+		foreach( MFB_Shipment::$parcel_fields as $fieldname) {
+			if ( isset($_POST['_parcel_'.$parcel_index.'_'.$fieldname]) ) $shipment->parcels[$parcel_index]->$fieldname = wp_kses_post( $_POST['_parcel_'.$parcel_index.'_'.$fieldname] );
+		}
+		
+		$shipment->get_new_quote();
+		$res = $shipment->save();
+		
+		if ( $res ) {
+			$response['data'] = 'success';
+			$response['shipment'] = $shipment;
+		} else {
+			$response['data'] = 'error';
+		}
+		
+		// Whatever the outcome, send the Response back
+		wp_send_json( $response );
+	}
+	
+	public static function download_labels () {
+	
+		// We create a ready-to-confirm shipment object based on existing order
+		$shipment_id = intval( $_GET['shipment_id'] );
+		$shipment = MFB_Shipment::get( $shipment_id );
+		
+		$booking = Lce\Resource\Order::find($shipment->api_order_uuid);
+		$labels_content = $booking->labels();
+		$filename = 'labels_'.$booking->id.'.pdf';
+		
+		header('Content-type: application/pdf');
+		header("Content-Transfer-Encoding: binary");
+		header('Content-Disposition: attachment; filename="'.$filename.'"');
+		print($labels_content);
+		die();
+	}
+
 }
 
 MFB_AJAX::init();

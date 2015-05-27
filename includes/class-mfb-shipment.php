@@ -15,6 +15,8 @@ class MFB_Shipment {
 	// Currently selected quote and offer for this shipment
 	public $quote = null;
 	public $offer = null;
+	public $collection_date = null; // Selected collection date at time of booking.
+	public $delivery_location_code = null; // Selected relay delivery at time of booking.
 
 	public $post = null;
 
@@ -81,6 +83,8 @@ class MFB_Shipment {
 		$this->quote = MFB_Quote::get( get_post_meta( $this->id, '_quote_id', true ) );
 		$this->offer = MFB_Offer::get( get_post_meta( $this->id, '_offer_id', true ) );
 		
+		$this->collection_date = get_post_meta( $this->id, '_collection_date', true ); // Selected collection date
+		$this->delivery_location_code = get_post_meta( $this->id, '_delivery_location_code', true ); // Selected relay
 
 		
 		// Loading Shipper and Recipient
@@ -200,20 +204,28 @@ class MFB_Shipment {
 		// All good. Now we try to get a quote straight away.
 		$quote = $shipment->get_new_quote();
 		
-		if ( $quote ) {
-			$shipment->quote = $quote;
-			$shipment->offer = null;
+		$shipment->save();
+		
+		$shipment->autoselect_offer( $order );
+		
+		return $shipment;
+	}
+	
+	public function autoselect_offer( $order = null ) {
+		if ( $this->quote && $this->wc_order_id ) {
+			if ( null === $order ) $order = wc_get_order( $this->wc_order_id );
+			$this->offer = null;
+			
 			// Auto-setting the offer based on what the customer has chosen
 			if ( count($order->get_shipping_methods()) == 1 ) {
 				$methods = array_pop($order->get_shipping_methods());
 				$chosen_method = $methods['item_meta']['method_id'][0];
-				if ( $quote->offers[$chosen_method] ) {
-					$shipment->offer = $quote->offers[$chosen_method];
+				if ( $this->quote->offers[$chosen_method] ) {
+					$this->offer = $this->quote->offers[$chosen_method];
 				}
 			}
-			$shipment->save();
+			$this->save();
 		}
-		return $shipment;
 	}
 	
 	public function save() {
@@ -266,8 +278,21 @@ class MFB_Shipment {
 		update_post_meta( $this->id, '_parcels_count', count($this->parcels) );
 		update_post_meta( $this->id, '_api_uuid', $this->api_order_uuid );
 		
-		if ( $this->quote ) update_post_meta( $this->id, '_quote_id', $this->quote->id );
-		if ( $this->offer ) update_post_meta( $this->id, '_offer_id', $this->offer->id );
+		if ( $this->quote ) {
+			update_post_meta( $this->id, '_quote_id', $this->quote->id );
+		} else {
+			update_post_meta( $this->id, '_quote_id', null );
+		}
+		
+		if ( $this->offer ) {
+			update_post_meta( $this->id, '_offer_id', $this->offer->id );
+		} else {
+			update_post_meta( $this->id, '_offer_id', null );
+		}
+		
+		update_post_meta( $this->id, '_collection_date', $this->collection_date );
+		update_post_meta( $this->id, '_delivery_location_code', $this->delivery_location_code );
+		
 		
 		// Reloading object
 		$this->populate();
@@ -362,10 +387,17 @@ class MFB_Shipment {
 					$offer->currency              = $api_offer->total_price->currency;
 					$offer->save();
 				}
+				$this->quote = $quote;
+				$this->offer = null;
+				$this->save();
+
+
 			}
 			// Refreshing the quote, to get the offers loaded properly
 			$quote->populate();
-		
+			$this->populate();
+			$this->autoselect_offer();
+			
 			return $quote;
 	}
 
@@ -394,11 +426,11 @@ class MFB_Shipment {
 		);
 		
 		if( $this->offer->pickup == true ) {
-			$params['shipper']['collection_date'] = $this->offer->collection_dates[0];
+			$params['shipper']['collection_date'] = $this->collection_date;
 		}
 
 		if( $this->offer->relay == true ) {
-			$params['recipient']['location_code'] = get_post_meta( $this->wc_order_id, '_mfb_delivery_location', true );
+			$params['recipient']['location_code'] = $this->delivery_location_code;
 		}
 		
 		foreach( $this->parcels as $parcel ) {
@@ -411,6 +443,7 @@ class MFB_Shipment {
 		// Saving the order uuid
 		$this->api_order_uuid = $api_order->id;
 		$this->date_booking = date('Y-m-d H:i:s');
+		$this->status = 'mfb-booked';
 		
 		$this->save();
 	}
