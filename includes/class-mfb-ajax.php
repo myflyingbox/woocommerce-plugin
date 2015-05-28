@@ -24,6 +24,7 @@ class MFB_AJAX {
 			'add_parcel'                                      => false,
 			'edit_parcel'                                     => false,
 			'update_parcel'                                   => false,
+			'delete_parcel'                                   => false,
 			'update_selected_offer'                           => false,
 			'download_labels'                                 => false
 		);
@@ -91,7 +92,9 @@ class MFB_AJAX {
 		// We create a ready-to-confirm shipment object based on existing order
 		$shipment_id = intval( $_POST['shipment_id'] );
 		$shipment = MFB_Shipment::get( $shipment_id );
-		
+
+		if ( $shipment->status != 'mfb-draft' ) die();
+
 		$offer_id = intval( $_POST['offer_id'] );
 		$offer = MFB_Offer::get( $offer_id );
 		
@@ -140,6 +143,8 @@ class MFB_AJAX {
 		$shipment_id = intval( $_POST['shipment_id'] );
 		$shipment = MFB_Shipment::get( $shipment_id );
 		
+		if ( $shipment->status != 'mfb-draft' ) die();
+		
 		$res = $shipment->destroy();
 		
 		if ( $res ) {
@@ -157,7 +162,9 @@ class MFB_AJAX {
 	
 		$shipment_id = intval( $_POST['shipment_id'] );
 		$shipment = MFB_Shipment::get( $shipment_id );
-		
+
+		if ( $shipment->status != 'mfb-draft' ) die();
+
 		$offer_id = intval( $_POST['offer_id'] );
 		$offer = MFB_Offer::get( $offer_id );
 		
@@ -171,6 +178,8 @@ class MFB_AJAX {
 	
 		$shipment_id = intval( $_POST['shipment_id'] );
 		$shipment = MFB_Shipment::get( $shipment_id );
+
+		if ( $shipment->status != 'mfb-draft' ) die();
 		
 		foreach( MFB_Shipment::$address_fields as $fieldname) {
 			if ( isset($_POST['_shipment_recipient_'.$fieldname]) ) $shipment->recipient->$fieldname = wp_kses_post( $_POST['_shipment_recipient_'.$fieldname] );
@@ -194,7 +203,9 @@ class MFB_AJAX {
 	
 		$shipment_id = intval( $_POST['shipment_id'] );
 		$shipment = MFB_Shipment::get( $shipment_id );
-		
+
+		if ( $shipment->status != 'mfb-draft' ) die();
+
 		foreach( MFB_Shipment::$address_fields as $fieldname) {
 			if ( isset($_POST['_shipment_shipper_'.$fieldname]) ) $shipment->shipper->$fieldname = wp_kses_post( $_POST['_shipment_shipper_'.$fieldname] );
 		}
@@ -216,10 +227,22 @@ class MFB_AJAX {
 	
 		$shipment_id = intval( $_POST['shipment_id'] );
 		$shipment = MFB_Shipment::get( $shipment_id );
-		
-		$parcel_index = intval( $_POST['parcel_index'] );
-		foreach( MFB_Shipment::$parcel_fields as $fieldname) {
-			if ( isset($_POST['_parcel_'.$parcel_index.'_'.$fieldname]) ) $shipment->parcels[$parcel_index]->$fieldname = wp_kses_post( $_POST['_parcel_'.$parcel_index.'_'.$fieldname] );
+
+		if ( $shipment->status != 'mfb-draft' ) die();
+
+		if ( $_POST['parcel_index'] == 'new' ) {
+			// we are adding a new parcel
+			$parcel = new stdClass();
+			foreach( MFB_Shipment::$parcel_fields as $fieldname) {
+				if ( isset($_POST['_parcel_new_'.$fieldname]) ) $parcel->$fieldname = wp_kses_post( $_POST['_parcel_new_'.$fieldname] );
+			}
+			$shipment->parcels[] = $parcel;
+		} else {
+			// We are updating an existing parcel
+			$parcel_index = intval( $_POST['parcel_index'] );
+			foreach( MFB_Shipment::$parcel_fields as $fieldname) {
+				if ( isset($_POST['_parcel_'.$parcel_index.'_'.$fieldname]) ) $shipment->parcels[$parcel_index]->$fieldname = wp_kses_post( $_POST['_parcel_'.$parcel_index.'_'.$fieldname] );
+			}
 		}
 		
 		$shipment->get_new_quote();
@@ -235,7 +258,34 @@ class MFB_AJAX {
 		// Whatever the outcome, send the Response back
 		wp_send_json( $response );
 	}
+
+	public static function delete_parcel () {
 	
+		$shipment_id = intval( $_POST['shipment_id'] );
+		$shipment = MFB_Shipment::get( $shipment_id );
+		
+		if ( $shipment->status != 'mfb-draft' ) die();
+		
+		$parcel_index = intval( $_POST['parcel_index'] );
+		
+		unset( $shipment->parcels[$parcel_index] );
+		
+		$shipment->save();
+		
+		$shipment->get_new_quote();
+		$res = $shipment->save();
+		
+		if ( $res ) {
+			$response['data'] = 'success';
+			$response['shipment'] = $shipment;
+		} else {
+			$response['data'] = 'error';
+		}
+		
+		// Whatever the outcome, send the Response back
+		wp_send_json( $response );
+	}
+
 	public static function download_labels () {
 	
 		// We create a ready-to-confirm shipment object based on existing order

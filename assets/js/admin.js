@@ -15,12 +15,15 @@ jQuery( function ( $ ) {
 				.on( 'click',  'div.display_recipient_address a.edit_recipient_address',			this.load_recipient_form )
 				.on( 'click',  'div.display_shipper_address a.edit_shipper_address',					this.load_shipper_form )
 				.on( 'click',  'div.parcel-data a.edit_parcel',																this.load_parcel_form )
+				.on( 'click',  'div.parcel-data a.delete_parcel',															this.delete_parcel )
+				.on( 'click',  'div.parcel-data button.new_parcel', 													this.load_parcel_form )
 				.on( 'click',  'div.recipient_form_container button.cancel_recipient_form',		this.hide_recipient_form )
 				.on( 'click',  'div.shipper_form_container button.cancel_shipper_form',				this.hide_shipper_form )
 				.on( 'click',  'div.parcel div.parcel-form button.cancel_parcel_form',				this.hide_parcel_form )
 				.on( 'click',  'div.recipient_form_container button.submit_recipient_form',		this.submit_recipient_form )
 				.on( 'click',  'div.shipper_form_container button.submit_shipper_form',				this.submit_shipper_form )
 				.on( 'click',  'div.mfb-booked-offer button.download-labels',									this.download_labels )
+				.on( 'click',  'div.new-parcel div.parcel-form button.submit_parcel_form',		this.submit_new_parcel_form )
 				.on( 'click',  'div.parcel div.parcel-form button.submit_parcel_form',				this.submit_parcel_form )
 				.on( 'change', 'div.mfb-available-offers select.offer-selector',							this.update_selected_offer )
 				.on( 'click',  'a.delete-shipment',		this.delete_shipment );
@@ -197,6 +200,8 @@ jQuery( function ( $ ) {
 			var action = 'mfb_update_parcel';
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
 			var parcel_index = $( this ).closest('div.parcel').data('parcel_index');
+
+
 			var form = $( this ).closest('form');
 			$.ajax({
 				url:  woocommerce_admin_meta_boxes.ajax_url,
@@ -208,11 +213,29 @@ jQuery( function ( $ ) {
 			});
 			return false;
 		},
-		
+
+    delete_parcel: function( event ) {
+    	event.preventDefault();
+			var action = 'mfb_delete_parcel';
+			var shipment_id = $( this ).closest('tr').data('shipment_id');
+			var parcel_index = $( this ).closest('div.parcel').data('parcel_index');
+
+
+			var form = $( this ).closest('form');
+			$.ajax({
+				url:  woocommerce_admin_meta_boxes.ajax_url,
+				data: form.serialize()+'&action='+action+'&shipment_id='+shipment_id+"&parcel_index="+parcel_index,
+				type: 'POST',
+				success: function( response ) {
+					window.location.reload();
+				}
+			});
+			return false;
+		},
+
     download_labels: function() {
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
 			window.open( plugin_url+'/my-flying-box/direct/download_labels.php?shipment_id='+shipment_id );
-			
 			return false;
 		},
 		

@@ -1,5 +1,7 @@
 <div class='display_<?php echo $address_type; ?>_address'>
-  <a class="edit_<?php echo $address_type; ?>_address" href="#"><img src="<?php echo WC()->plugin_url(); ?>/assets/images/icons/edit.png" alt="<?php _e( "Edit $address_type address", 'my-flying-box' ); ?>" width="14" /></a>
+  <?php if ( $shipment->status == 'mfb-draft' ) { ?>
+    <a class="edit_<?php echo $address_type; ?>_address" href="#"><img src="<?php echo WC()->plugin_url(); ?>/assets/images/icons/edit.png" alt="<?php _e( "Edit $address_type address", 'my-flying-box' ); ?>" width="14" /></a>
+  <?php } ?>
   <?php $method_name = 'formatted_'.$address_type.'_address'; echo $shipment->$method_name(); ?>
   <br/>
   <?php echo $shipment->$address_type->email; ?> 

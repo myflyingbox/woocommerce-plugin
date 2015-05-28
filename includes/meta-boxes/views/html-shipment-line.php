@@ -27,13 +27,20 @@ if ( ! defined( 'ABSPATH' ) ) {
   
   <td>
     <?php
-      foreach( $shipment->parcels as $key => $parcel ) {
+      $parcels = $shipment->parcels;
+      foreach( $parcels as $key => $parcel ) {
         ?>
         <div class="parcel" data-parcel_index="<?php echo $key; ?>">
           <div class="parcel-data">
             <p>
               <?php echo MFB_Shipment::formatted_parcel_line( $parcel ); ?>
-              <a class="edit_parcel" href="#"><img src="<?php echo WC()->plugin_url() ?>/assets/images/icons/edit.png" alt="<?php _e( 'Edit shipper address', 'my-flying-box' ) ?>" width="14" /></a>
+              
+              <?php if ( $shipment->status == 'mfb-draft' ) { ?>
+                <a class="edit_parcel" href="#"><img src="<?php echo WC()->plugin_url() ?>/assets/images/icons/edit.png" alt="<?php _e( 'Edit shipper address', 'my-flying-box' ) ?>" width="14" /></a>
+                <?php if ( $key > 0) { ?>
+                <a class="delete_parcel" href="#"></a>
+                <?php } ?>
+              <?php } ?>
             </p>
           </div>
           <div class="parcel-form" style="display: none;">
@@ -61,7 +68,39 @@ if ( ! defined( 'ABSPATH' ) ) {
         </div>
       <?php
       }
+      
+    if ( $shipment->status == 'mfb-draft' ) {
     ?>
+        <div class="parcel" data-parcel_index="new">
+          <div class="parcel-data">
+            <p>
+              <button class="button new_parcel"><?php _e( 'Add new parcel', 'my-flying-box' ) ?></button>
+            </p>
+          </div>
+          <div class="parcel-form" style="display: none;">
+            <input name="_parcel_new_length" placeholder="<?php _e("l", 'my-flying-box') ?>" type="text" style="width: 40px; text-align: center;"/>x
+            <input name="_parcel_new_width" placeholder="<?php _e("w", 'my-flying-box') ?>" type="text" style="width: 40px; text-align: center;"/>x
+            <input name="_parcel_new_height" placeholder="<?php _e("h", 'my-flying-box') ?>" type="text" style="width: 40px; text-align: center;"/>cm
+            <input name="_parcel_new_weight" placeholder="<?php _e("weight", 'my-flying-box') ?>" type="text" style="width: 40px; text-align: center;"/>kg
+            <br/>
+            <input name="_parcel_new_description" placeholder="<?php _e("goods description", 'my-flying-box') ?>" type="text"/>
+            <br/>
+            <input name="_parcel_new_value" placeholder="<?php _e("value", 'my-flying-box') ?>" type="text" style="width: 60px; text-align: right;"/>€
+            <?php $countries = WC()->countries->__get( 'countries' ) ?>
+              <?php _e("Origin:", 'my-flying-box') ?><select name="_parcel_new_country_of_origin" style="width: 120px;">
+              <option value='<?php echo $parcels[0]->country_of_origin ?>' selected><?php echo $countries[$parcels[0]->country_of_origin] ?></option>
+              <option value='' disabled></option>
+              <?php foreach ($countries as $code => $name) {
+                echo "<option value='$code'>$name</option>";
+              }
+              ?>
+            </select>
+            <br/>
+            <button class="button cancel_parcel_form"><?php _e( 'Cancel', 'my-flying-box' ) ?></button>
+            <button class="button submit_parcel_form"><?php _e( 'Submit', 'my-flying-box' ) ?></button>
+          </div>
+        </div>
+      <?php } ?>
   </td> 
   
   <td>

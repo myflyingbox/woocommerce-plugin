@@ -269,7 +269,8 @@ class MFB_Shipment {
 			}
 		}
 		
-		// Now we can save the latest parcel data
+		// Now we can save the latest parcel data, after regenerating a clean, linear array index
+		$this->parcels = array_values( $this->parcels );
 		for( $i = 0; $i < count($this->parcels); $i++ ) {
 			foreach( self::$parcel_fields as $fieldname ) {
 				update_post_meta( $this->id, '_parcel_'.($i+1).'_'.$fieldname, $this->parcels[$i]->$fieldname);
