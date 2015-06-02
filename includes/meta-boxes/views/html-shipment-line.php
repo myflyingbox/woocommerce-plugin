@@ -179,6 +179,20 @@ if ( ! defined( 'ABSPATH' ) ) {
           <p><?php echo $shipment->offer->product_name ?> (<?php echo $shipment->offer->formatted_price(); ?>)</p>
           <button type="button" class="button button-primary download-labels"><?php _e( 'Download labels', 'my-flying-box' ); ?></button>
         </div>
+        <?php
+          $tracking_links = $shipment->tracking_links();
+          if ( count ( $tracking_links ) > 0 ) {
+            echo '<div class="mfb-order-tracking">';
+            echo '<p>'.__( 'Tracking:', 'my-flying-box' );
+            foreach( $tracking_links as $link ) {
+            ?>
+              <br/><a href='<?php echo $link['link']; ?>' target='_blank'><?php echo $link['code']; ?></a>
+            <?php
+            }
+            echo '</p></div>';
+          }
+        ?>
+        
       </div>
     <?php
     }

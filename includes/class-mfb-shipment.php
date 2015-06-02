@@ -454,4 +454,24 @@ class MFB_Shipment {
 		$this->save();
 	}
 
+	// Returns an array of links and codes, for tracking
+	public function tracking_links() {
+		$links = array();
+		// We only continue if we find the corresponding carrier and it has a tracking URL
+		$carrier = MFB_Carrier::get_by_code( $this->offer->product_code );
+		if ( $this->status == 'mfb-booked' && $carrier && $carrier->tracking_url ) {
+			$tracking_numbers = array();
+			foreach ( $this->parcels as $parcel ) {
+				$tracking_numbers[] = $parcel->tracking_number;
+			}
+			$tracking_numbers = array_unique( $tracking_numbers );
+			$tracking_numbers = array_filter( $tracking_numbers, function($v){ return !empty($v);});
+			foreach( $tracking_numbers as $tracking_number ) {
+				$links[] = array(	'link' => str_replace( 'TRACKING_NUMBER', $tracking_number, $carrier->tracking_url ),
+													'code' => $tracking_number);
+			}
+		}
+		return $links;
+	}
+
 }
