@@ -58,10 +58,11 @@ class MFB_Carrier extends WC_Shipping_Method {
 
 	public $shop_delivery = false;
 
-
 	public $pickup_supported = false;
 
 	public $dropoff_supported = false;
+	
+	public $tracking_url = null;
 
 
 	public function __construct() {
@@ -144,6 +145,9 @@ class MFB_Carrier extends WC_Shipping_Method {
 		$this->shop_delivery      = get_post_meta( $this->id, '_shop_delivery', true);
 		$this->pickup_supported   = get_post_meta( $this->id, '_pickup_supported', true);
 		$this->dropoff_supported  = get_post_meta( $this->id, '_dropoff_supported', true);
+		
+		$method_options           = get_option('woocommerce_'.$this->code.'_settings');
+		$this->tracking_url       = ( isset($method_options['tracking_url']) && !empty( $method_options['tracking_url'] )) ? $method_options['tracking_url'] : null;
 	}
 
 

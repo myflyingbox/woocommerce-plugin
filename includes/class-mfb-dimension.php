@@ -149,17 +149,18 @@ class MFB_Dimension {
 
     $args = array(
       'post_type'  => 'mfb_dimension',
+      'post_status' => 'private',
       'meta_query' => array(
         array(
           'key'     => '_from',
           'value'   => $weight,
-          'compare' => '<=',
+          'compare' => '<',
           'type'    => 'numeric'
         ),
         array(
           'key'     => '_to',
           'value'   => $weight,
-          'compare' => '>',
+          'compare' => '>=',
           'type'    => 'numeric'
         )        
       ),

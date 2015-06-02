@@ -23,7 +23,6 @@ jQuery( function ( $ ) {
 				.on( 'click',  'div.recipient_form_container button.submit_recipient_form',		this.submit_recipient_form )
 				.on( 'click',  'div.shipper_form_container button.submit_shipper_form',				this.submit_shipper_form )
 				.on( 'click',  'div.mfb-booked-offer button.download-labels',									this.download_labels )
-				.on( 'click',  'div.new-parcel div.parcel-form button.submit_parcel_form',		this.submit_new_parcel_form )
 				.on( 'click',  'div.parcel div.parcel-form button.submit_parcel_form',				this.submit_parcel_form )
 				.on( 'change', 'div.mfb-available-offers select.offer-selector',							this.update_selected_offer )
 				.on( 'click',  'a.delete-shipment',		this.delete_shipment );
@@ -169,10 +168,9 @@ jQuery( function ( $ ) {
     	event.preventDefault();
 			var action = 'mfb_update_recipient';
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
-			var form = $( this ).closest('form');
 			$.ajax({
 				url:  woocommerce_admin_meta_boxes.ajax_url,
-				data: form.serialize()+'&action='+action+'&shipment_id='+shipment_id,
+				data: $( this ).closest('div.recipient_form_container').find('input, textarea, select').serialize()+'&action='+action+'&shipment_id='+shipment_id,
 				type: 'POST',
 				success: function( response ) {
 					window.location.reload();
@@ -184,10 +182,9 @@ jQuery( function ( $ ) {
     	event.preventDefault();
 			var action = 'mfb_update_shipper';
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
-			var form = $( this ).closest('form');
 			$.ajax({
 				url:  woocommerce_admin_meta_boxes.ajax_url,
-				data: form.serialize()+'&action='+action+'&shipment_id='+shipment_id,
+				data: $( this ).closest('div.shipper_form_container').find('input, textarea, select').serialize()+'&action='+action+'&shipment_id='+shipment_id,
 				type: 'POST',
 				success: function( response ) {
 					window.location.reload();
@@ -200,12 +197,9 @@ jQuery( function ( $ ) {
 			var action = 'mfb_update_parcel';
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
 			var parcel_index = $( this ).closest('div.parcel').data('parcel_index');
-
-
-			var form = $( this ).closest('form');
 			$.ajax({
 				url:  woocommerce_admin_meta_boxes.ajax_url,
-				data: form.serialize()+'&action='+action+'&shipment_id='+shipment_id+"&parcel_index="+parcel_index,
+				data: $( this ).closest('div.parcel-form').find('input, select').serialize()+'&action='+action+'&shipment_id='+shipment_id+"&parcel_index="+parcel_index,
 				type: 'POST',
 				success: function( response ) {
 					window.location.reload();
@@ -219,12 +213,9 @@ jQuery( function ( $ ) {
 			var action = 'mfb_delete_parcel';
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
 			var parcel_index = $( this ).closest('div.parcel').data('parcel_index');
-
-
-			var form = $( this ).closest('form');
 			$.ajax({
 				url:  woocommerce_admin_meta_boxes.ajax_url,
-				data: form.serialize()+'&action='+action+'&shipment_id='+shipment_id+"&parcel_index="+parcel_index,
+				data: 'action='+action+'&shipment_id='+shipment_id+"&parcel_index="+parcel_index,
 				type: 'POST',
 				success: function( response ) {
 					window.location.reload();

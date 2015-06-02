@@ -52,7 +52,8 @@ class MFB_Shipment {
 		'country_of_origin',
 		'shipper_reference',
 		'recipient_reference',
-		'customer_reference'
+		'customer_reference',
+		'tracking_number'
 	);
 
 
@@ -445,6 +446,10 @@ class MFB_Shipment {
 		$this->api_order_uuid = $api_order->id;
 		$this->date_booking = date('Y-m-d H:i:s');
 		$this->status = 'mfb-booked';
+		
+		foreach ( $api_order->parcels as $key => $parcel) {
+			$this->parcels[$key]->tracking_number = $parcel->reference;
+		}
 		
 		$this->save();
 	}

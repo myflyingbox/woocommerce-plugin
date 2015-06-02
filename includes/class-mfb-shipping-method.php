@@ -152,6 +152,13 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
+			'tracking_url' => array(
+				'title'       => __( 'Tracking URL', 'my-flying-box' ),
+				'type'        => 'text',
+				'description' => __( 'Put the variable TRACKING_NUMBER in the URL, it will be automatically replaced with the real tracking number when generating the link.', 'my-flying-box' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
 			'included_postcodes' => array(
 				'title'       => __( 'Included postcodes', 'my-flying-box' ),
 				'type'        => 'textarea',
@@ -189,8 +196,9 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	 * calculate_shipping function.
 	 */
 	public function calculate_shipping( $package = array() ) {
-		if ( ! $this->enabled ) return false;
 
+		if ( ! $this->enabled ) return false;
+		
 		// Extracting total weight from the WC CART
 		$weight = 0;
 		foreach ( WC()->cart->get_cart() as $item_id => $values ) {
@@ -203,7 +211,6 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		if ( 0 == $weight)
 			$weight = 0.2;
 
-
 		// Loading existing quote, if available, so as not to send useless requests to the API
 		$saved_quote_id = WC()->session->get('myflyingbox_shipment_quote_id');
 		$quote_request_time = WC()->session->get('myflyingbox_shipment_quote_timestamp');
@@ -215,7 +222,6 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			// We get the computed dimensions based on the total weight      
 			$dimension = MFB_Dimension::get_for_weight( $weight );
 
-		
 			if ( ! $dimension ) return false;
 			
 			// We need destination info to be able to send a quote
@@ -263,7 +269,6 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			$quote->populate();
 
 		}
-
 		// And now we save the ID in session so that we can load this quote for other
 		// shipping methods, instead of sending another query to the server.
 		// A quote is valid only for a given request, which is not perfect, but already better

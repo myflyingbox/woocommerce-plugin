@@ -123,6 +123,11 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		// Adds MyFlyingBox meta box on order page
 		add_action( 'add_meta_boxes_shop_order', array( &$this, 'load_admin_order_metabox' ) );
 
+		// Inject tracking link to order confirmation notification
+		add_action( 'woocommerce_email_customer_details', array( &$this, 'add_tracking_link_to_email_notification' ), 15, 3 );
+		
+		// Add tracking link(s) to order summary page
+		add_action( 'woocommerce_order_details_after_order_table', array( &$this,'add_tracking_link_to_order_page'), 10, 1 );
 
 		// Load API for generic admin functions
 		if ( is_admin() ) {
@@ -573,4 +578,42 @@ class My_Flying_Box  extends WC_Shipping_Method {
 				return ( ! is_admin() || defined( 'DOING_AJAX' ) ) && ! defined( 'DOING_CRON' );
 		}
 	}
+
+	// Returns an array of tracking links and corresponding tracking number for a given order
+	public function get_tracking_links( $order ) {
+		$shipments = MFB_Shipment::get_all_for_order( $order->id );
+		$links = array();
+		// We deal with each shipment
+		foreach( $shipments as $shipment ) {
+			// We only continue if we find the corresponding carrier and it has a tracking URL
+			$carrier = MFB_Carrier::get_by_code( $shipment->offer->product_code );
+			if ( $shipment->status == 'mfb-booked' && $carrier && $carrier->tracking_url ) {
+				$tracking_numbers = array();
+				foreach ( $shipment->parcels as $parcel ) {
+					$tracking_numbers[] = $parcel->tracking_number;
+				}
+				$tracking_numbers = array_unique( $tracking_numbers );
+				$tracking_numbers = array_filter( $tracking_numbers, function($v){ return !empty($v);});
+				foreach( $tracking_numbers as $tracking_number ) {
+					$links[] = array(	'link' => str_replace( 'TRACKING_NUMBER', $tracking_number, $carrier->tracking_url ),
+														'code' => $tracking_number);
+				}
+			}
+		}
+		return $links;
+	}
+
+	public function add_tracking_link_to_email_notification( $order, $sent_to_admin, $plain_text ) {
+		$links = MFB()->get_tracking_links( $order );
+		if ( count($links) > 0) {
+			include( dirname ( dirname( __FILE__ ) ) . '/includes/views/email-tracking.php');
+		}
+	}
+	public function add_tracking_link_to_order_page( $order ) {
+		$links = MFB()->get_tracking_links( $order );
+		if ( count($links) > 0) {
+			include( dirname ( dirname( __FILE__ ) ) . '/includes/views/order-page-tracking.php');
+		}
+	}
+	
 }
