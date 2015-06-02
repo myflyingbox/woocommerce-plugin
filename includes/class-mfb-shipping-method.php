@@ -37,7 +37,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		// Define user set variables
 		$this->enabled		        = $this->get_option( 'enabled' ) == 'yes' ? true : false;
 		$this->title		          = $this->get_option( 'title' );
-		$this->description        = $this->get_option( 'description' );
+		$this->description        = apply_filters( 'mfb_shipping_method_description', $this->get_option( 'description' ) );
 		
 		$this->method_title       = $this->title;
 		$this->method_description = $this->description;
@@ -48,6 +48,8 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		// Actions
 		add_filter( 'woocommerce_calculated_shipping',  array( $this, 'calculate_shipping'));
 		add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
+		
+		do_action ( 'mfb_shipping_method_initialized', $this->id );
 	}
 
 	private function load_destination_restrictions() {
@@ -131,7 +133,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	 * This is the form definition for the shipping method settings.
 	 */
 	public function init_form_fields() {
-		$this->form_fields = array(
+		$fields = array(
 			'enabled' => array(
 				'title'   => __( 'Enable', 'my-flying-box' ),
 				'type'    => 'checkbox',
@@ -190,6 +192,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				'desc_tip'    => true,
 			),
 		);
+		$this->form_fields = apply_filters( 'mfb_shipping_method_form_fields', $fields );
 	}
 
 	/**
@@ -287,7 +290,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				$rate = array(
 					'id' 		=> $this->id,
 					'label' 	=> $this->title,
-					'cost' => $price
+					'cost' => apply_filters( 'mfb_shipping_rate_price', $price )
 				);
 				$this->add_rate( $rate );
 			}
@@ -302,15 +305,18 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 	// Controls whether this method should be proposed or not
 	public function is_available( $package ) {
-		return $this->enabled;
+		return apply_filters( 'mfb_shipping_method_available', $this->enabled );
 	}
 	
 	public function destination_supported( $postal_code, $country ) {
+		// Result tag; by default, all destinations are supported.
+		$supported = true;
+		
 		// First, checking if inclusion restrictions apply
 		if ( count($this->included_destinations) > 0 ) {
 			if ( ! array_key_exists($country, $this->included_destinations) ) {
 				// The country is not included, we can get out now.
-				return false;
+				$supported = false;
 			} else {
 				// Country is included, let's check the postcodes, if necessary
 				if (count($this->included_destinations[$country]) > 0 ) {
@@ -320,7 +326,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 							$included = true;
 						}
 					}
-					if ( ! $included ) return false; // The postal code was not included in any way, so we just get out.
+					if ( ! $included ) $supported = false; // The postal code was not included in any way, so we just get out.
 				}
 			}
 		}
@@ -337,17 +343,17 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 						// Checks whether postal code starts with the characters from excluded_postcode
 						// If any match, we return false.
 						if( strrpos($postal_code, $excluded_postcode, -strlen($postal_code)) !== FALSE ) {
-							return false;
+							$supported = false;
 						}
 					}
 				} else {
 					// There are no postcode exclusion rules, so the whole country is excluded.
-					return false;
+					$supported = false;
 				}
 			}
 		}
 		// We made it through without any exclusion match, we can return true!
-		return true;
+		return apply_filters( 'mfb_shipping_method_destination_supported', $supported );
 	}
 	
 }
