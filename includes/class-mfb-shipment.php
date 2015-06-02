@@ -427,6 +427,10 @@ class MFB_Shipment {
 			'parcels' => array()
 		);
 		
+		$thermal_printing = get_option('mfb_thermal_printing');
+		
+		$params['thermal_labels'] = $thermal_printing == 'yes' ? true : false;
+		
 		if( $this->offer->pickup == true ) {
 			$params['shipper']['collection_date'] = $this->collection_date;
 		}

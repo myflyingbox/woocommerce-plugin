@@ -82,7 +82,15 @@ class MFB_Settings_Account extends MFB_Settings_Page {
 					'default'		=> 'FR',
 					'desc_tip' => true,
 					'required' => true
-				)
+				),
+			array(
+				'id'            => 'mfb_thermal_printing',
+				'title'         => __( 'Thermal printing', 'my-flying-box' ),
+				'desc'          => __( 'Get shipment labels in a thermal-printer friendly format', 'my-flying-box' ),
+				'default'       => 'no',
+				'type'          => 'checkbox',
+				'autoload'      => false
+			)
 			)
 		);
 		return apply_filters( 'woocommerce_get_settings_' . $this->id, $settings );
