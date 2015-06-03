@@ -525,8 +525,54 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		);
 
 		wp_enqueue_script( 'jquery' );
-		wp_enqueue_script( 'gmap', '//maps.google.com/maps/api/js?sensor=false' );
-		wp_enqueue_script( 'mfb_delivery_locations','/wp-content/plugins/my-flying-box/assets/js/delivery_locations.js',array( 'jquery', 'gmap' ) );
+		//wp_enqueue_script( 'gmap', '//maps.google.com/maps/api/js?sensor=false' );
+		
+		// Google APIs should not be loaded twice. We will make sure that it is only loaded once.
+		global $wp_scripts;
+		$google_apis = array();
+		
+		// First, we identify any registered script that corresponds to Google maps API
+		foreach((array)$wp_scripts->registered as $script) {
+			if(strpos($script->src, 'maps.googleapis.com/maps/api/js') !== false or strpos($script->src, 'maps.google.com/maps/api/js') !== false )
+				$google_apis[] = $script;
+				
+		}
+		
+		// We will store the libraries called, to make sure that nothing is forgotten
+		$libraries = array();
+		$unregistered = array(); 
+		
+		foreach($google_apis as $g) {
+			wp_dequeue_script($g->handle); // Temporarily deregistering the script
+			$unregistered[] = $g->handle;
+			// Extracting any specifically mentioned library
+			$qs = parse_url($g->src);
+			$qs = $qs['query'];
+			parse_str($qs, $params);
+			if(isset($params['libraries']))
+				$libraries = array_merge($libraries, explode(',', $params['libraries']) );
+
+		}
+		
+		// Updating deprecated dependency information that was based on old script handlers
+		// We will use only one handler: google-api-grouped
+		foreach($wp_scripts->registered as $i=>$script) {
+			foreach($script->deps as $j => $dept) {
+				if(in_array($dept, $unregistered)) {
+					$script->deps[$j] = 'google-api-grouped';
+				}
+			}
+		}
+			
+		$library = '';
+		if(count($libraries))
+			$library = 'libraries='.implode(',', $libraries).'&';
+		
+		// Finally, enqueuing the script again.
+		wp_enqueue_script( 'google-api-grouped', '//maps.googleapis.com/maps/api/js?'.$library.'sensor=false', array(), '', true);
+		
+		
+		wp_enqueue_script( 'mfb_delivery_locations','/wp-content/plugins/my-flying-box/assets/js/delivery_locations.js',array( 'jquery', 'google-api-grouped' ) );
 		wp_localize_script( 'mfb_delivery_locations', 'plugin_url', plugins_url() );
 		wp_localize_script( 'mfb_delivery_locations', 'lang', $translations );
 		wp_localize_script( 'mfb_delivery_locations', 'map', My_Flying_Box::generate_google_map_html_container() );
