@@ -55,9 +55,13 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	private function load_destination_restrictions() {
 		// Loading included destinations first
 		$rules = array();
-		foreach( explode(',', $this->settings['included_postcodes']) as $part1) {
-			foreach( explode('\r\n', $part1) as $part2 ) {
-				$rules[] = $part2;
+		
+		if(isset($this->settings['included_postcodes']))
+		{
+			foreach( explode(',', $this->settings['included_postcodes']) as $part1) {
+				foreach( explode('\r\n', $part1) as $part2 ) {
+					$rules[] = $part2;
+				}
 			}
 		}
 		foreach( $rules as $rule ) {
@@ -80,9 +84,12 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		
 		// Loading excluded destinations
 		$rules = array();
-		foreach( explode(',', $this->settings['excluded_postcodes']) as $part1) {
-			foreach( explode("\n", $part1) as $part2 ) {
-				$rules[] = $part2;
+		if(isset($this->settings['excluded_postcodes']))
+		{
+			foreach( explode(',', $this->settings['excluded_postcodes']) as $part1) {
+				foreach( explode("\n", $part1) as $part2 ) {
+					$rules[] = $part2;
+				}
 			}
 		}
 		foreach( $rules as $rule ) {
@@ -106,9 +113,12 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	public function load_flat_rates() {
 		$this->flat_rates = array();
 		$rates = array();
-		foreach( explode(',', $this->settings['flatrate_prices']) as $part1) {
-			foreach( explode(PHP_EOL, $part1) as $part2 ) {
-				$rates[] = $part2;
+		if(isset($this->settings['flatrate_prices']))
+		{
+			foreach( explode(',', $this->settings['flatrate_prices']) as $part1) {
+				foreach( explode(PHP_EOL, $part1) as $part2 ) {
+					$rates[] = $part2;
+				}
 			}
 		}
 		$previous_weight = 0;
@@ -323,13 +333,16 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				$price = $quote->offers[$this->id]->base_price_in_cents / 100;
 				
 				// Overriding the API price is we use flatrate pricing
-				if ( $this->settings['flatrate_pricing'] == 'yes') {
+				if ( isset($this->settings['flatrate_pricing']) && $this->settings['flatrate_pricing'] == 'yes') {
 					$price = $this->get_flatrate_price( $weight );
 				}
+				
+				$price = apply_filters( 'mfb_shipping_rate_price', $price, $this->id );
 				$rate = array(
 					'id' 		=> $this->id,
 					'label' 	=> $this->title,
-					'cost' => apply_filters( 'mfb_shipping_rate_price', $price )
+					'cost' => $price,
+					'taxes' => apply_filters( 'mfb_shipping_rate_taxes', '', $this->id, $price ),
 				);
 				$this->add_rate( $rate );
 			}
@@ -358,7 +371,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 	// Controls whether this method should be proposed or not
 	public function is_available( $package ) {
-		return apply_filters( 'mfb_shipping_method_available', $this->enabled );
+		return apply_filters( 'mfb_shipping_method_available', $this->enabled, $package, $this->id);
 	}
 	
 	public function destination_supported( $postal_code, $country ) {
