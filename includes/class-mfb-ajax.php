@@ -39,20 +39,120 @@ class MFB_AJAX {
 	
 	public static function get_delivery_locations () {
 
-		// Getting Offer from transmitted uuid:
-		$offer = MFB_Offer::get_by_uuid( $_REQUEST['k'] );
+		if ( empty( $k ) ) {
+			//
+			// We have no offer uuid. We need to request a quote to get the delivery locations!
 
-		// Extracting address and city
-		$customer = WC()->session->get('customer');
+			// Extracting total weight from the WC CART
+			$weight = 0;
+			foreach ( WC()->cart->get_cart() as $item_id => $values ) {
+				$product = $values['data'];
+				if( $product->needs_shipping() ) {
+					$product_weight = $product->get_weight() ? wc_format_decimal( wc_get_weight($product->get_weight(),'kg'), 2 ) : 0;
+					$weight += ($product_weight*$values['quantity']);
+				}
+			}
+			if ( 0 == $weight)
+				$weight = 0.2;
+				
+			// We get the computed dimensions based on the total weight      
+			$dimension = MFB_Dimension::get_for_weight( $weight );
+			
+			// And then we build the quote request params' array
+			$params = array(
+				'shipper' => array(
+					'city'         => My_Flying_Box_Settings::get_option('mfb_shipper_city'),
+					'postal_code'  => My_Flying_Box_Settings::get_option('mfb_shipper_postal_code'),
+					'country'      => My_Flying_Box_Settings::get_option('mfb_shipper_country_code')
+				),
+				'recipient' => array(
+					'city'         => ( $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_city'] : $_REQUEST['billing_city'] ),
+					'postal_code'  => ( $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_postcode'] : $_REQUEST['billing_postcode'] ),
+					'country'      => ( $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_country'] : $_REQUEST['billing_country'] ),
+					'is_a_company' => ( !empty( $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_company'] : $_REQUEST['billing_company'] ))
+				),
+				'parcels' => array(
+					array('length' => $dimension->length, 'height' => $dimension->height, 'width' => $dimension->width, 'weight' => $weight)
+				)
+			);
+			
+			if (
+				empty( $params['recipient']['city'] ) ||
+				empty( $params['recipient']['country'] )
+			) {
+			
+				$response['data'] = 'error';
+				$response['message'] = 'Please fill in all address fields before loading the delivery location selector';
 
-		$street = $customer['shipping_address'];
-		if ( ! empty($customer['shipping_address_2']) ) {
-			$street .= "\n".$customer['shipping_address_2'];
+				wp_send_json( $response );
+				die();
+			}
+			
+			// Loading existing quote, if available, so as not to send useless requests to the API
+			$saved_quote_id = WC()->session->get('myflyingbox_shipment_quote_id');
+			$quote_request_time = WC()->session->get('myflyingbox_shipment_quote_timestamp');
+			
+			if (
+						is_numeric( $saved_quote_id ) &&
+						$quote_request_time &&
+						time() - $_SERVER['REQUEST_TIME'] < 600
+					) {
+					
+				$quote = MFB_Quote::get( $saved_quote_id );
+				
+				if (
+					$quote->params['recipient']['city']        !=  $params['recipient']['city'] ||
+					$quote->params['recipient']['postal_code'] !=  $params['recipient']['postal_code'] ||
+					$quote->params['recipient']['country']     !=  $params['recipient']['country']
+				) {
+					$quote = null;
+				}
+			}
+			
+			if ( ! $quote ) {
+
+				$api_quote = Lce\Resource\Quote::request($params);
+				
+				$quote = new MFB_Quote();
+				$quote->api_quote_uuid = $api_quote->id;
+				$quote->params         = $params;
+				
+				if ($quote->save()) {
+					// Now we create the offers
+
+					foreach($api_quote->offers as $k => $api_offer) {
+						$offer = new MFB_Offer();
+						$offer->quote_id = $quote->id;
+						$offer->api_offer_uuid = $api_offer->id;
+						$offer->product_code = $api_offer->product->code;
+						$offer->base_price_in_cents = $api_offer->price->amount_in_cents;
+						$offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
+						$offer->currency = $api_offer->total_price->currency;
+						$offer->save();
+					}
+				}
+				// Refreshing the quote, to get the offers loaded properly
+				$quote->populate();
+
+				WC()->session->set( 'myflyingbox_shipment_quote_id', $quote->id );
+				WC()->session->set( 'myflyingbox_shipment_quote_timestamp', $_SERVER['REQUEST_TIME'] );
+			}
+			$offer = $quote->offers[$_REQUEST['s']];
+			
+		} else {
+			// Getting Offer from transmitted uuid:
+			$offer = MFB_Offer::get_by_uuid( $_REQUEST['k'] );
+		}
+
+		$street = $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_address_1'] : $_REQUEST['billing_address_1'];
+		$street_line_2 = $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_address_2'] : $_REQUEST['billing_address_2'];
+		if ( ! empty( $street_line_2 ) ) {
+			$street .= "\n".$street_line_2;
 		}
 
 		$params = array(
 			'street' => $street,
-			'city' => $customer['shipping_city']
+			'city' => $quote->params['recipient']['city']
 		);
 
 		// Building the response

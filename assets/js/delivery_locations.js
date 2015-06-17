@@ -12,14 +12,11 @@ jQuery(window).load(function(){
 	
 	jQuery('body').delegate('.select-location','click',function(){
 		elements = jQuery(this).attr('id').split('__');
-    key = elements[2];
-    service_code = elements[1];
+		key = elements[2];
+		service_code = elements[1];
 		jQuery.ajax({
 			url:      mfb_params.ajaxurl,
-      data: {
-          'k': key,
-          'action': mfb_params.action
-          },
+			data: jQuery(this).closest('form.checkout.woocommerce-checkout').serialize()+'&action='+mfb_params.action+'&k='+key+'&s='+service_code,
 			dataType: 'json',
 			timeout:  15000,
 			error:    error_loading_locations,
@@ -37,12 +34,12 @@ jQuery(window).load(function(){
  */
 function init_gmap() {
 	jQuery('#map-container').css('display','block');
-  var options = {
-    zoom: 11, 
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-  };
+	var options = {
+		zoom: 11, 
+		mapTypeId: google.maps.MapTypeId.ROADMAP
+	};
 	gmap = new google.maps.Map(document.getElementById("map-canvas"), options);
-  geocoder = new google.maps.Geocoder();
+	geocoder = new google.maps.Geocoder();
 	infowindow = new google.maps.InfoWindow();
 }
 
@@ -52,15 +49,15 @@ function init_gmap() {
 function close_gmap() {
 	jQuery('#map-container').css('display','none');
 	jQuery('#map-canvas').html('');
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(null);
-  }
+	for (var i = 0; i < markers.length; i++) {
+		markers[i].setMap(null);
+	}
 	markers = [];
 	locations_data = [];
 }
 
 function update_zoom_gmap() {
-  
+	
 	if (mfb_locations.length == 0 ||  (mfb_locations.length != 0 && markers.length < mfb_locations.length))
 	{
 		return;
@@ -88,39 +85,39 @@ function show_locations(data) {
 	init_gmap();
 	
 	// add parcel point markers
-  for (i in mfb_locations){
+	for (i in mfb_locations){
 		loc = mfb_locations[i];
-    (function(i) {
-      var name = loc.company;
-      var address = loc.street;
-      var city = loc.city;
-      var postal_code = loc.postal_code;
-      info ='<b>'+name+'</b><br/>'+
-			      '<u class="mfb-select-location" data="'+i+'">'+lang['Select this location']+'</u><br/>'+
+		(function(i) {
+			var name = loc.company;
+			var address = loc.street;
+			var city = loc.city;
+			var postal_code = loc.postal_code;
+			info ='<b>'+name+'</b><br/>'+
+						'<u class="mfb-select-location" data="'+i+'">'+lang['Select this location']+'</u><br/>'+
 						'<span>'+address+', '+postal_code+' '+city+'</span><br/>'+
 						'<div class="mfb-opening-hours"><table>';
-      var opening_hours = loc.opening_hours.sort(function(a,b){ return a.day-b.day});
-      
+			var opening_hours = loc.opening_hours.sort(function(a,b){ return a.day-b.day});
+			
 			for (j in opening_hours){
 				day = opening_hours[j];
 					info += '<tr>';
 					info += '<td><b>'+lang['day_'+day.day]+'</b> : </td>';
 					info += '<td>';
-          info += day.hours ;
+					info += day.hours ;
 					info += '</td></tr>';
 			}
 			info += '</table></div>';
 
 			locations_data[i] = info;
-      
+			
 			if(geocoder)
-      {
-        geocoder.geocode({ 'address': address + ', ' + postal_code + ' ' + city }, function(results, status) {
-          if(status == google.maps.GeocoderStatus.OK)   
-          {
-            if (i == 0) {
-              gmap.setCenter(results[0].geometry.location);
-            }
+			{
+				geocoder.geocode({ 'address': address + ', ' + postal_code + ' ' + city }, function(results, status) {
+					if(status == google.maps.GeocoderStatus.OK)   
+					{
+						if (i == 0) {
+							gmap.setCenter(results[0].geometry.location);
+						}
 						var marker = new google.maps.Marker({
 							map: gmap, 
 							position: results[0].geometry.location,
@@ -134,14 +131,14 @@ function show_locations(data) {
 						});
 						markers[i] = marker;
 						update_zoom_gmap();
-          }
-        });
-      }
-    })(i);
-  }
-  
-  
-  // remove info if we click on the map
+					}
+				});
+			}
+		})(i);
+	}
+	
+	
+	// remove info if we click on the map
 	google.maps.event.addListener(gmap,"click",function() {
 		infowindow.close();
 	});

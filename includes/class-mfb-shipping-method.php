@@ -191,6 +191,12 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				'placeholder' => '6 | 3.5',
 				'desc_tip'    => true,
 			),
+			'reduce_api_calls' => array(
+				'title'   => __( 'Reduce API calls', 'my-flying-box' ),
+				'type'    => 'checkbox',
+				'label'   => __( 'Check to limit the number of API calls, improving performance of checkout process. WARNING: use only in conjunction with flatrate pricing (internal or from other extension) and an external method to determine whether this service should be available or not. As no request will be sent to the API, the module cannot determine whether the service is available or not for the destination, so you must use another mechanism for this!', 'my-flying-box' ),
+				'default' => 'no'
+			),
 		);
 		$this->form_fields = apply_filters( 'mfb_shipping_method_form_fields', $fields );
 	}
@@ -219,8 +225,41 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		$quote_request_time = WC()->session->get('myflyingbox_shipment_quote_timestamp');
 		
 		if ( is_numeric( $saved_quote_id ) && $quote_request_time && $quote_request_time == $_SERVER['REQUEST_TIME'] ) {
+			// A quote was already requested in the same server request, we just load it
 			$quote = MFB_Quote::get( $saved_quote_id );
+			
+		} else if (
+					is_numeric( $saved_quote_id ) &&
+					$quote_request_time &&
+					$quote_request_time != $_SERVER['REQUEST_TIME'] &&
+					time() - $_SERVER['REQUEST_TIME'] < 600 &&
+					$this->quote_still_valid( $saved_quote_id, $package )
+			  ) {
+			// A quote was requested in a recent previous request, with the same parameters. We can use it as is.
+			$quote = MFB_Quote::get( $saved_quote_id );
+			
 		} else {
+			// We don't have any existing valid quote
+		
+			// Removing any remains of old quote references
+			WC()->session->set( 'myflyingbox_shipment_quote_id', null );
+			WC()->session->set( 'myflyingbox_shipment_quote_timestamp', null );
+			
+			
+			// In some cases, we can avoid calling the API altogether, improving performances.
+			if ( $this->settings['reduce_api_calls'] == 'yes' && $this->settings['flatrate_pricing'] == 'yes' && $this->destination_supported( $package['destination']['postcode'], $package['destination']['country']) ) {
+
+				$price = $this->get_flatrate_price( $weight );
+				$rate = array(
+					'id' 		=> $this->id,
+					'label' 	=> $this->title,
+					'cost' => apply_filters( 'mfb_shipping_rate_price', $price )
+				);
+				$this->add_rate( $rate );
+				return true;
+			}
+			// If we continue to run here, that means we must get a quote from the API.
+
 
 			// We get the computed dimensions based on the total weight      
 			$dimension = MFB_Dimension::get_for_weight( $weight );
@@ -238,7 +277,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 					'country'      => My_Flying_Box_Settings::get_option('mfb_shipper_country_code')
 				),
 				'recipient' => array(
-					'city'         => ( isset($package['destination']['city']) && !empty($package['destination']['city']) ? $package['destination']['city']     : 'N/A' ),
+					'city'         => ( isset($package['destination']['city']) && !empty($package['destination']['city']) ? $package['destination']['city']     : '' ),
 					'postal_code'  => ( isset($package['destination']['postcode'])  ? $package['destination']['postcode'] : '' ),
 					'country'      => ( isset($package['destination']['country'])   ? $package['destination']['country']  : '' ),
 					'is_a_company' => false
@@ -248,11 +287,11 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				)
 			);
 			
-			
 			$api_quote = Lce\Resource\Quote::request($params);
 			
 			$quote = new MFB_Quote();
 			$quote->api_quote_uuid = $api_quote->id;
+			$quote->params         = $params;
 			
 			if ($quote->save()) {
 				// Now we create the offers
@@ -294,6 +333,20 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				);
 				$this->add_rate( $rate );
 			}
+		}
+	}
+	
+	// Checking whether a quote is still valid for the given params
+	private function quote_still_valid( $quote_id, $params ) {
+		$quote = MFB_Quote::get( $saved_quote_id );
+		if (
+			$quote->params['recipient']['city']        == $params['destination']['city'] &&
+			$quote->params['recipient']['postal_code'] == $params['destination']['postcode'] &&
+			$quote->params['recipient']['country']     == $params['destination']['country']
+		) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 
