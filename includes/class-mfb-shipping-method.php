@@ -351,7 +351,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	
 	// Checking whether a quote is still valid for the given params
 	private function quote_still_valid( $quote_id, $params ) {
-		$quote = MFB_Quote::get( $saved_quote_id );
+		$quote = MFB_Quote::get( $quote_id );
 		if (
 			$quote->params['recipient']['city']        == $params['destination']['city'] &&
 			$quote->params['recipient']['postal_code'] == $params['destination']['postcode'] &&
