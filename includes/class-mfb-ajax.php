@@ -66,10 +66,10 @@ class MFB_AJAX {
 					'country'      => My_Flying_Box_Settings::get_option('mfb_shipper_country_code')
 				),
 				'recipient' => array(
-					'city'         => ( $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_city'] : $_REQUEST['billing_city'] ),
-					'postal_code'  => ( $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_postcode'] : $_REQUEST['billing_postcode'] ),
-					'country'      => ( $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_country'] : $_REQUEST['billing_country'] ),
-					'is_a_company' => ( !empty( $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_company'] : $_REQUEST['billing_company'] ))
+					'city'         => ( isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_city'] : $_REQUEST['billing_city'] ),
+					'postal_code'  => ( isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_postcode'] : $_REQUEST['billing_postcode'] ),
+					'country'      => ( isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_country'] : $_REQUEST['billing_country'] ),
+					'is_a_company' => ( isset($_REQUEST['ship_to_different_address']) && !empty( $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_company'] : $_REQUEST['billing_company'] ))
 				),
 				'parcels' => array(
 					array('length' => $dimension->length, 'height' => $dimension->height, 'width' => $dimension->width, 'weight' => $weight)
@@ -144,8 +144,8 @@ class MFB_AJAX {
 			$offer = MFB_Offer::get_by_uuid( $_REQUEST['k'] );
 		}
 
-		$street = $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_address_1'] : $_REQUEST['billing_address_1'];
-		$street_line_2 = $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_address_2'] : $_REQUEST['billing_address_2'];
+		$street = isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_address_1'] : $_REQUEST['billing_address_1'];
+		$street_line_2 = isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_address_2'] : $_REQUEST['billing_address_2'];
 		if ( ! empty( $street_line_2 ) ) {
 			$street .= "\n".$street_line_2;
 		}

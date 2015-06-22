@@ -370,6 +370,7 @@ class MFB_Shipment {
 			$quote = new MFB_Quote();
 			$quote->api_quote_uuid = $api_quote->id;
 			$quote->shipment_id = $this->id;
+			$quote->params = $params;
 			
 			if ($quote->save()) {
 				// Now we create the offers
