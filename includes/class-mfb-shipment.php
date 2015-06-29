@@ -17,6 +17,8 @@ class MFB_Shipment {
 	public $offer = null;
 	public $collection_date = null; // Selected collection date at time of booking.
 	public $delivery_location_code = null; // Selected relay delivery at time of booking.
+	
+	public $delivery_location = null; // std Object containing the selected delivery location characteristics
 
 	public $post = null;
 
@@ -86,6 +88,7 @@ class MFB_Shipment {
 		
 		$this->collection_date = get_post_meta( $this->id, '_collection_date', true ); // Selected collection date
 		$this->delivery_location_code = get_post_meta( $this->id, '_delivery_location_code', true ); // Selected relay
+		$this->delivery_location      = get_post_meta( $this->id, '_delivery_location', true ); // Selected relay (full object with details)
 
 		
 		// Loading Shipper and Recipient
@@ -294,6 +297,22 @@ class MFB_Shipment {
 		
 		update_post_meta( $this->id, '_collection_date', $this->collection_date );
 		update_post_meta( $this->id, '_delivery_location_code', $this->delivery_location_code );
+		
+		// Saving the delivery location details, if applicable
+		if ( $this->offer->relay == true && !empty($this->delivery_location_code) ) {
+			$loc_params = array(
+				'street' => $this->recipient->street,
+				'city' => $this->recipient->city
+			);
+			$locations = $this->offer->get_delivery_locations($loc_params);
+			foreach( $locations as $loc ) {
+				if ( $loc->code == $this->delivery_location_code ) {
+					$this->delivery_location = $loc;
+				}
+			}
+		}
+		
+		update_post_meta( $this->id, '_delivery_location', $this->delivery_location );
 		
 		
 		// Reloading object

@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
+
 ?>
 <h2><?php _e( "Track your shipment", 'my-flying-box' ); ?></h2>
 <?php if ( count($links) > 1 ) { ?>

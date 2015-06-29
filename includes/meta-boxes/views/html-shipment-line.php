@@ -193,6 +193,21 @@ if ( ! defined( 'ABSPATH' ) ) {
           }
         ?>
         
+        <?php
+        if ( $shipment->delivery_location ) {
+          echo '<p>';
+          _e('Delivery location:', 'my-flying-box');
+          echo '<br/>';
+          echo $shipment->delivery_location->company.' ('.$shipment->delivery_location->code.')';
+          echo '<br/>';
+          echo $shipment->delivery_location->street;
+          echo '<br/>';
+          echo $shipment->delivery_location->postal_code.' '.$shipment->delivery_location->city;
+          echo '</p>';
+        }
+        
+        ?>
+        
       </div>
     <?php
     }

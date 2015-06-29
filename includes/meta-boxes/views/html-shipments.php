@@ -1,4 +1,18 @@
 <div class="mfb_shipments_wrapper">
+	<?php
+	if ( $relay ) {
+		echo '<p>';
+		_e( 'Relay selected by the customer:', 'my-flying-box' );
+		echo '<br/>';
+		echo $relay->name.' ('.$relay->code.')';
+		echo '<br/>';
+		echo $relay->street;
+		echo '<br/>';
+		echo $relay->postal_code.' '.$relay->city;
+		echo '</p>';
+	}
+	
+	?>
 	<table cellpadding="0" cellspacing="0" class="mfb_order_shipments">
 		<thead>
 			<tr>

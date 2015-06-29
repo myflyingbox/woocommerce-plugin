@@ -424,20 +424,13 @@ class My_Flying_Box  extends WC_Shipping_Method {
 	 * Validate the checkout form, so we can save the delivery location
 	**/
 	public function hook_process_order_checkout() {
-		global $order_id;
-
-		// We save the latest quote associated to this cart
-		update_post_meta( $order_id, '_mfb_last_quote_id', WC()->session->get('myflyingbox_shipment_quote_id') );
 
 		// Check if the parcel point is needed and if it has been chosen
 		if (isset($_POST['shipping_method']))	{
 			foreach($_POST['shipping_method'] as $shipping_method) {
 				$carrier = MFB_Carrier::get_by_code( $shipping_method );
 				if ($carrier->shop_delivery) {
-					if (isset($_POST['_delivery_location'])) {
-						update_post_meta( $order_id, '_mfb_delivery_location', $_POST['_delivery_location'] );
-					}
-					else {
+					if (!isset($_POST['_delivery_location'])) {
 						wc_add_notice(__('Please select a delivery location','my-flying-box'),'error');
 					}
 
@@ -459,6 +452,30 @@ class My_Flying_Box  extends WC_Shipping_Method {
 				if ($carrier->shop_delivery) {
 					if (isset($_POST['_delivery_location'])) {
 						update_post_meta( $order_id, '_mfb_delivery_location', $_POST['_delivery_location'] );
+						
+						// Trying to get the details of the location
+						$quote = MFB_Quote::get( WC()->session->get('myflyingbox_shipment_quote_id') );
+						
+						$street = isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_address_1'] : $_REQUEST['billing_address_1'];
+						$street_line_2 = isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_address_2'] : $_REQUEST['billing_address_2'];
+						if ( ! empty( $street_line_2 ) ) {
+							$street .= "\n".$street_line_2;
+						}
+
+						$params = array(
+							'street' => $street,
+							'city' => $quote->params['recipient']['city']
+						);
+						
+						$locations = $quote->offers[$shipping_method]->get_delivery_locations($params);
+						foreach( $locations as $loc ) {
+							if ( $loc->code == $_POST['_delivery_location'] ) {
+								update_post_meta( $order_id, '_mfb_delivery_location_name', $loc->company );
+								update_post_meta( $order_id, '_mfb_delivery_location_street', $loc->street );
+								update_post_meta( $order_id, '_mfb_delivery_location_city', $loc->city );
+								update_post_meta( $order_id, '_mfb_delivery_location_postal_code', $loc->postal_code );
+							}
+						}
 					}
 				}
 			}
@@ -649,16 +666,40 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		return $links;
 	}
 
+	// Returns an array of relay delivery addresses for a given order
+	public function get_relay_addresses( $order ) {
+		$shipments = MFB_Shipment::get_all_for_order( $order->id );
+		$addresses = array();
+		// We deal with each shipment
+		foreach( $shipments as $shipment ) {
+			// We only continue if the delivery is for a relay
+			if ( $shipment->status == 'mfb-booked' && $shipment->delivery_location ) {
+				$loc = $shipment->delivery_location;
+				$addresses[$loc->code] = $loc;
+			}
+		}
+		return $addresses;
+	}
+
+
 	public function add_tracking_link_to_email_notification( $order, $sent_to_admin, $plain_text ) {
 		$links = MFB()->get_tracking_links( $order );
 		if ( count($links) > 0) {
 			include( dirname ( dirname( __FILE__ ) ) . '/includes/views/email-tracking.php');
+		}
+		$addresses = MFB()->get_relay_addresses( $order );
+		if ( count($addresses) > 0) {
+			include( dirname ( dirname( __FILE__ ) ) . '/includes/views/email-relay-address.php');
 		}
 	}
 	public function add_tracking_link_to_order_page( $order ) {
 		$links = MFB()->get_tracking_links( $order );
 		if ( count($links) > 0) {
 			include( dirname ( dirname( __FILE__ ) ) . '/includes/views/order-page-tracking.php');
+		}
+		$addresses = MFB()->get_relay_addresses( $order );
+		if ( count($addresses) > 0) {
+			include( dirname ( dirname( __FILE__ ) ) . '/includes/views/order-page-relay-address.php');
 		}
 	}
 	

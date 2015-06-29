@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: My Flying Box 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-07 11:28:06+00:00\n"
-"PO-Revision-Date: Tue Jun 02 2015 13:29:34 GMT+0300 (EEST)\n"
+"PO-Revision-Date: Mon Jun 29 2015 15:37:07 GMT+0300 (EEST)\n"
 "Last-Translator: thomas <thomas@lce.io>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: French (France)\n"
@@ -257,38 +257,38 @@ msgstr "Sélectionner tout"
 msgid "Select none"
 msgstr "Sélectionner aucun"
 
-#: ../includes/class-mfb-shipping-method.php:136
+#: ../includes/class-mfb-shipping-method.php:148
 msgid "Enable"
 msgstr "Activer"
 
-#: ../includes/class-mfb-shipping-method.php:138
+#: ../includes/class-mfb-shipping-method.php:150
 msgid "Enable this service"
 msgstr "Activer ce service"
 
-#: ../includes/class-mfb-shipping-method.php:142
+#: ../includes/class-mfb-shipping-method.php:154
 msgid "Title"
 msgstr "Titre"
 
-#: ../includes/class-mfb-shipping-method.php:144
+#: ../includes/class-mfb-shipping-method.php:156
 msgid "This controls the title which the user sees during checkout."
 msgstr "Défini le nom du service que le client verra à la commande."
 
-#: ../includes/class-mfb-shipping-method.php:149 ../includes/views/html-admin-
+#: ../includes/class-mfb-shipping-method.php:161 ../includes/views/html-admin-
 #: carriers-list.php:24
 msgid "Description"
 msgstr "Description"
 
-#: ../includes/class-mfb-shipping-method.php:151
+#: ../includes/class-mfb-shipping-method.php:163
 msgid ""
 "This controls the description of this shipping method, which the user sees "
 "during checkout."
 msgstr "Définit la description du du service, visible par le client à la commande."
 
-#: ../includes/class-mfb-shipping-method.php:156
+#: ../includes/class-mfb-shipping-method.php:168
 msgid "Tracking URL"
 msgstr "URL de tracking"
 
-#: ../includes/class-mfb-shipping-method.php:158
+#: ../includes/class-mfb-shipping-method.php:170
 msgid ""
 "Put the variable TRACKING_NUMBER in the URL, it will be automatically "
 "replaced with the real tracking number when generating the link."
@@ -296,11 +296,11 @@ msgstr ""
 "Placez la variable TRACKING_NUMBER dans l'URL, elle sera automatiquement "
 "remplacée par le numéro de suivi lors de la génération du lien."
 
-#: ../includes/class-mfb-shipping-method.php:163
+#: ../includes/class-mfb-shipping-method.php:175
 msgid "Included postcodes"
 msgstr "Codes postaux inclus"
 
-#: ../includes/class-mfb-shipping-method.php:165
+#: ../includes/class-mfb-shipping-method.php:177
 msgid ""
 "Limits the service only to these postcodes. One rule per line (or same line "
 "and separated by a comma), using the following format: XX-YYYYY (XX = alpha2 "
@@ -315,11 +315,11 @@ msgstr ""
 "ne spécifié que les codes pays sans codes postaux. Lasisez vide pour "
 "n'appliquer aucune limitation."
 
-#: ../includes/class-mfb-shipping-method.php:171
+#: ../includes/class-mfb-shipping-method.php:183
 msgid "Excluded postcodes"
 msgstr "Codes postaux exclus"
 
-#: ../includes/class-mfb-shipping-method.php:173
+#: ../includes/class-mfb-shipping-method.php:185
 msgid ""
 "Excludes postcodes matching this list. One rule per line, using the "
 "following format: XX-YYYYY (XX = alpha2 country code, YYYYY = full postcode "
@@ -333,11 +333,11 @@ msgstr ""
 "ne spécifié que les codes pays sans codes postaux. Lasisez vide pour "
 "n'appliquer aucune limitation."
 
-#: ../includes/class-mfb-shipping-method.php:179
+#: ../includes/class-mfb-shipping-method.php:191
 msgid "Flat-rate pricing"
 msgstr "Tarif fixe"
 
-#: ../includes/class-mfb-shipping-method.php:181
+#: ../includes/class-mfb-shipping-method.php:193
 msgid ""
 "Check to enable pricing based on flat-rate pricing table, as defined below. "
 "When enabled, the prices returned by the API will not be used."
@@ -346,11 +346,11 @@ msgstr ""
 "au poids. Lorsque cette option est activée, les tarifs retournés par l'API "
 "MyFlyingBox seront ignorés."
 
-#: ../includes/class-mfb-shipping-method.php:185
+#: ../includes/class-mfb-shipping-method.php:197
 msgid "Flat-rate prices"
 msgstr "Tarifs fixe"
 
-#: ../includes/class-mfb-shipping-method.php:187
+#: ../includes/class-mfb-shipping-method.php:199
 msgid ""
 "Prices are based on weight, so you can define as many rules as you want in "
 "the following format: Weight (up to, in kg, e.g. 6 or 7.5) | Price (float "
@@ -360,6 +360,28 @@ msgstr ""
 "vous le souhaitez, en respectant le format suivant : Poids (jusqu'à, en kg, "
 "par ex. 6 ou 7.5) | Prix (décimal avec un séparateur point, par ex. 3.54). "
 "Une règle par ligne."
+
+#: ../includes/class-mfb-shipping-method.php:205
+msgid "Reduce API calls"
+msgstr "Limiter les appels API"
+
+#: ../includes/class-mfb-shipping-method.php:207
+msgid ""
+"Check to limit the number of API calls, improving performance of checkout "
+"process. WARNING: use only in conjunction with flatrate pricing (internal or "
+"from other extension) and an external method to determine whether this "
+"service should be available or not. As no request will be sent to the API, "
+"the module cannot determine whether the service is available or not for the "
+"destination, so you must use another mechanism for this!"
+msgstr ""
+"Activer pour limiter le nombre de requêtes envoyées vers l'API, afin "
+"d'améliorer les performances lors du checkout. ATTENTION: à n'utiliser "
+"qu'avec une grille de prix statiques (en utilisant les mécanismes internes à "
+"ce plugin ou bien avec un autre module) et une méthode externe pour "
+"déterminer si le service est disponible ou non. Dans la mesure où aucune "
+"requête ne sera envoyée à l'API, le module ne pourra pas déterminer lui-même "
+"si le service est disponible ou non pour la destination saisie par le client "
+"; il vous faut donc impérativement utiliser un autre mécanisme."
 
 #: ../includes/class-my-flying-box.php:264
 msgid "Shipments"
@@ -434,59 +456,59 @@ msgstr[1] ""
 msgid "Cheatin&#8217; huh?"
 msgstr "Vous essayez de triché?"
 
-#: ../includes/class-my-flying-box.php:441
+#: ../includes/class-my-flying-box.php:434
 msgid "Please select a delivery location"
 msgstr "Choisissez un point relais"
 
-#: ../includes/class-my-flying-box.php:502
+#: ../includes/class-my-flying-box.php:519
 msgid "Choose a location"
 msgstr "Choisir un point relais"
 
-#: ../includes/class-my-flying-box.php:503
+#: ../includes/class-my-flying-box.php:520
 msgid "Selected "
 msgstr "Sélectionné"
 
-#: ../includes/class-my-flying-box.php:516
+#: ../includes/class-my-flying-box.php:533
 msgid "Unable to load parcel points"
 msgstr "Impossible de charger la liste des relais"
 
-#: ../includes/class-my-flying-box.php:517
+#: ../includes/class-my-flying-box.php:534
 msgid "Select this location"
 msgstr "Choisir ce point relais"
 
-#: ../includes/class-my-flying-box.php:518
+#: ../includes/class-my-flying-box.php:535
 msgid "Monday"
 msgstr "Lundi"
 
-#: ../includes/class-my-flying-box.php:519
+#: ../includes/class-my-flying-box.php:536
 msgid "Tuesday"
 msgstr "Mardi"
 
-#: ../includes/class-my-flying-box.php:520
+#: ../includes/class-my-flying-box.php:537
 msgid "Wednesday"
 msgstr "Mercredi"
 
-#: ../includes/class-my-flying-box.php:521
+#: ../includes/class-my-flying-box.php:538
 msgid "Thursday"
 msgstr "Jeudi"
 
-#: ../includes/class-my-flying-box.php:522
+#: ../includes/class-my-flying-box.php:539
 msgid "Friday"
 msgstr "Vendredi"
 
-#: ../includes/class-my-flying-box.php:523
+#: ../includes/class-my-flying-box.php:540
 msgid "Saturday"
 msgstr "Samedi"
 
-#: ../includes/class-my-flying-box.php:524
+#: ../includes/class-my-flying-box.php:541
 msgid "Sunday"
 msgstr "Dimanche"
 
-#: ../includes/class-my-flying-box.php:551
+#: ../includes/class-my-flying-box.php:614
 msgid "Hide map"
 msgstr "Fermer la carte"
 
-#: ../includes/class-my-flying-box.php:560
+#: ../includes/class-my-flying-box.php:623
 msgid "Shipping - My Flying Box"
 msgstr "Expédition - My Flying Box"
 
@@ -617,18 +639,45 @@ msgstr "Contenu des colis par défaut"
 msgid "Default country of origin"
 msgstr "Pays d'origine par défaut"
 
+#: ../includes/settings/class-mfb-settings-account.php:88
+msgid "Thermal printing"
+msgstr "Impression thermale"
+
+#: ../includes/settings/class-mfb-settings-account.php:89
+msgid "Get shipment labels in a thermal-printer friendly format"
+msgstr "Obtenir les étiquettes dans un format adapté à une impression thermique"
+
 #: ../includes/views/order-page-tracking.php:6 ../includes/views/email-tracking.
-#: php:6
+#: php:7
+msgid "Relay delivery address"
+msgstr "Livraison en point relais"
+
+#: ../includes/views/order-page-tracking.php:8 ../includes/views/email-tracking.
+#: php:9
+msgid "Your shipment will be delivered at the following address:"
+msgstr "Votre commande sera livrée à l'adresse suivante :"
+
+#: ../includes/views/order-page-tracking.php:10 ../includes/views/email-tracking.
+#: php:11
+msgid ""
+"Your order has been split and shipped to several addresses, listed below. "
+"Please check tracking information."
+msgstr ""
+"Votre commande a été expédiée en plusieurs fois, à des adresses différentes "
+"listées ci-dessous. Pensez à consulter les informations de suivi."
+
+#: ../includes/views/order-page-tracking.php:24 ../includes/views/email-tracking.
+#: php:25
 msgid "Track your shipment"
 msgstr "Suivre votre colis"
 
-#: ../includes/views/order-page-tracking.php:8 ../includes/views/email-tracking.
-#: php:8
+#: ../includes/views/order-page-tracking.php:26 ../includes/views/email-tracking.
+#: php:27
 msgid "Direct links to track your shipments:"
 msgstr "Liens directs pour suivre vos colis :"
 
-#: ../includes/views/order-page-tracking.php:10 ../includes/views/email-tracking.
-#: php:10
+#: ../includes/views/order-page-tracking.php:28 ../includes/views/email-tracking.
+#: php:29
 msgid "Direct link to track your shipment:"
 msgstr "Lien direct pour suivre votre colis :"
 
@@ -667,7 +716,7 @@ msgid "Offers"
 msgstr "Offres"
 
 #: ../includes/views/html-admin-carriers-list.php:26 ../includes/meta-
-#: boxes/views/html-shipments.php:5
+#: boxes/views/html-shipments.php:19
 msgid "Status"
 msgstr "Etat"
 
@@ -796,6 +845,10 @@ msgstr "Télécharger étiquettes"
 msgid "Tracking:"
 msgstr "Suivi :"
 
+#: ../includes/meta-boxes/views/html-shipment-line.php:199
+msgid "Delivery location:"
+msgstr "Point de livraison :"
+
 #: ../includes/meta-boxes/views/html-shipment-address-cell.php:14
 msgid "Company"
 msgstr "Société"
@@ -812,22 +865,26 @@ msgstr "Adresse"
 msgid "State/Region"
 msgstr "Etat/Région"
 
-#: ../includes/meta-boxes/views/html-shipments.php:6
+#: ../includes/meta-boxes/views/html-shipments.php:5
+msgid "Relay selected by the customer:"
+msgstr "Point relais sélectionné par le client :"
+
+#: ../includes/meta-boxes/views/html-shipments.php:20
 msgid "From"
 msgstr "De"
 
-#: ../includes/meta-boxes/views/html-shipments.php:7
+#: ../includes/meta-boxes/views/html-shipments.php:21
 msgid "To"
 msgstr "A"
 
-#: ../includes/meta-boxes/views/html-shipments.php:8
+#: ../includes/meta-boxes/views/html-shipments.php:22
 msgid "Parcels"
 msgstr "Colis"
 
-#: ../includes/meta-boxes/views/html-shipments.php:9
+#: ../includes/meta-boxes/views/html-shipments.php:23
 msgid "Selected service"
 msgstr "Service sélectionné"
 
-#: ../includes/meta-boxes/views/html-shipments.php:25
+#: ../includes/meta-boxes/views/html-shipments.php:39
 msgid "Create new shipment"
 msgstr "Créer nouvelle expédition"
