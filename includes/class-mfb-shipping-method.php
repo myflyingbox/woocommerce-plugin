@@ -43,7 +43,6 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		$this->method_description = $this->description;
 		
 		$this->load_destination_restrictions();
-		$this->load_flat_rates();
 
 		// Actions
 		add_filter( 'woocommerce_calculated_shipping',  array( $this, 'calculate_shipping'));
@@ -109,8 +108,8 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			}
 		}
 	}
-	
-	public function load_flat_rates() {
+
+	public function load_flat_rates( $country ) {
 		$this->flat_rates = array();
 		$rates = array();
 		if(isset($this->settings['flatrate_prices']))
@@ -122,21 +121,52 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			}
 		}
 		$previous_weight = 0;
+		$country_specific_pricelist = false;
+		
+		$valid_rates = array(); // Storing applicable rates (for current country)
 		foreach( $rates as $rate ) {
 			$split = explode('|', $rate);
+			
+			// No country specific rate
 			if ( count($split) == 2) {
 				$weight = trim($split[0]);
 				$price = trim($split[1]);
-				$this->flat_rates[] = array( $previous_weight, (float)$weight, (float)$price );
-				$previous_weight = $weight;
+				$valid_rates[] = array( null, (float)$weight, (float)$price );
+			// Rate for specific country
+			} else if ( count($split) == 3 && $country != null ) {
+				$rate_country = trim($split[0]);
+				$weight = trim($split[1]);
+				$price = trim($split[2]);
+				if ( $rate_country == $country ) {
+					// We have at least one tariff specific to this country, to we'll ignore any generic tariff
+					$country_specific_pricelist = true;
+					$valid_rates[] = array( $country, (float)$weight, (float)$price );
+				}
 			}
 		}
+		// Removing duplicates, keeping only latest defined rate and rates applicable to this country, if applicable
+		$weights = array();
+		$applicable_country = $country_specific_pricelist ? $country : null;
+		foreach ( array_reverse($valid_rates) as $rate ) {
+			if ( !in_array( $rate[1], $weights ) && $rate[0] == $applicable_country ) {
+				$this->flat_rates[] = array($rate[1], $rate[2]);
+			}
+			$weights[] = $rate[1];
+		}
+		
 		// Sorting by weight
 		$weights = array();
 		foreach($this->flat_rates as $key => $value){
 			$weights[$key] = $value[1];
 		}
 		array_multisort($weights, SORT_ASC, SORT_NUMERIC, $this->flat_rates);
+		
+		// And finally, setting 'previous_weight' values to ease extraction
+		$previous_weight = 0;
+		foreach($this->flat_rates as $key => $value) {
+			$this->flat_rates[$key] = array($previous_weight, $value[0], $value[1]);
+			$previous_weight = $value[0];
+		}
 	}
 
 	/**
@@ -218,10 +248,16 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 		// If this shipping is not enabled, no need to proceed any further
 		if ( ! $this->enabled ) return false;
-		
+
+		$recipient_city = (isset($package['destination']['city']) && !empty($package['destination']['city']) ? $package['destination']['city']     : '');
+		$recipient_postal_code = ( isset($package['destination']['postcode'])  ? $package['destination']['postcode'] : '' );
+		$recipient_country = ( isset($package['destination']['country'])   ? $package['destination']['country']  : '' );
+
 		// If this destination is not supported by this method, no need to go further either
-		if ( ! $this->destination_supported( $package['destination']['postcode'], $package['destination']['country']) ) return false;
-		
+		if ( ! $this->destination_supported( $recipient_postal_code, $recipient_country) ) return false;
+
+		if ( $this->settings['flatrate_pricing'] == 'yes' ) $this->load_flat_rates( $recipient_country );
+
 		// Extracting total weight from the WC CART
 		$weight = 0;
 		foreach ( WC()->cart->get_cart() as $item_id => $values ) {
@@ -248,7 +284,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 					$quote_request_time != $_SERVER['REQUEST_TIME'] &&
 					time() - $_SERVER['REQUEST_TIME'] < 600 &&
 					$this->quote_still_valid( $saved_quote_id, $package )
-			  ) {
+				) {
 			// A quote was requested in a recent previous request, with the same parameters. We can use it as is.
 			$quote = MFB_Quote::get( $saved_quote_id );
 			
@@ -263,7 +299,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			// In some cases, we can avoid calling the API altogether, improving performances.
 			if ( $this->settings['reduce_api_calls'] == 'yes' && $this->settings['flatrate_pricing'] == 'yes' ) {
 
-				$price = $this->get_flatrate_price( $weight );
+				$price = $this->get_flatrate_price( $weight, $recipient_country );
 				$rate = array(
 					'id' 		=> $this->id,
 					'label' 	=> $this->title,
@@ -279,12 +315,6 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			$dimension = MFB_Dimension::get_for_weight( $weight );
 
 			if ( ! $dimension ) return false;
-			
-			
-
-			$recipient_city = (isset($package['destination']['city']) && !empty($package['destination']['city']) ? $package['destination']['city']     : '');
-			$recipient_postal_code = ( isset($package['destination']['postcode'])  ? $package['destination']['postcode'] : '' );
-			$recipient_country = ( isset($package['destination']['country'])   ? $package['destination']['country']  : '' );
 			
 			// We need destination info to be able to send a quote
 			if ( empty($recipient_postal_code) || empty($recipient_country) ) return false;
@@ -346,7 +376,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			
 			// Overriding the API price is we use flatrate pricing
 			if ( isset($this->settings['flatrate_pricing']) && $this->settings['flatrate_pricing'] == 'yes') {
-				$price = $this->get_flatrate_price( $weight );
+				$price = $this->get_flatrate_price( $weight, $recipient_country );
 			}
 			
 			$price = apply_filters( 'mfb_shipping_rate_price', $price, $this->id );
