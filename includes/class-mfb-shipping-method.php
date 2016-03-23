@@ -216,7 +216,11 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	 */
 	public function calculate_shipping( $package = array() ) {
 
+		// If this shipping is not enabled, no need to proceed any further
 		if ( ! $this->enabled ) return false;
+		
+		// If this destination is not supported by this method, no need to go further either
+		if ( ! $this->destination_supported( $package['destination']['postcode'], $package['destination']['country']) ) return false;
 		
 		// Extracting total weight from the WC CART
 		$weight = 0;
@@ -257,7 +261,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			
 			
 			// In some cases, we can avoid calling the API altogether, improving performances.
-			if ( $this->settings['reduce_api_calls'] == 'yes' && $this->settings['flatrate_pricing'] == 'yes' && $this->destination_supported( $package['destination']['postcode'], $package['destination']['country']) ) {
+			if ( $this->settings['reduce_api_calls'] == 'yes' && $this->settings['flatrate_pricing'] == 'yes' ) {
 
 				$price = $this->get_flatrate_price( $weight );
 				$rate = array(
@@ -276,9 +280,18 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 			if ( ! $dimension ) return false;
 			
-			// We need destination info to be able to send a quote
-			if ( ! isset($package['destination']['postcode']) || ! isset($package['destination']['country']) || empty($package['destination']['postcode']) || empty($package['destination']['country'])) return false;
+			
 
+			$recipient_city = (isset($package['destination']['city']) && !empty($package['destination']['city']) ? $package['destination']['city']     : '');
+			$recipient_postal_code = ( isset($package['destination']['postcode'])  ? $package['destination']['postcode'] : '' );
+			$recipient_country = ( isset($package['destination']['country'])   ? $package['destination']['country']  : '' );
+			
+			// We need destination info to be able to send a quote
+			if ( empty($recipient_postal_code) || empty($recipient_country) ) return false;
+			
+			// However, when having a postal code but no city, this should not block the quote request. In most cases the quote is based on postal code only anyway!
+			if (empty($recipient_city) && !empty($recipient_postal_code)) $recipient_city = 'N/A';
+			
 			// And then we build the quote request params' array
 			$params = array(
 				'shipper' => array(
@@ -287,9 +300,9 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 					'country'      => My_Flying_Box_Settings::get_option('mfb_shipper_country_code')
 				),
 				'recipient' => array(
-					'city'         => ( isset($package['destination']['city']) && !empty($package['destination']['city']) ? $package['destination']['city']     : '' ),
-					'postal_code'  => ( isset($package['destination']['postcode'])  ? $package['destination']['postcode'] : '' ),
-					'country'      => ( isset($package['destination']['country'])   ? $package['destination']['country']  : '' ),
+					'city'         => $recipient_city,
+					'postal_code'  => $recipient_postal_code,
+					'country'      => $recipient_country,
 					'is_a_company' => false
 				),
 				'parcels' => array(
@@ -329,23 +342,21 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		WC()->session->set( 'myflyingbox_shipment_quote_timestamp', $_SERVER['REQUEST_TIME'] );
 		
 		if ( isset($quote->offers[$this->id]) ) {
-			if ( $this->destination_supported( $package['destination']['postcode'], $package['destination']['country']) ) {
-				$price = $quote->offers[$this->id]->base_price_in_cents / 100;
-				
-				// Overriding the API price is we use flatrate pricing
-				if ( isset($this->settings['flatrate_pricing']) && $this->settings['flatrate_pricing'] == 'yes') {
-					$price = $this->get_flatrate_price( $weight );
-				}
-				
-				$price = apply_filters( 'mfb_shipping_rate_price', $price, $this->id );
-				$rate = array(
-					'id' 		=> $this->id,
-					'label' 	=> $this->title,
-					'cost' => $price,
-					'taxes' => apply_filters( 'mfb_shipping_rate_taxes', '', $this->id, $price ),
-				);
-				$this->add_rate( $rate );
+			$price = $quote->offers[$this->id]->base_price_in_cents / 100;
+			
+			// Overriding the API price is we use flatrate pricing
+			if ( isset($this->settings['flatrate_pricing']) && $this->settings['flatrate_pricing'] == 'yes') {
+				$price = $this->get_flatrate_price( $weight );
 			}
+			
+			$price = apply_filters( 'mfb_shipping_rate_price', $price, $this->id );
+			$rate = array(
+				'id' 		=> $this->id,
+				'label' 	=> $this->title,
+				'cost' => $price,
+				'taxes' => apply_filters( 'mfb_shipping_rate_taxes', '', $this->id, $price ),
+			);
+			$this->add_rate( $rate );
 		}
 	}
 	
