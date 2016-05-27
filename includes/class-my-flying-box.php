@@ -132,6 +132,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		// Load API for generic admin functions
 		if ( is_admin() ) {
 			$this->admin = new My_Flying_Box_Admin_API();
+			new My_Flying_Box_Multiple_Shipment();
 		}
 
 		$api_env = My_Flying_Box_Settings::get_option('mfb_api_env');

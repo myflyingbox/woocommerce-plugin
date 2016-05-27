@@ -323,6 +323,9 @@ class MFB_Shipment {
 	public function formatted_address( $address_type ) {
 		// Formatted Addresses
 		$street = explode("\n", $this->$address_type->street, 2);
+		if (!isset($street[1])){
+			$street[1] = '';
+		}
 		$address = array(
 			'last_name'     => $this->$address_type->name,
 			'company'       => $this->$address_type->company,
