@@ -4,7 +4,7 @@ use \Lce\Lce;
 use \Lce\Resource\Order;
 
 class My_Flying_Box_Multiple_Shipment  extends WC_Shipping_Method {
-	
+
 	/*
 	 * Ajout des différentes actions wordpress
 	 */
@@ -18,7 +18,7 @@ class My_Flying_Box_Multiple_Shipment  extends WC_Shipping_Method {
 	/*
 	 * Ajout des actions dans le menu déroulant
 	 */
-	function my_flying_box_admin_footer() 
+	function my_flying_box_admin_footer()
 	{
 		global $post_type;
 		/* Ici on prend que pour les articles et on ajoute l'opion export en haut et en bas du tableau */
@@ -39,12 +39,15 @@ class My_Flying_Box_Multiple_Shipment  extends WC_Shipping_Method {
 	/*
 	 * Fonction de création des expéditions
 	 */
-	function creation_expedition() 
+	function creation_expedition()
 	{
-		# Array with the selected User IDs
 		foreach( $_REQUEST['post'] as $post_id ) {
-			$order = new WC_Order( $post_id );
-			$shipment = MFB_Shipment::create_from_order( $order );
+      // Only booking new shipments if no existing booked shipment
+      if ( MFB_Shipment::get_last_booked_for_order( $post_id ) == null ) {
+        $order = new WC_Order( $post_id );
+        $shipment = MFB_Shipment::create_from_order( $order );
+        $shipment->place_booking();
+      }
 		}
 		// $_REQUEST['post'] if used on edit.php screen
 	}
@@ -57,13 +60,15 @@ class My_Flying_Box_Multiple_Shipment  extends WC_Shipping_Method {
 		$uuid_list = array();
 		foreach( $_REQUEST['post'] as $post_id ) {
 			//$order = new WC_Order( $post_id );
-			$uuid = get_post_meta( $post_id, '_api_uuid', true );
-			array_push($uuid_list, $uuid);
-			//$shipment = MFB_Shipment::create_from_order( $order );
+      $shipment = MFB_Shipment::get_last_booked_for_order($post_id);
+      if ($shipment) {
+        $uuid = get_post_meta( $shipment->id, '_api_uuid', true );
+        array_push($uuid_list, $uuid);
+      }
 		}
-		
-		if (!empty($uuid_list)){
-			Order::multiple_labels($uuid_list);
+
+		if ( !empty( $uuid_list ) ){
+			$labels = Order::multiple_labels($uuid_list);
 			$filename = 'MFB-labels.pdf';
 
 			header('Content-type: application/pdf');
