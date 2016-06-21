@@ -150,29 +150,29 @@ class MFB_Shipment {
 		return $shipments;
 	}
 
-  public static function get_last_booked_for_order( $order_id ) {
+	public static function get_last_booked_for_order( $order_id ) {
 
-    $all_shipments = get_children( array(
-      'post_type'     => 'mfb_shipment',
-      'post_status'   => array('mfb-booked'),
-      'post_parent'   => $order_id,
-      'field'         => 'ids',
-      'numberposts'   => 1,
-      'orderby'       => array( 'date' => 'DESC' )
-    ));
+		$all_shipments = get_children( array(
+			'post_type'     => 'mfb_shipment',
+			'post_status'   => array('mfb-booked'),
+			'post_parent'   => $order_id,
+			'field'         => 'ids',
+			'numberposts'   => 1,
+			'orderby'       => array( 'date' => 'DESC' )
+		));
 
-    $shipments = array();
+		$shipments = array();
 
-    foreach($all_shipments as $shipment) {
-      $shipments[] = self::get($shipment->ID);
-    }
+		foreach($all_shipments as $shipment) {
+			$shipments[] = self::get($shipment->ID);
+		}
 
-    if ( !empty( $shipments ) ) {
-      return $shipments[0];
-    } else {
-      return null;
-    }
-  }
+		if ( !empty( $shipments ) ) {
+			return $shipments[0];
+		} else {
+			return null;
+		}
+	}
 
 
 	public static function create_from_order( $order ) {
@@ -203,11 +203,11 @@ class MFB_Shipment {
 		$shipment->recipient->phone         = $order->billing_phone;
 
 
-    // If a location code was associated to the order, we record it here
-    $delivery_location_code = get_post_meta( $order->id, '_mfb_delivery_location', true);
-    if ( $delivery_location_code && !empty( $delivery_location_code ) ) {
-      $shipment->delivery_location_code = $delivery_location_code;
-    }
+		// If a location code was associated to the order, we record it here
+		$delivery_location_code = get_post_meta( $order->id, '_mfb_delivery_location', true);
+		if ( $delivery_location_code && !empty( $delivery_location_code ) ) {
+			$shipment->delivery_location_code = $delivery_location_code;
+		}
 
 		// Initialize a default parcel based on total weight of order
 		$total_weight = wc_format_decimal(0);
