@@ -26,6 +26,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  **/
 if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) :
 
+    // Loading standalone module
+    if ( is_admin() ) {
+      include_once( 'includes/class-mfb-admin-menus.php' );
+    }
+
   /**
    * Returns the main instance of My_Flying_Box to prevent the need to use globals.
    *
