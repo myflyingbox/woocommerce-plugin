@@ -254,7 +254,8 @@ class MFB_Shipment {
 
 			// Auto-setting the offer based on what the customer has chosen
 			if ( count($order->get_shipping_methods()) == 1 ) {
-				$methods = array_pop($order->get_shipping_methods());
+				$shipping_methods = $order->get_shipping_methods();
+				$methods = array_pop($shipping_methods);
 				$chosen_method = $methods['item_meta']['method_id'][0];
 				if ( $this->quote->offers[$chosen_method] ) {
 					$this->offer = $this->quote->offers[$chosen_method];

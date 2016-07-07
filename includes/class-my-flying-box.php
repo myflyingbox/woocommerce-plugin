@@ -95,7 +95,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ), 10, 1 );
 
 		$this->includes();
-		
+
 		$this->register_custom_post_statuses();
 		$this->register_custom_post_types();
 
@@ -125,7 +125,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 		// Inject tracking link to order confirmation notification
 		add_action( 'woocommerce_email_customer_details', array( &$this, 'add_tracking_link_to_email_notification' ), 15, 3 );
-		
+
 		// Add tracking link(s) to order summary page
 		add_action( 'woocommerce_order_details_after_order_table', array( &$this,'add_tracking_link_to_order_page'), 10, 1 );
 
@@ -373,11 +373,11 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		include_once( 'class-mfb-offer.php' );
 		include_once( 'class-mfb-dimension.php' );
 		include_once( 'class-mfb-shipment.php' );
-		
+
 		if ( is_admin() ) {
 			include_once( 'class-mfb-admin-menus.php' );
 		}
-		
+
 		if ( $this->is_request( 'ajax' ) ) {
 			$this->ajax_includes();
 		}
@@ -404,7 +404,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 				eval("class $method_name extends MFB_Shipping_Method{}");
 			}
 			if ( !in_array( $method_name, $methods ) ) {
-				$methods[] = new $method_name();
+				$methods[$method_name] = $method_name;
 			}
 		}
 
@@ -453,10 +453,10 @@ class My_Flying_Box  extends WC_Shipping_Method {
 				if ($carrier->shop_delivery) {
 					if (isset($_POST['_delivery_location'])) {
 						update_post_meta( $order_id, '_mfb_delivery_location', $_POST['_delivery_location'] );
-						
+
 						// Trying to get the details of the location
 						$quote = MFB_Quote::get( WC()->session->get('myflyingbox_shipment_quote_id') );
-						
+
 						$street = isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_address_1'] : $_REQUEST['billing_address_1'];
 						$street_line_2 = isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_address_2'] : $_REQUEST['billing_address_2'];
 						if ( ! empty( $street_line_2 ) ) {
@@ -467,7 +467,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 							'street' => $street,
 							'city' => $quote->params['recipient']['city']
 						);
-						
+
 						$locations = $quote->offers[$shipping_method]->get_delivery_locations($params);
 						foreach( $locations as $loc ) {
 							if ( $loc->code == $_POST['_delivery_location'] ) {
@@ -544,22 +544,22 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 		wp_enqueue_script( 'jquery' );
 		//wp_enqueue_script( 'gmap', '//maps.google.com/maps/api/js?sensor=false' );
-		
+
 		// Google APIs should not be loaded twice. We will make sure that it is only loaded once.
 		global $wp_scripts;
 		$google_apis = array();
-		
+
 		// First, we identify any registered script that corresponds to Google maps API
 		foreach((array)$wp_scripts->registered as $script) {
 			if(strpos($script->src, 'maps.googleapis.com/maps/api/js') !== false or strpos($script->src, 'maps.google.com/maps/api/js') !== false )
 				$google_apis[] = $script;
-				
+
 		}
-		
+
 		// We will store the libraries called, to make sure that nothing is forgotten
 		$libraries = array();
-		$unregistered = array(); 
-		
+		$unregistered = array();
+
 		foreach($google_apis as $g) {
 			wp_dequeue_script($g->handle); // Temporarily deregistering the script
 			$unregistered[] = $g->handle;
@@ -571,7 +571,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 				$libraries = array_merge($libraries, explode(',', $params['libraries']) );
 
 		}
-		
+
 		// Updating deprecated dependency information that was based on old script handlers
 		// We will use only one handler: google-api-grouped
 		foreach($wp_scripts->registered as $i=>$script) {
@@ -581,15 +581,15 @@ class My_Flying_Box  extends WC_Shipping_Method {
 				}
 			}
 		}
-			
+
 		$library = '';
 		if(count($libraries))
 			$library = 'libraries='.implode(',', $libraries).'&';
-		
+
 		// Finally, enqueuing the script again.
 		wp_enqueue_script( 'google-api-grouped', '//maps.googleapis.com/maps/api/js?'.$library.'sensor=false', array(), '', true);
-		
-		
+
+
 		wp_enqueue_script( 'mfb_delivery_locations','/wp-content/plugins/my-flying-box/assets/js/delivery_locations.js',array( 'jquery', 'google-api-grouped' ) );
 		wp_localize_script( 'mfb_delivery_locations', 'plugin_url', plugins_url() );
 		wp_localize_script( 'mfb_delivery_locations', 'lang', $translations );
@@ -617,14 +617,14 @@ class My_Flying_Box  extends WC_Shipping_Method {
 							 <div id="map-canvas"></div>
 						 </div>';
 	}
-	
+
 	public function load_admin_order_metabox() {
 		foreach ( wc_get_order_types( 'order-meta-boxes' ) as $type ) {
 			//$order_type_object = get_post_type_object( $type );
 			add_meta_box( 'myflyingbox-order-shipping', __( 'Shipping - My Flying Box', 'my-flying-box' ), 'MFB_Meta_Box_Order_Shipping::output', $type, 'normal', 'high' );
 		}
 	}
-	
+
 	/**
 	 * What type of request is this?
 	 * string $type ajax, frontend or admin
@@ -703,5 +703,5 @@ class My_Flying_Box  extends WC_Shipping_Method {
 			include( dirname ( dirname( __FILE__ ) ) . '/includes/views/order-page-relay-address.php');
 		}
 	}
-	
+
 }

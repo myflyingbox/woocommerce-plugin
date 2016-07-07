@@ -18,7 +18,7 @@ class My_Flying_Box_Settings {
 	private static $settings = array();
 	private static $errors   = array();
 	private static $messages = array();
-  private static $setting_instances = array();
+	private static $setting_instances = array();
 
 	/**
 	 * Include the settings page classes
@@ -29,13 +29,17 @@ class My_Flying_Box_Settings {
 
 			include_once( 'settings/class-mfb-settings-page.php' );
 
+			// Loading dependencies for settings pages
+			include_once( 'class-mfb-carrier.php' );
+			include_once( 'class-mfb-dimension.php' );
+
 			$settings[] = include( 'settings/class-mfb-settings-account.php' );
-      $settings[] = include( 'settings/class-mfb-settings-shipper.php' );
-      $settings[] = include( 'settings/class-mfb-settings-carriers.php' );
-      
-      self::$setting_instances['account'] = new MFB_Settings_Account();
-      self::$setting_instances['shipper'] = new MFB_Settings_Shipper();
-      self::$setting_instances['carriers'] = new MFB_Settings_Carriers();
+			$settings[] = include( 'settings/class-mfb-settings-shipper.php' );
+			$settings[] = include( 'settings/class-mfb-settings-carriers.php' );
+
+			self::$setting_instances['account'] = new MFB_Settings_Account();
+			self::$setting_instances['shipper'] = new MFB_Settings_Shipper();
+			self::$setting_instances['carriers'] = new MFB_Settings_Carriers();
 
 			self::$settings = apply_filters( 'woocommerce_get_settings_pages', $settings );
 		}
@@ -361,7 +365,7 @@ class My_Flying_Box_Settings {
 										<?php
 									}
 								?>
-						   </select> <?php echo $description; ?>
+							 </select> <?php echo $description; ?>
 						</td>
 					</tr><?php
 					break;
