@@ -2,7 +2,7 @@ jQuery( function ( $ ) {
 
 	/**
 	 * My Flying Box meta boxes functions
-	 * 
+	 *
 	 * We can rely on woocommerce_admin_meta_boxes variable to extract
 	 * some useful data.
 	 */
@@ -26,7 +26,7 @@ jQuery( function ( $ ) {
 				.on( 'click',  'div.parcel div.parcel-form button.submit_parcel_form',				this.submit_parcel_form )
 				.on( 'change', 'div.mfb-available-offers select.offer-selector',							this.update_selected_offer )
 				.on( 'click',  'a.delete-shipment',		this.delete_shipment );
-			
+
     },
 
     add_shipment: function() {
@@ -48,13 +48,13 @@ jQuery( function ( $ ) {
 		},
 
     book_offer: function() {
-    
+
 			var offer_id = $( this ).closest('div.mfb-available-offers').find('select.offer-selector option:selected').data('offer_id');
 			var date_selector = $( this ).closest('div.mfb-available-offers').find('select.pickup-date-selector');
 			var relay_selector = $( this ).closest('div.mfb-available-offers').find('select.delivery-location-selector');
 			var pickup_date = '';
 			var relay_code = '';
-			
+
 			if ( date_selector ) {
 				pickup_date = date_selector.val();
 			}
@@ -92,8 +92,6 @@ jQuery( function ( $ ) {
 				offer_id: offer_id,
 				shipment_id: $( this ).closest('tr').data('shipment_id')
 			};
-			
-			console.log(data);
 
 			$.ajax({
 				url:  woocommerce_admin_meta_boxes.ajax_url,
@@ -137,7 +135,7 @@ jQuery( function ( $ ) {
 			$( this ).closest('div.display_shipper_address').hide();
 			$( this ).closest('td').find('div.shipper_form_container').show();
 		},
-		
+
     load_parcel_form: function( event ) {
 			event.preventDefault();
 			// Initializing form dialogs
@@ -229,9 +227,9 @@ jQuery( function ( $ ) {
 			window.open( plugin_url+'/my-flying-box/direct/download_labels.php?shipment_id='+shipment_id );
 			return false;
 		},
-		
+
   };
-  
+
   mfb_meta_boxes_order.init();
-  
+
 });
