@@ -209,31 +209,60 @@ class MFB_Shipment {
 			$shipment->delivery_location_code = $delivery_location_code;
 		}
 
-		// Initialize a default parcel based on total weight of order
+		// Initialize a default parcel based on total weight of order and dimensions if available
+
 		$total_weight = wc_format_decimal(0);
 		$total_value  = wc_format_decimal(0);
 		$line_items = $order->get_items( apply_filters( 'woocommerce_admin_order_item_types', 'line_item' ) );
 
+		$dimensions_available = true;
+		$products = [];
 		foreach ( $line_items as $item_id => $item ) {
 			$_product = $order->get_product_from_item( $item );
+
 			if ( $_product ) {
 				$total_weight += wc_format_decimal( $_product->get_weight() * $item['qty'] );
 				$total_value  += wc_format_decimal( isset( $item['line_total'] ) ? $item['line_total'] : 0 );
+
+				if ($_product->get_length() > 0 && $_product->get_width() > 0 && $_product->get_height() > 0) {
+					$products[] = ['name' => $_product->get_title(), 'price' => wc_format_decimal($_product->get_price()), 'quantity' => $item['qty'], 'weight' => $_product->get_weight(), 'length' => $_product->get_length(), 'width' => $_product->get_width(), 'height' => $_product->get_height()];
+				} else {
+					$dimensions_available = false;
+				}
 			}
 		}
 
-		$parcel = new stdClass();
-		$dims = MFB_Dimension::get_for_weight( $total_weight );
+		$parcels = [];
+		if ($dimensions_available) {
+			foreach($products as $product) {
+				for($i = 1; $i <= $product['quantity']; $i++){
+					$parcel = new stdClass();
+					$parcel->length            = $product['length'];
+					$parcel->width             = $product['width'];
+					$parcel->height            = $product['height'];
+					$parcel->weight            = $product['weight'];
+					$parcel->description       = $product['name'];
+					$parcel->country_of_origin = get_option( 'mfb_default_origin_country' );
+					$parcel->value             = $product['price'];
+					$parcels[] = $parcel;
+				}
+			}
+		} else {
+			$parcel = new stdClass();
+			$dims = MFB_Dimension::get_for_weight( $total_weight );
 
-		$parcel->length            = $dims->length;
-		$parcel->width             = $dims->width;
-		$parcel->height            = $dims->height;
-		$parcel->weight            = $total_weight;
-		$parcel->description       = get_option( 'mfb_default_parcel_description' );
-		$parcel->country_of_origin = get_option( 'mfb_default_origin_country' );
-		$parcel->value             = $total_value;
+			$parcel->length            = $dims->length;
+			$parcel->width             = $dims->width;
+			$parcel->height            = $dims->height;
+			$parcel->weight            = $total_weight;
+			$parcel->description       = get_option( 'mfb_default_parcel_description' );
+			$parcel->country_of_origin = get_option( 'mfb_default_origin_country' );
+			$parcel->value             = $total_value;
+			$parcels[] = $parcel;
+		}
 
-		$shipment->parcels[0] = $parcel;
+
+		$shipment->parcels = $parcels;
 
 		$shipment->save();
 

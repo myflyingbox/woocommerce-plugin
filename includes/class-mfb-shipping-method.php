@@ -267,13 +267,22 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 		// Extracting total weight from the WC CART
 		$weight = 0;
+		$dimensions_available = true;
+		$products = [];
 		foreach ( WC()->cart->get_cart() as $item_id => $values ) {
 			$product = $values['data'];
 			if( $product->needs_shipping() ) {
 				$product_weight = $product->get_weight() ? wc_format_decimal( wc_get_weight($product->get_weight(),'kg'), 2 ) : 0;
 				$weight += ($product_weight*$values['quantity']);
+
+				if ($product->get_length() > 0 && $product->get_width() > 0 && $product->get_height() > 0) {
+					$products[] = ['name' => $product->get_title(), 'price' => wc_format_decimal($product->get_price()), 'quantity' => $values['quantity'], 'weight' => $product->get_weight(), 'length' => $product->get_length(), 'width' => $product->get_width(), 'height' => $product->get_height()];
+				} else {
+					$dimensions_available = false;
+				}
 			}
 		}
+
 		if ( 0 == $weight)
 			$weight = 0.2;
 
@@ -317,11 +326,32 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			}
 			// If we continue to run here, that means we must get a quote from the API.
 
-			// We get the computed dimensions based on the total weight
-			$dimension = MFB_Dimension::get_for_weight( $weight );
+			// We prepare the parcels data depending on whether or not we have product dimensions
+			$parcels = [];
+			if ($dimensions_available) {
+				foreach($products as $product) {
+					for($i = 1; $i <= $product['quantity']; $i++){
+						$parcel = [];
+						$parcel['length']            = $product['length'];
+						$parcel['width']             = $product['width'];
+						$parcel['height']            = $product['height'];
+						$parcel['weight']            = $product['weight'];
+						$parcels[] = $parcel;
+					}
+				}
+			} else {
+				$parcel = [];
+				$dims = MFB_Dimension::get_for_weight( $weight );
 
+				# We should use weight/dimensions correspondance; if we don't have any, we can't get a tariff...
+				if (!$dims) return false;
 
-			if ( ! $dimension ) return false;
+				$parcel['length']            = $dims->length;
+				$parcel['width']             = $dims->width;
+				$parcel['height']            = $dims->height;
+				$parcel['weight']            = $total_weight;
+				$parcels[] = $parcel;
+			}
 
 			// We need destination info to be able to send a quote
 			if ( empty($recipient_postal_code) || empty($recipient_country) ) return false;
@@ -342,9 +372,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 					'country'      => $recipient_country,
 					'is_a_company' => false
 				),
-				'parcels' => array(
-					array('length' => $dimension->length, 'height' => $dimension->height, 'width' => $dimension->width, 'weight' => $weight)
-				)
+				'parcels' => $parcels
 			);
 
 			$api_quote = Lce\Resource\Quote::request($params);
