@@ -2,7 +2,7 @@
 Contributors: tbelliard
 Tags: wordpress, plugin, template, woocommerce
 Requires at least: 3.9
-Tested up to: 4.0
+Tested up to: 4.6
 Stable tag: 1.0
 License: MIT
 License URI: http://opensource.org/licenses/MIT
