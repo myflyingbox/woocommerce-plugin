@@ -11,7 +11,7 @@
 		echo $relay->postal_code.' '.$relay->city;
 		echo '</p>';
 	}
-	
+
 	?>
 	<table cellpadding="0" cellspacing="0" class="mfb_order_shipments">
 		<thead>

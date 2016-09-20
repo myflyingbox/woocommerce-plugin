@@ -45,29 +45,50 @@ class My_Flying_Box_Multiple_Shipment  extends WC_Shipping_Method {
 		$notices = array();
 		$errors = array();
 		$already_shipped = array();
+		$already_included = array();
 		$booked = array();
+		$bulk = new MFB_Bulk_Order();
+
 
 		foreach( $_REQUEST['post'] as $post_id ) {
-			// Only booking new shipments if no existing booked shipment
-			$latest_shipment = MFB_Shipment::get_last_booked_for_order( $post_id );
+
 			$order = new WC_Order( $post_id );
-			if ( $latest_shipment == null ) {
-				try {
-					$shipment = MFB_Shipment::create_from_order( $order );
-					$shipment->place_booking();
-					$booked[] = $order->id;
-				} catch (Exception $e) {
-					$errors[] = sprintf( __('Error while booking shipment for Order %s: %s', 'my-flying-box'), $order->id, $e->getMessage());
-				}
-			} else {
-				$already_shipped[] = $order->id;
+			$res = $bulk->add_order( $order );
+
+			if ( $res['success'] ) {
+				$booked[] = $order->get_order_number();
+
+			} elseif ( $res['error'] == 'already_shipped' ) {
+				$already_shipped[] = $order->get_order_number();
+
+			} elseif ( $res['error'] == 'already_included' ) {
+				$already_included[] = $order->get_order_number();
 			}
 		}
+		if ( count($booked) > 0 ) {
+			$bulk->save();
+
+			$queue = new MFB_Bulk_Order_Background_Process();
+
+			foreach( $bulk->wc_order_ids as $wc_order_id ) {
+				$queue->push_to_queue( $wc_order_id );
+			}
+
+			$bulk->update_status('mfb-processing');
+
+			$queue->save()->dispatch();
+		} else {
+			$errors[] = __('No bulk order was created!', 'my-flying-box');
+		}
+
 		if ( count($already_shipped) > 0) {
-			$notices[] = sprintf( __('The following orders have already been shipped with MyFlyingBox: %s', 'my-flying-box'), implode(', ', $already_shipped));
+			$errors[] = sprintf( __('The following orders have already been shipped with MyFlyingBox: %s', 'my-flying-box'), implode(', ', $already_shipped));
+		}
+		if ( count($already_included) > 0) {
+			$errors[] = sprintf( __('The following orders have already been included in the bulk order: %s', 'my-flying-box'), implode(', ', $already_included));
 		}
 		if ( count($booked) > 0) {
-			$notices[] = sprintf( __('Shipment has been booked for the following orders: %s', 'my-flying-box'), implode(', ', $booked));
+			$notices[] = sprintf( __('The following orders has been added to shipment booking queue: %s', 'my-flying-box'), implode(', ', $booked));
 		}
 
 		set_transient('mfb_bulk_notices', $notices, 180);
@@ -122,5 +143,14 @@ class My_Flying_Box_Multiple_Shipment  extends WC_Shipping_Method {
 		delete_transient('mfb_bulk_notices');
 	}
 
+
+	public static function output() {
+		global $current_section, $current_tab;
+
+		$bulk_orders = MFB_Bulk_Order::get_all();
+
+		include 'views/html-admin-bulk-orders-index.php';
+
+	}
 
 }

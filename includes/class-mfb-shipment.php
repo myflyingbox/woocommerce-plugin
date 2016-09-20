@@ -11,6 +11,10 @@ class MFB_Shipment {
 	public $date_booking = null;
 
 	public $wc_order_id = 0;
+	public $bulk_order_id = 0;
+
+	// Recording booking errors (used primarily by bulk order mechanism, with async booking)
+	public $last_booking_error = '';
 
 	// Currently selected quote and offer for this shipment
 	public $quote = null;
@@ -81,6 +85,10 @@ class MFB_Shipment {
 	public function populate() {
 		$this->api_order_uuid = get_post_meta( $this->id, '_api_uuid', true );
 		$this->date_booking = get_post_meta( $this->id, '_date_booking', true );
+
+		$this->bulk_order_id = get_post_meta( $this->id, '_bulk_order_id', true );
+
+		$this->last_booking_error = get_post_meta( $this->id, '_last_booking_error', true );
 
 		// Loading quote and offer
 		$this->quote = MFB_Quote::get( get_post_meta( $this->id, '_quote_id', true ) );
@@ -175,11 +183,17 @@ class MFB_Shipment {
 	}
 
 
-	public static function create_from_order( $order ) {
+	public static function create_from_order( $order, $bulk_order_id = null ) {
 
 		$shipment = new self();
 		$shipment->wc_order_id = $order->id;
-		$shipment->status = 'mfb-draft';
+		if ($bulk_order_id == null) {
+			$shipment->status = 'mfb-draft';
+		} else {
+			$shipment->status = 'mfb-processing';
+		}
+
+		$shipment->bulk_order_id = $bulk_order_id;
 
 		// Setting default shipper data
 		foreach( self::$address_fields as $fieldname ) {
@@ -244,6 +258,10 @@ class MFB_Shipment {
 					$parcel->description       = $product['name'];
 					$parcel->country_of_origin = get_option( 'mfb_default_origin_country' );
 					$parcel->value             = $product['price'];
+					$parcel->shipper_reference   = '';
+					$parcel->recipient_reference = '';
+					$parcel->customer_reference  = '';
+					$parcel->tracking_number     = '';
 					$parcels[] = $parcel;
 				}
 			}
@@ -258,6 +276,10 @@ class MFB_Shipment {
 			$parcel->description       = get_option( 'mfb_default_parcel_description' );
 			$parcel->country_of_origin = get_option( 'mfb_default_origin_country' );
 			$parcel->value             = $total_value;
+			$parcel->shipper_reference   = '';
+			$parcel->recipient_reference = '';
+			$parcel->customer_reference  = '';
+			$parcel->tracking_number     = '';
 			$parcels[] = $parcel;
 		}
 
@@ -286,7 +308,7 @@ class MFB_Shipment {
 				$shipping_methods = $order->get_shipping_methods();
 				$methods = array_pop($shipping_methods);
 				$chosen_method = $methods['item_meta']['method_id'][0];
-				if ( $this->quote->offers[$chosen_method] ) {
+				if ( array_key_exists($chosen_method, $this->quote->offers) ) {
 					$this->offer = $this->quote->offers[$chosen_method];
 				}
 			}
@@ -310,7 +332,10 @@ class MFB_Shipment {
 
 			$this->id = wp_insert_post( $shipment, true );
 			$this->post = get_post( $this->id );
-			$this->status = 'mfb-draft'; // New shipments should always be created as drafts.
+			if ($this->status == null) {
+				$this->status = 'mfb-draft'; // New shipments should always be created as drafts, unless part of bulk order
+			}
+
 		}
 		wp_update_post(array(
 			'ID' => $this->id,
@@ -345,6 +370,10 @@ class MFB_Shipment {
 		update_post_meta( $this->id, '_parcels_count', count($this->parcels) );
 		update_post_meta( $this->id, '_api_uuid', $this->api_order_uuid );
 
+		update_post_meta( $this->id, '_bulk_order_id', $this->bulk_order_id );
+
+		update_post_meta( $this->id, '_last_booking_error', $this->last_booking_error );
+
 		if ( $this->quote ) {
 			update_post_meta( $this->id, '_quote_id', $this->quote->id );
 		} else {
@@ -361,7 +390,7 @@ class MFB_Shipment {
 		update_post_meta( $this->id, '_delivery_location_code', $this->delivery_location_code );
 
 		// Saving the delivery location details, if applicable
-		if ( $this->offer->relay == true && !empty($this->delivery_location_code) ) {
+		if ( $this->offer && $this->offer->relay == true && !empty($this->delivery_location_code) ) {
 			$loc_params = array(
 				'street' => $this->recipient->street,
 				'city' => $this->recipient->city
@@ -381,6 +410,15 @@ class MFB_Shipment {
 		$this->populate();
 		return true;
 	}
+
+  public function update_status( $status ) {
+    $this->status = $status;
+    wp_update_post(array(
+      'ID' => $this->id,
+      'post_status' => $this->status
+    ));
+  }
+
 
 	public function formatted_address( $address_type ) {
 		// Formatted Addresses
@@ -422,7 +460,7 @@ class MFB_Shipment {
 	public function get_new_quote() {
 
 			// Not proceeding unless the shipment is in draft state
-			if ($this->status != 'mfb-draft') return false;
+			if ($this->status != 'mfb-draft' && $this->status != 'mfb-processing') return false;
 
 			$parcels = array();
 			foreach( $this->parcels as $parcel ) {
@@ -490,6 +528,8 @@ class MFB_Shipment {
 
 	public function place_booking() {
 
+		if ( !$this->offer ) return false;
+
 		$params = array(
 			'shipper' => array(
 				'company' => $this->shipper->company,
@@ -539,8 +579,7 @@ class MFB_Shipment {
 		foreach ( $api_order->parcels as $key => $parcel) {
 			$this->parcels[$key]->tracking_number = $parcel->reference;
 		}
-
-		$this->save();
+		return $this->save();
 	}
 
 	// Returns an array of links and codes, for tracking

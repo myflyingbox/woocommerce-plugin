@@ -28,9 +28,18 @@ Installing "My Flying Box" can only be done from source at the moment:
 5. php composer.phar install
 6. Open WordPress admin panel, and activate the module
 
+== Development ==
+
+Here are some useful commands for developing on this module.
+
+=== CSS
+
+Styles are managed with Less, and compiled with Grunt.
+First, install grunt: npm install -g grunt-cli
+Then, at the root of the plugin, run grunt: grunt
+
+
 == Changelog ==
 
-= 0.1 =
-* 2015-03-24
-* Initial beta release
+Please see release history on Github (https://github.com/myflyingbox/woocommerce-plugin/releases)
 

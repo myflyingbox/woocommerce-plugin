@@ -3,14 +3,14 @@ jQuery( function ( $ ) {
 	/**
 	 * My Flying Box meta boxes functions
 	 *
-	 * We can rely on woocommerce_admin_meta_boxes variable to extract
+	 * We can rely on mfb_js_resources variable to extract
 	 * some useful data.
 	 */
 	var mfb_meta_boxes_order = {
 		states: null,
 		init: function() {
 			$( '#myflyingbox-order-shipping' )
-				.on( 'click',  'button.add-shipment',	this.add_shipment )
+				.on( 'click',  'button.add-shipment',                                       	this.add_shipment )
 				.on( 'click',  'div.mfb-available-offers button.book-offer',									this.book_offer )
 				.on( 'click',  'div.display_recipient_address a.edit_recipient_address',			this.load_recipient_form )
 				.on( 'click',  'div.display_shipper_address a.edit_shipper_address',					this.load_shipper_form )
@@ -27,16 +27,21 @@ jQuery( function ( $ ) {
 				.on( 'change', 'div.mfb-available-offers select.offer-selector',							this.update_selected_offer )
 				.on( 'click',  'a.delete-shipment',		this.delete_shipment );
 
+
+      $( '#myflyingbox-bulk-shipments' )
+        .on( 'click',  'div.mfb-available-offers button.book-offer',                  this.book_offer )
+        .on( 'click',  'div.mfb-booked-offer button.download-labels',                 this.download_labels )
+        .on( 'change', 'div.mfb-available-offers select.offer-selector',              this.update_selected_offer );
     },
 
     add_shipment: function() {
 			var data = {
 				action:   'mfb_create_shipment',
-				order_id: woocommerce_admin_meta_boxes.post_id
+				order_id: mfb_js_resources.post_id
 			};
 
 			$.ajax({
-				url:  woocommerce_admin_meta_boxes.ajax_url,
+				url:  mfb_js_resources.ajax_url,
 				data: data,
 				type: 'POST',
 				success: function( response ) {
@@ -70,7 +75,7 @@ jQuery( function ( $ ) {
 			};
 
 			$.ajax({
-				url:  woocommerce_admin_meta_boxes.ajax_url,
+				url:  mfb_js_resources.ajax_url,
 				data: data,
 				type: 'POST',
 				dataType: 'json',
@@ -94,7 +99,7 @@ jQuery( function ( $ ) {
 			};
 
 			$.ajax({
-				url:  woocommerce_admin_meta_boxes.ajax_url,
+				url:  mfb_js_resources.ajax_url,
 				data: data,
 				type: 'POST',
 				dataType: 'json',
@@ -112,7 +117,7 @@ jQuery( function ( $ ) {
 			};
 
 			$.ajax({
-				url:  woocommerce_admin_meta_boxes.ajax_url,
+				url:  mfb_js_resources.ajax_url,
 				data: data,
 				type: 'POST',
 				success: function( response ) {
@@ -167,7 +172,7 @@ jQuery( function ( $ ) {
 			var action = 'mfb_update_recipient';
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
 			$.ajax({
-				url:  woocommerce_admin_meta_boxes.ajax_url,
+				url:  mfb_js_resources.ajax_url,
 				data: $( this ).closest('div.recipient_form_container').find('input, textarea, select').serialize()+'&action='+action+'&shipment_id='+shipment_id,
 				type: 'POST',
 				success: function( response ) {
@@ -181,7 +186,7 @@ jQuery( function ( $ ) {
 			var action = 'mfb_update_shipper';
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
 			$.ajax({
-				url:  woocommerce_admin_meta_boxes.ajax_url,
+				url:  mfb_js_resources.ajax_url,
 				data: $( this ).closest('div.shipper_form_container').find('input, textarea, select').serialize()+'&action='+action+'&shipment_id='+shipment_id,
 				type: 'POST',
 				success: function( response ) {
@@ -196,7 +201,7 @@ jQuery( function ( $ ) {
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
 			var parcel_index = $( this ).closest('div.parcel').data('parcel_index');
 			$.ajax({
-				url:  woocommerce_admin_meta_boxes.ajax_url,
+				url:  mfb_js_resources.ajax_url,
 				data: $( this ).closest('div.parcel-form').find('input, select').serialize()+'&action='+action+'&shipment_id='+shipment_id+"&parcel_index="+parcel_index,
 				type: 'POST',
 				success: function( response ) {
@@ -212,7 +217,7 @@ jQuery( function ( $ ) {
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
 			var parcel_index = $( this ).closest('div.parcel').data('parcel_index');
 			$.ajax({
-				url:  woocommerce_admin_meta_boxes.ajax_url,
+				url:  mfb_js_resources.ajax_url,
 				data: 'action='+action+'&shipment_id='+shipment_id+"&parcel_index="+parcel_index,
 				type: 'POST',
 				success: function( response ) {
@@ -224,7 +229,7 @@ jQuery( function ( $ ) {
 
     download_labels: function() {
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
-			window.open( plugin_url+'/my-flying-box/direct/download_labels.php?shipment_id='+shipment_id );
+			window.open( mfb_js_resources.labels_url+'&shipment_id='+shipment_id );
 			return false;
 		},
 
