@@ -511,7 +511,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		if (isset($_POST['shipping_method']))	{
 			foreach($_POST['shipping_method'] as $shipping_method) {
 				$carrier = MFB_Carrier::get_by_code( $shipping_method );
-				if ($carrier->shop_delivery) {
+				if ($carrier && $carrier->shop_delivery) {
 					if (!isset($_POST['_delivery_location'])) {
 						wc_add_notice(__('Please select a delivery location','my-flying-box'),'error');
 					}
@@ -531,7 +531,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 				$carrier = MFB_Carrier::get_by_code( $shipping_method );
 				update_post_meta( $order_id, '_mfb_carrier_code', $shipping_method );
 
-				if ($carrier->shop_delivery) {
+				if ($carrier && $carrier->shop_delivery) {
 					if (isset($_POST['_delivery_location'])) {
 						update_post_meta( $order_id, '_mfb_delivery_location', $_POST['_delivery_location'] );
 
