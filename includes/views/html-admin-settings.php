@@ -24,8 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php
 			do_action( 'woocommerce_sections_' . $current_tab );
 			do_action( 'woocommerce_settings_' . $current_tab );
-			do_action( 'woocommerce_settings_tabs_' . $current_tab ); // @deprecated hook
-		
+			// do_action( 'woocommerce_settings_tabs_' . $current_tab ); // @deprecated hook
 		?>
 		</div>
       <p class="submit">
