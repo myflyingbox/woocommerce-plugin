@@ -83,6 +83,26 @@ class MFB_Settings_Account extends MFB_Settings_Page {
 					'desc_tip' => true,
 					'required' => true
 				),
+        array(
+          'id'      => 'mfb_default_domestic_service',
+          'title'     => __( 'Default service for domestic shipments', 'my-flying-box' ),
+          'description' => __( 'Only used in back-office for orders with no MFB service selected by customer.', 'my-flying-box' ),
+          'type'      => 'select',
+          'options'   => array( '' => __( 'Select a service...', 'my-flying-box' ) ) + MFB_Carrier::get_all_for_select(),
+          'default'   => '',
+          'desc_tip' => false,
+          'required' => false
+        ),
+        array(
+          'id'      => 'mfb_default_international_service',
+          'title'     => __( 'Default service for international shipments', 'my-flying-box' ),
+          'description' => __( 'Only used in back-office for orders with no MFB service selected by customer.', 'my-flying-box' ),
+          'type'      => 'select',
+          'options'   => array( '' => __( 'Select a service...', 'my-flying-box' ) ) + MFB_Carrier::get_all_for_select(),
+          'default'   => '',
+          'desc_tip' => false,
+          'required' => false
+        ),
 			array(
 				'id'            => 'mfb_thermal_printing',
 				'title'         => __( 'Thermal printing', 'my-flying-box' ),

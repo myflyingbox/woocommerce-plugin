@@ -1,10 +1,10 @@
 <?php
 /**
  * MFB_Carrier
- * 
+ *
  * MyFlyingBox carrier object. Serves both to handle MFB services, as imported from API,
  * and the corresponding shipping method when the service is active.
- * 
+ *
  */
 
 class MFB_Carrier extends WC_Shipping_Method {
@@ -61,7 +61,7 @@ class MFB_Carrier extends WC_Shipping_Method {
 	public $pickup_supported = false;
 
 	public $dropoff_supported = false;
-	
+
 	public $tracking_url = null;
 
 
@@ -145,14 +145,14 @@ class MFB_Carrier extends WC_Shipping_Method {
 		$this->shop_delivery      = get_post_meta( $this->id, '_shop_delivery', true);
 		$this->pickup_supported   = get_post_meta( $this->id, '_pickup_supported', true);
 		$this->dropoff_supported  = get_post_meta( $this->id, '_dropoff_supported', true);
-		
+
 		$method_options           = get_option('woocommerce_'.$this->code.'_settings');
 		$this->tracking_url       = ( isset($method_options['tracking_url']) && !empty( $method_options['tracking_url'] )) ? $method_options['tracking_url'] : null;
 	}
 
 
 	public static function get( $carrier ) {
-		
+
 		// Typical case: get a new carrier by ID
 		if ( is_numeric( $carrier ) ) {
 			$instance = new self();
@@ -174,7 +174,7 @@ class MFB_Carrier extends WC_Shipping_Method {
 			$instance->populate();
 		}
 		return $instance;
-	}  
+	}
 
 
 	public static function get_all() {
@@ -191,7 +191,16 @@ class MFB_Carrier extends WC_Shipping_Method {
 			$carriers[] = self::get($carrier->ID);
 		}
 		return $carriers;
-	}  
+	}
+
+  public static function get_all_for_select() {
+    $options = array();
+    $carriers = self::get_all();
+    foreach ($carriers as $carrier) {
+      $options[$carrier->code] = $carrier->name;
+    }
+    return $options;
+  }
 
 
 	public static function get_all_active() {
@@ -208,7 +217,7 @@ class MFB_Carrier extends WC_Shipping_Method {
 			$carriers[] = self::get($carrier->ID);
 		}
 		return $carriers;
-	}  
+	}
 
 
 	/**
@@ -225,13 +234,13 @@ class MFB_Carrier extends WC_Shipping_Method {
 
 				if ( ! $carrier ) {
 					self::create_carrier($product);
-					
+
 				} else {
 					// Applying systematic updates of important process attributes
 					update_post_meta( $carrier->id, '_shop_delivery',      ($product->preset_delivery_location == 1 ? true : false) );
 					update_post_meta( $carrier->id, '_pickup_supported',   ($product->pick_up == 1 ? true : false) );
 					update_post_meta( $carrier->id, '_dropoff_supported',  ($product->drop_off == 1 ? true : false) );
-					
+
 				}
 			}
 		}
@@ -274,7 +283,7 @@ class MFB_Carrier extends WC_Shipping_Method {
 				update_post_meta( $carrier_id, '_shop_delivery',      $api_service->preset_delivery_location );
 				update_post_meta( $carrier_id, '_pickup_supported',   $api_service->pick_up );
 				update_post_meta( $carrier_id, '_dropoff_supported',  $api_service->drop_off );
-				
+
 				return self::get( $carrier_id );
 			}
 		} else {
@@ -293,10 +302,10 @@ class MFB_Carrier extends WC_Shipping_Method {
 			'meta_key' => '_code',
 			'meta_value' => $carrier_code
 		);
-		
+
 		// The Query
 		$query = get_posts( $args );
-		
+
 		if ( count($query) > 0 ) {
 			return self::get($query[0]->ID);
 		} else {
@@ -311,7 +320,7 @@ class MFB_Carrier extends WC_Shipping_Method {
 		$post_status  = $this->active ? 'mfb-active' : 'mfb-inactive';
 		$post_title   = $this->name;
 		$post_content = $this->description;
-		
+
 		wp_update_post( array(
 			'ID'            => $post_id,
 			'post_status'   => $post_status,

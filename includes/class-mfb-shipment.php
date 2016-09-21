@@ -308,13 +308,36 @@ class MFB_Shipment {
 				$shipping_methods = $order->get_shipping_methods();
 				$methods = array_pop($shipping_methods);
 				$chosen_method = $methods['item_meta']['method_id'][0];
+
+        // Testing if the chosen method is listed on the API offers
 				if ( array_key_exists($chosen_method, $this->quote->offers) ) {
 					$this->offer = $this->quote->offers[$chosen_method];
-				}
+				} else {
+          // Maybe the offer selected by the customer was not a MFB service.
+          // In this case, we try to select a default service, if applicable.
+          if ( $this->domestic() ) {
+            $default_service = My_Flying_Box_Settings::get_option('mfb_default_domestic_service');
+          } else {
+            $default_service = My_Flying_Box_Settings::get_option('mfb_default_international_service');
+          }
+          if ( array_key_exists($default_service, $this->quote->offers)  ) {
+            $this->offer = $this->quote->offers[$default_service];
+          }
+        }
 			}
 			$this->save();
 		}
 	}
+
+  public function domestic() {
+    if ( $this->shipper &&
+         $this->recipient &&
+         $this->shipper->country_code == $this->recipient->country_code ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
 	public function save() {
 		// ID equal to zero, this is a new record
@@ -557,6 +580,10 @@ class MFB_Shipment {
 		$params['thermal_labels'] = $thermal_printing == 'yes' ? true : false;
 
 		if( $this->offer->pickup == true ) {
+      // Forcing first collection available if no date has been previously selected (case of bulk order)
+      if ( $this->collection_date == null || strlen($this->collection_date) == 0 ) {
+        $this->collection_date = $this->offer->collection_dates[0]->date;
+      }
 			$params['shipper']['collection_date'] = $this->collection_date;
 		}
 
