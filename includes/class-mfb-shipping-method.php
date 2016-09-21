@@ -19,6 +19,8 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	public $flat_rates = array();
 
 	public function __construct( $instance_id = 0 ) {
+
+
 		$this->id = get_called_class();
 		$this->instance_id       = absint( $instance_id );
 		$this->supports              = array(
@@ -26,6 +28,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			'instance-settings',
 			'instance-settings-modal'
 		);
+
 		$this->init();
 	}
 
@@ -51,7 +54,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		$this->load_destination_restrictions();
 
 		// Actions
-		add_filter( 'woocommerce_calculated_shipping',  array( $this, 'calculate_shipping'));
+		// add_filter( 'woocommerce_calculated_shipping',  array( $this, 'calculate_shipping'));
 		add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
 
 		do_action ( 'mfb_shipping_method_initialized', $this->id );
@@ -253,7 +256,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	 */
 	public function calculate_shipping( $package = array() ) {
 
-		// If this shipping is not enabled, no need to proceed any further
+		// If this shipping method is not enabled, no need to proceed any further
 		if ( ! $this->enabled ) return false;
 
 		$recipient_city = (isset($package['destination']['city']) && !empty($package['destination']['city']) ? $package['destination']['city']     : '');
@@ -316,9 +319,10 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			if ( $this->get_option('reduce_api_calls') == 'yes' && $this->get_option('flatrate_pricing') == 'yes' ) {
 
 				$price = $this->get_flatrate_price( $weight, $recipient_country );
+
 				$rate = array(
-					'id' 		=> $this->id,
-					'label' 	=> $this->title,
+					'id'      => $this->get_rate_id(),
+					'label' 	=> $this->get_title,
 					'cost' => apply_filters( 'mfb_shipping_rate_price', $price )
 				);
 				$this->add_rate( $rate );
@@ -416,8 +420,8 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 			$price = apply_filters( 'mfb_shipping_rate_price', $price, $this->id );
 			$rate = array(
-				'id' 		=> $this->id,
-				'label' 	=> $this->title,
+				'id' 		=> $this->get_rate_id(),
+				'label' 	=> $this->get_title(),
 				'cost' => $price,
 				'taxes' => apply_filters( 'mfb_shipping_rate_taxes', '', $this->id, $price ),
 			);
