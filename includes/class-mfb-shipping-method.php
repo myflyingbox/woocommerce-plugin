@@ -322,7 +322,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 				$rate = array(
 					'id'      => $this->get_rate_id(),
-					'label' 	=> $this->get_title,
+					'label' 	=> $this->get_title(),
 					'cost' => apply_filters( 'mfb_shipping_rate_price', $price )
 				);
 				$this->add_rate( $rate );
