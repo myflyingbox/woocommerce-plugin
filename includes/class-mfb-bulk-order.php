@@ -103,6 +103,9 @@ class MFB_Bulk_Order {
     // If we have the same count of shipments (booked or draft, so not processing) as
     // we have associated orders, we're good.
     if ($query->post_count == count($this->wc_order_ids)) {
+      $notices = array();
+      $notices[] = sprintf( __('Bulk shipment #%s has been processed.', 'my-flying-box'), $this->id);
+      set_transient('mfb_bulk_notices', $notices, 300);
       return $this->update_status('mfb-processed');
     } else {
       return true;
