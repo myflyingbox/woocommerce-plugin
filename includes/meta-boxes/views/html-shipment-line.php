@@ -119,7 +119,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<select name="_mfb_selected_offer" class="offer-selector" style="width: 250px; font-size: 0.9em;">
 				<?php foreach ($offers as $offer) {
 					echo "<option data-offer_id='".$offer->id."' value='".$offer->product_code."'";
-					if ( $shipment->offer && $shipment->offer->product_code == $offer->product_code ) echo " selected";
+					if ( $shipment->offer && $shipment->offer->product_code == $offer->product_code ) echo " selected='selected'";
 					echo ">".$offer->product_name." - ".$offer->formatted_price()."</option>";
 				}
 				?>
@@ -161,8 +161,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				foreach ( $locations as $location ) {
 					echo "<option value='".$location->code."'";
-					$preferred_location = get_post_meta( $theorder->id, '_mfb_delivery_location');
-					if ( $location->code == $preferred_location[0] ) {
+					$preferred_location = get_post_meta( $theorder->id, '_mfb_delivery_location', true);
+					if ( $location->code == $preferred_location ) {
 						echo " selected";
 					}
 					echo ">";

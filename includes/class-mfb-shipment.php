@@ -307,7 +307,7 @@ class MFB_Shipment {
 			if ( count($order->get_shipping_methods()) == 1 ) {
 				$shipping_methods = $order->get_shipping_methods();
 				$methods = array_pop($shipping_methods);
-				$chosen_method = $methods['item_meta']['method_id'][0];
+				$chosen_method = explode(':', $methods['item_meta']['method_id'][0])[0];
 
         // Testing if the chosen method is listed on the API offers
 				if ( array_key_exists($chosen_method, $this->quote->offers) ) {

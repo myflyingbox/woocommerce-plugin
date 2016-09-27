@@ -96,11 +96,11 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 		$this->includes();
 
-    // Custom post types
-    add_action( 'init', array( $this, 'register_custom_post_types' ), 10, 0 );
+		// Custom post types
+		add_action( 'init', array( $this, 'register_custom_post_types' ), 10, 0 );
 
-    // Includes with dependencies are loaded after all plugins have been loaded already
-    add_action( 'woocommerce_loaded', array( $this, 'includes_with_dependencies' ), 10, 0 );
+		// Includes with dependencies are loaded after all plugins have been loaded already
+		add_action( 'woocommerce_loaded', array( $this, 'includes_with_dependencies' ), 10, 0 );
 
 		$this->register_custom_post_statuses();
 
@@ -126,13 +126,13 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 
 		// Adds MyFlyingBox meta box on order page
-    add_action( 'add_meta_boxes_shop_order', array( &$this, 'load_admin_order_metabox' ) );
+		add_action( 'add_meta_boxes_shop_order', array( &$this, 'load_admin_order_metabox' ) );
 		add_action( 'add_meta_boxes_mfb_bulk_order', array( &$this, 'load_admin_bulk_order_metabox' ) );
 
-    add_filter( 'bulk_actions-edit-mfb_bulk_order', array( $this, 'bulk_order_bulk_actions' ) );
-    add_filter( 'post_row_actions', array( $this, 'bulk_order_row_actions' ), 10, 2 );
+		add_filter( 'bulk_actions-edit-mfb_bulk_order', array( $this, 'bulk_order_bulk_actions' ) );
+		add_filter( 'post_row_actions', array( $this, 'bulk_order_row_actions' ), 10, 2 );
 
-    add_filter( 'pre_get_posts', array( $this, 'bulk_order_admin_filters' ), 10, 1 );
+		add_filter( 'pre_get_posts', array( $this, 'bulk_order_admin_filters' ), 10, 1 );
 
 
 		// Inject tracking link to order confirmation notification
@@ -147,10 +147,10 @@ class My_Flying_Box  extends WC_Shipping_Method {
 			new My_Flying_Box_Multiple_Shipment();
 		}
 
-    // Load Background Process class, to make the hook available when cron is run
-    if ( is_admin() ) {
-      $queue = new MFB_Bulk_Order_Background_Process();
-    }
+		// Load Background Process class, to make the hook available when cron is run
+		if ( is_admin() ) {
+			$queue = new MFB_Bulk_Order_Background_Process();
+		}
 
 		$api_env = My_Flying_Box_Settings::get_option('mfb_api_env');
 		$api_login = My_Flying_Box_Settings::get_option('mfb_api_login');
@@ -164,7 +164,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		// Handle localisation
 		$this->load_plugin_textdomain();
 
-    add_action( 'init', array( $this, 'load_localisation' ), 0 );
+		add_action( 'init', array( $this, 'load_localisation' ), 0 );
 
 
 		// Add shipping methods
@@ -246,17 +246,17 @@ class My_Flying_Box  extends WC_Shipping_Method {
 	 * @return  void
 	 */
 	public function admin_enqueue_scripts ( $hook = '' ) {
-    global $wp_query, $post;
+		global $wp_query, $post;
 
 		wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
 		wp_localize_script( $this->_token . '-admin', 'plugin_url', plugins_url());
 
-    $params = array(
-      'post_id'                             => isset( $post->ID ) ? $post->ID : '',
-      'ajax_url'                            => admin_url( 'admin-ajax.php' ),
-      'labels_url'                          => admin_url( 'admin-post.php?action=mfb_download_labels' )
-    );
-    wp_localize_script( $this->_token . '-admin', 'mfb_js_resources', $params );
+		$params = array(
+			'post_id'                             => isset( $post->ID ) ? $post->ID : '',
+			'ajax_url'                            => admin_url( 'admin-ajax.php' ),
+			'labels_url'                          => admin_url( 'admin-post.php?action=mfb_download_labels' )
+		);
+		wp_localize_script( $this->_token . '-admin', 'mfb_js_resources', $params );
 		wp_enqueue_script( $this->_token . '-admin' );
 	} // End admin_enqueue_scripts ()
 
@@ -287,38 +287,38 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 
 	public function register_custom_post_types() {
-    $this->register_post_type( 'mfb_shipment', __( 'Shipments', 'my-flying-box' ), __( 'Shipment', 'my-flying-box' ), '', true );
+		$this->register_post_type( 'mfb_shipment', __( 'Shipments', 'my-flying-box' ), __( 'Shipment', 'my-flying-box' ), '', true );
 		$this->register_post_type( 'mfb_carrier', __( 'Carriers', 'my-flying-box' ), __( 'Carrier', 'my-flying-box' ), '', false );
 		$this->register_post_type( 'mfb_dimension', __( 'Dimensions', 'my-flying-box' ), __( 'Carrier', 'my-flying-box', '', false ) );
 
 
-    $labels = array(
-        'name'                  => __( 'Bulk Orders', 'my-flying-box' ),
-        'singular_name'         => __( 'Bulk Order', 'my-flying-box' ),
-        'menu_name'             => __( 'Bulk Orders', 'my-flying-box' )
-    );
+		$labels = array(
+				'name'                  => __( 'Bulk Orders', 'my-flying-box' ),
+				'singular_name'         => __( 'Bulk Order', 'my-flying-box' ),
+				'menu_name'             => __( 'Bulk Orders', 'my-flying-box' )
+		);
 
-    $args = array(
-            'label'              => __( 'Bulk Orders', 'my-flying-box' ),
-            'labels'             => $labels,
-            'public'             => true,
-            'exclude_from_search' => true,
-            'publicly_queryable' => false,
-            'show_ui'            => true,
-            'show_in_menu'       => 'my-flying-box',
-            'query_var'          => true,
-            'capability_type'    => 'post',
-            'capabilities'       => array('create_posts' => false, 'edit' => true),
-            'map_meta_cap'       => true,
-            'supports'           => array('title' => false),
-        );
+		$args = array(
+						'label'              => __( 'Bulk Orders', 'my-flying-box' ),
+						'labels'             => $labels,
+						'public'             => true,
+						'exclude_from_search' => true,
+						'publicly_queryable' => false,
+						'show_ui'            => true,
+						'show_in_menu'       => 'my-flying-box',
+						'query_var'          => true,
+						'capability_type'    => 'post',
+						'capabilities'       => array('create_posts' => false, 'edit' => true),
+						'map_meta_cap'       => true,
+						'supports'           => array('title' => false),
+				);
 
-    register_post_type( 'mfb_bulk_order', $args );
+		register_post_type( 'mfb_bulk_order', $args );
 
 
-    // Now we register filters to manage columns on index views
-    add_filter( 'manage_mfb_bulk_order_posts_columns', array( $this, 'bulk_order_columns' ) );
-    add_action( 'manage_mfb_bulk_order_posts_custom_column', array( $this, 'render_bulk_order_columns' ), 2 );
+		// Now we register filters to manage columns on index views
+		add_filter( 'manage_mfb_bulk_order_posts_columns', array( $this, 'bulk_order_columns' ) );
+		add_action( 'manage_mfb_bulk_order_posts_custom_column', array( $this, 'render_bulk_order_columns' ), 2 );
 
 	}
 
@@ -359,23 +359,23 @@ class My_Flying_Box  extends WC_Shipping_Method {
 			'label_count'               => _n_noop( 'Booked <span class="count">(%s)</span>', 'Booked <span class="count">(%s)</span>' ),
 		) );
 
-    register_post_status( 'mfb-processing', array(
-      'label'                     => _x( 'Processing', 'my-flying-box' ),
-      'public'                    => false,
-      'exclude_from_search'       => true,
-      'show_in_admin_all_list'    => true,
-      'show_in_admin_status_list' => true,
-      'label_count'               => _n_noop( 'Processing <span class="count">(%s)</span>', 'Processing <span class="count">(%s)</span>' ),
-    ) );
+		register_post_status( 'mfb-processing', array(
+			'label'                     => _x( 'Processing', 'my-flying-box' ),
+			'public'                    => false,
+			'exclude_from_search'       => true,
+			'show_in_admin_all_list'    => true,
+			'show_in_admin_status_list' => true,
+			'label_count'               => _n_noop( 'Processing <span class="count">(%s)</span>', 'Processing <span class="count">(%s)</span>' ),
+		) );
 
-    register_post_status( 'mfb-processed', array(
-      'label'                     => _x( 'Processed', 'my-flying-box' ),
-      'public'                    => false,
-      'exclude_from_search'       => true,
-      'show_in_admin_all_list'    => true,
-      'show_in_admin_status_list' => true,
-      'label_count'               => _n_noop( 'Processed <span class="count">(%s)</span>', 'Processed <span class="count">(%s)</span>' ),
-    ) );
+		register_post_status( 'mfb-processed', array(
+			'label'                     => _x( 'Processed', 'my-flying-box' ),
+			'public'                    => false,
+			'exclude_from_search'       => true,
+			'show_in_admin_all_list'    => true,
+			'show_in_admin_status_list' => true,
+			'label_count'               => _n_noop( 'Processed <span class="count">(%s)</span>', 'Processed <span class="count">(%s)</span>' ),
+		) );
 
 	}
 
@@ -445,10 +445,10 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		include_once( 'class-mfb-quote.php' );
 		include_once( 'class-mfb-offer.php' );
 		include_once( 'class-mfb-dimension.php' );
-    include_once( 'class-mfb-shipment.php' );
-    include_once( 'class-mfb-bulk-order.php' );
+		include_once( 'class-mfb-shipment.php' );
+		include_once( 'class-mfb-bulk-order.php' );
 		if ( is_admin() ) {
-      include_once( 'class-mfb-admin-menus.php' );
+			include_once( 'class-mfb-admin-menus.php' );
 			include_once( 'class-mfb-download-labels.php' );
 		}
 
@@ -457,12 +457,12 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		}
 	}
 
-  public function includes_with_dependencies() {
-    // Checking if dependency is met
-    if ( class_exists( 'WP_Background_Process' ) ) {
-      include_once( 'class-mfb-bulk-order-background-process.php' );
-    }
-  }
+	public function includes_with_dependencies() {
+		// Checking if dependency is met
+		if ( class_exists( 'WP_Background_Process' ) ) {
+			include_once( 'class-mfb-bulk-order-background-process.php' );
+		}
+	}
 
 	/**
 	 * Include required ajax files.
@@ -510,7 +510,8 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		// Check if the parcel point is needed and if it has been chosen
 		if (isset($_POST['shipping_method']))	{
 			foreach($_POST['shipping_method'] as $shipping_method) {
-				$carrier = MFB_Carrier::get_by_code( $shipping_method );
+				$carrier_code = explode(':',$shipping_method)[0];
+				$carrier = MFB_Carrier::get_by_code( $carrier_code );
 				if ($carrier && $carrier->shop_delivery) {
 					if (!isset($_POST['_delivery_location'])) {
 						wc_add_notice(__('Please select a delivery location','my-flying-box'),'error');
@@ -528,8 +529,9 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 		if (isset($_POST['shipping_method']))	{
 			foreach($_POST['shipping_method'] as $shipping_method) {
-				$carrier = MFB_Carrier::get_by_code( $shipping_method );
-				update_post_meta( $order_id, '_mfb_carrier_code', $shipping_method );
+				$carrier_code = explode(':',$shipping_method)[0];
+				$carrier = MFB_Carrier::get_by_code( $carrier_code );
+				update_post_meta( $order_id, '_mfb_carrier_code', $carrier_code );
 
 				if ($carrier && $carrier->shop_delivery) {
 					if (isset($_POST['_delivery_location'])) {
@@ -549,7 +551,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 							'city' => $quote->params['recipient']['city']
 						);
 
-						$locations = $quote->offers[$shipping_method]->get_delivery_locations($params);
+						$locations = $quote->offers[$carrier_code]->get_delivery_locations($params);
 						foreach( $locations as $loc ) {
 							if ( $loc->code == $_POST['_delivery_location'] ) {
 								update_post_meta( $order_id, '_mfb_delivery_location_name', $loc->company );
@@ -572,7 +574,8 @@ class My_Flying_Box  extends WC_Shipping_Method {
 	 */
 	public function add_delivery_location_selector_to_shipping_method_label($full_label, $shipping_rate){
 
-		$method_code = $shipping_rate->id;
+		$method_code = $shipping_rate->method_id;
+		$service_id = $shipping_rate->id;
 		$carrier = MFB_Carrier::get_by_code( $method_code );
 
 		// If this is not a MFB service, we do not do anything.
@@ -591,7 +594,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 		// Add a selector of available delivery locations, pulled from the API
 		if ( ( (stristr(WC()->cart->get_checkout_url(), $_SERVER['REQUEST_URI']) ||  (stristr(WC()->cart->get_checkout_url(), $_SERVER['HTTP_REFERER'] ) ) ) )
-					&& in_array($method->id , WC()->session->get('chosen_shipping_methods') ) ) {
+					&& in_array($service_id , WC()->session->get('chosen_shipping_methods') ) ) {
 
 			if ($carrier->shop_delivery) {
 
@@ -667,8 +670,10 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		if(count($libraries))
 			$library = 'libraries='.implode(',', $libraries).'&';
 
+		$google_api_key = My_Flying_Box_Settings::get_option('mfb_google_api_key');
+
 		// Finally, enqueuing the script again.
-		wp_enqueue_script( 'google-api-grouped', '//maps.googleapis.com/maps/api/js?'.$library.'sensor=false', array(), '', true);
+		wp_enqueue_script( 'google-api-grouped', '//maps.googleapis.com/maps/api/js?'.$library.'sensor=false&key='.$google_api_key, array(), '', true);
 
 
 		wp_enqueue_script( 'mfb_delivery_locations','/wp-content/plugins/my-flying-box/assets/js/delivery_locations.js',array( 'jquery', 'google-api-grouped' ) );
@@ -706,9 +711,9 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		}
 	}
 
-  public function load_admin_bulk_order_metabox() {
-      add_meta_box( 'myflyingbox-bulk-order-edit', __( 'List of shipments', 'my-flying-box' ), 'MFB_Meta_Box_Bulk_Order::output', 'mfb_bulk_order', 'normal', 'high' );
-  }
+	public function load_admin_bulk_order_metabox() {
+			add_meta_box( 'myflyingbox-bulk-order-edit', __( 'List of shipments', 'my-flying-box' ), 'MFB_Meta_Box_Bulk_Order::output', 'mfb_bulk_order', 'normal', 'high' );
+	}
 
 	/**
 	 * What type of request is this?
@@ -789,115 +794,115 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		}
 	}
 
-  public function bulk_order_columns( $existing_columns ) {
-    $columns                     = array();
-    $columns['cb']               = $existing_columns['cb'];
-    $columns['bulk_order_title']  =  __( 'Reference', 'my-flying-box' );
-    $columns['bulk_order_date']  =  __( 'Date', 'my-flying-box' );
-    $columns['bulk_order_status']  =  __( 'Status', 'my-flying-box' );
-    $columns['orders']  =  __( 'Orders', 'my-flying-box' );
-    $columns['bulk_order_actions']  =  __( 'Actions', 'my-flying-box' );
+	public function bulk_order_columns( $existing_columns ) {
+		$columns                     = array();
+		$columns['cb']               = $existing_columns['cb'];
+		$columns['bulk_order_title']  =  __( 'Reference', 'my-flying-box' );
+		$columns['bulk_order_date']  =  __( 'Date', 'my-flying-box' );
+		$columns['bulk_order_status']  =  __( 'Status', 'my-flying-box' );
+		$columns['orders']  =  __( 'Orders', 'my-flying-box' );
+		$columns['bulk_order_actions']  =  __( 'Actions', 'my-flying-box' );
 
-    return $columns;
-  }
+		return $columns;
+	}
 
-  public function render_bulk_order_columns( $column ) {
-    global $post, $the_bulk_order;
+	public function render_bulk_order_columns( $column ) {
+		global $post, $the_bulk_order;
 
-    if ( empty( $the_bulk_order ) || $the_bulk_order->id != $post->ID ) {
-      $the_bulk_order = MFB_Bulk_Order::get( $post->ID );
-    }
+		if ( empty( $the_bulk_order ) || $the_bulk_order->id != $post->ID ) {
+			$the_bulk_order = MFB_Bulk_Order::get( $post->ID );
+		}
 
-    switch ( $column ) {
+		switch ( $column ) {
 
-      case 'bulk_order_title' :
-        echo '<a href="' . admin_url( 'post.php?post=' . absint( $the_bulk_order->id ) . '&action=edit' ) . '" class="row-title">';
-        echo $the_bulk_order->id;
-        echo '</a>';
-      break;
+			case 'bulk_order_title' :
+				echo '<a href="' . admin_url( 'post.php?post=' . absint( $the_bulk_order->id ) . '&action=edit' ) . '" class="row-title">';
+				echo $the_bulk_order->id;
+				echo '</a>';
+			break;
 
-      case 'bulk_order_status' :
-        echo $the_bulk_order->status;
+			case 'bulk_order_status' :
+				echo $the_bulk_order->status;
 
-      break;
-
-
-      case 'bulk_order_date' :
-
-        $t_time = get_the_time( __( 'Y/m/d g:i:s A', 'my-flying-box' ), $post );
-        $h_time = get_the_time( __( 'Y/m/d', 'my-flying-box' ), $post );
-
-        echo '<abbr title="' . esc_attr( $t_time ) . '">' . esc_html( apply_filters( 'post_date_column_time', $h_time, $post ) ) . '</abbr>';
-
-      break;
-
-      case 'orders' :
-        $res = implode(', ', $the_bulk_order->wc_order_ids);
-        echo $res;
-      break;
-
-      case 'bulk_order_actions' :
-
-        ?><p>
-          <?php
-
-            $actions = array();
-
-            if ( $the_bulk_order->status == 'draft' ) {
-              $actions['delete'] = array(
-                'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=wp_ajax_mfb_delete_bulk_order&bulk_order_id=' . $post->ID ), 'my-flying-box-delete-bulk-order' ),
-                'name'      => __( 'Delete', 'my-flying-box' ),
-                'action'    => "delete"
-              );
-            }
-
-            $actions['view'] = array(
-              'url'       => admin_url( 'post.php?post=' . $post->ID . '&action=edit' ),
-              'name'      => __( 'View', 'my-flying-box' ),
-              'action'    => "view"
-            );
-
-            foreach ( $actions as $action ) {
-              printf( '<a class="button tips %s" href="%s" data-tip="%s">%s</a>', esc_attr( $action['action'] ), esc_url( $action['url'] ), esc_attr( $action['name'] ), esc_attr( $action['name'] ) );
-            }
-
-          ?>
-        </p><?php
-
-      break;
-    }
-  }
-
-  public function bulk_order_row_actions( $actions, $post ) {
-    global $pagenow;
-
-    if ($pagenow == 'edit.php' && $post->post_type == 'mfb_bulk_order') {
-      return array();
-    } else {
-      return $actions;
-    }
-  }
-
-  public function bulk_order_admin_filters( $query ) {
-    global $post_type, $pagenow;
-
-    if ($pagenow == 'edit.php' && $post_type == 'mfb_bulk_order') {
-      if( !isset($_GET['post_status']) || $_GET['post_status'] == 'all' ) {
-        $query->query_vars['post_status'] = array('mfb-processing','draft','mfb-draft','mfb-processed');
-      }
-    }
-    return $query;
-  }
+			break;
 
 
-  public function bulk_order_bulk_actions( $actions ) {
+			case 'bulk_order_date' :
 
-    // if ( isset( $actions['edit'] ) ) {
-    //   unset( $actions['edit'] );
-    // }
+				$t_time = get_the_time( __( 'Y/m/d g:i:s A', 'my-flying-box' ), $post );
+				$h_time = get_the_time( __( 'Y/m/d', 'my-flying-box' ), $post );
 
-    // return $actions;
-    return array();
-  }
+				echo '<abbr title="' . esc_attr( $t_time ) . '">' . esc_html( apply_filters( 'post_date_column_time', $h_time, $post ) ) . '</abbr>';
+
+			break;
+
+			case 'orders' :
+				$res = implode(', ', $the_bulk_order->wc_order_ids);
+				echo $res;
+			break;
+
+			case 'bulk_order_actions' :
+
+				?><p>
+					<?php
+
+						$actions = array();
+
+						if ( $the_bulk_order->status == 'draft' ) {
+							$actions['delete'] = array(
+								'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=wp_ajax_mfb_delete_bulk_order&bulk_order_id=' . $post->ID ), 'my-flying-box-delete-bulk-order' ),
+								'name'      => __( 'Delete', 'my-flying-box' ),
+								'action'    => "delete"
+							);
+						}
+
+						$actions['view'] = array(
+							'url'       => admin_url( 'post.php?post=' . $post->ID . '&action=edit' ),
+							'name'      => __( 'View', 'my-flying-box' ),
+							'action'    => "view"
+						);
+
+						foreach ( $actions as $action ) {
+							printf( '<a class="button tips %s" href="%s" data-tip="%s">%s</a>', esc_attr( $action['action'] ), esc_url( $action['url'] ), esc_attr( $action['name'] ), esc_attr( $action['name'] ) );
+						}
+
+					?>
+				</p><?php
+
+			break;
+		}
+	}
+
+	public function bulk_order_row_actions( $actions, $post ) {
+		global $pagenow;
+
+		if ($pagenow == 'edit.php' && $post->post_type == 'mfb_bulk_order') {
+			return array();
+		} else {
+			return $actions;
+		}
+	}
+
+	public function bulk_order_admin_filters( $query ) {
+		global $post_type, $pagenow;
+
+		if ($pagenow == 'edit.php' && $post_type == 'mfb_bulk_order') {
+			if( !isset($_GET['post_status']) || $_GET['post_status'] == 'all' ) {
+				$query->query_vars['post_status'] = array('mfb-processing','draft','mfb-draft','mfb-processed');
+			}
+		}
+		return $query;
+	}
+
+
+	public function bulk_order_bulk_actions( $actions ) {
+
+		// if ( isset( $actions['edit'] ) ) {
+		//   unset( $actions['edit'] );
+		// }
+
+		// return $actions;
+		return array();
+	}
 
 }
