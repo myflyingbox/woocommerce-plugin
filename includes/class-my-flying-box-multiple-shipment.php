@@ -1,7 +1,6 @@
-﻿<?php
+<?php
 
-use \Lce\Lce;
-use \Lce\Resource\Order;
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 class My_Flying_Box_Multiple_Shipment  extends WC_Shipping_Method {
 
@@ -111,7 +110,7 @@ class My_Flying_Box_Multiple_Shipment  extends WC_Shipping_Method {
 		}
 
 		if ( !empty( $uuid_list ) ){
-			$labels = Order::multiple_labels($uuid_list);
+			$labels = Lce\Resource\Order::multiple_labels($uuid_list);
 			$filename = 'MFB-labels.pdf';
 
 			header('Content-type: application/pdf');
