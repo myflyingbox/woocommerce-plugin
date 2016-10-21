@@ -18,6 +18,10 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 	public $flat_rates = array();
 
+	// When set to true, ignore product dimensions to determine packlist, using only
+	// the weight/dimensions table configured in module settings.
+	public $force_dimensions_table = false;
+
 	public function __construct( $instance_id = 0 ) {
 
 
@@ -47,6 +51,8 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		$this->enabled		        = $this->get_option( 'enabled' ) == 'yes' ? true : false;
 		$this->title		          = $this->get_option( 'title' );
 		$this->description        = apply_filters( 'mfb_shipping_method_description', $this->get_option( 'description' ) );
+
+		$this->force_dimensions_table = $this->get_option( 'force_dimensions_table' );
 
 		$this->method_title       = $this->id;
 		$this->method_description = $this->description;
@@ -246,6 +252,12 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				'label'   => __( 'Check to limit the number of API calls, improving performance of checkout process. WARNING: use only in conjunction with flatrate pricing (internal or from other extension) and an external method to determine whether this service should be available or not. As no request will be sent to the API, the module cannot determine whether the service is available or not for the destination, so you must use another mechanism for this!', 'my-flying-box' ),
 				'default' => 'no'
 			),
+			'force_dimensions_table' => array(
+				'title'   => __( 'Force dimensions table', 'my-flying-box' ),
+				'type'    => 'checkbox',
+				'label'   => __( 'Check to force the use of the weight/dimensions table (defined in module settings) to determine the packlist, instead of using product dimensions even when available.', 'my-flying-box' ),
+				'default' => 'no'
+			),
 		);
 		$this->instance_form_fields = apply_filters( 'mfb_shipping_method_form_fields', $fields );
 		$this->form_fields = apply_filters( 'mfb_shipping_method_form_fields', $fields );
@@ -332,7 +344,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 			// We prepare the parcels data depending on whether or not we have product dimensions
 			$parcels = [];
-			if ($dimensions_available) {
+			if ($dimensions_available && !$this->force_dimensions_table ) {
 				foreach($products as $product) {
 					for($i = 1; $i <= $product['quantity']; $i++){
 						$parcel = [];

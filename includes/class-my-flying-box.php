@@ -578,6 +578,8 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		$service_id = $shipping_rate->id;
 		$carrier = MFB_Carrier::get_by_code( $method_code );
 
+		$instance_id = explode(':', $service_id)[1];
+
 		// If this is not a MFB service, we do not do anything.
 		if ( ! $carrier )
 			return $full_label;
@@ -601,13 +603,11 @@ class My_Flying_Box  extends WC_Shipping_Method {
 				// Initializing currently valid quote; We need the offer's uuid to request the locations
 				$quote = MFB_Quote::get( WC()->session->get('myflyingbox_shipment_quote_id') );
 
-				$full_label .=  '<br/><span class="select-location" id="locationselector__'.$method->id.'__'.$quote->offers[$method->id]->api_offer_uuid.'">'.__( 'Choose a location', 'my-flying-box' ).'</span>';
+				$full_label .=  '<br/><span data-mfb-action="select-location" data-mfb-method-id="'.$method->id.'" data-mfb-instance-id="'.$instance_id.'" data-mfb-offer-uuid="'.$quote->offers[$method->id]->api_offer_uuid.'" id="locationselector">'.__( 'Choose a location', 'my-flying-box' ).'</span>';
 				$full_label .=  '<br/><span>'.__( 'Selected ', 'my-flying-box' ).' : <span id="mfb-location-client"></span></span>';
 				$full_label .=  '<span id="input_'.$method->id.'"></span>';
 			}
 		}
-
-
 		return $full_label;
 	}
 

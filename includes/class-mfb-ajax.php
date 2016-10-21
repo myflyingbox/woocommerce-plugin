@@ -18,7 +18,7 @@ class MFB_AJAX {
 			'get_delivery_locations'                          => true,
 			'create_shipment'                                 => false,
 			'book_offer'                                      => false,
-      'delete_shipment'                                 => false,
+			'delete_shipment'                                 => false,
 			'delete_bulk_order'                               => false,
 			'update_shipper'                                  => false,
 			'update_recipient'                                => false,
@@ -44,6 +44,14 @@ class MFB_AJAX {
 			//
 			// We have no offer uuid. We need to request a quote to get the delivery locations!
 
+			$method_name = $_REQUEST['s'];
+			$instance_id = $_REQUEST['i'];
+
+			if ( ! class_exists($method_name)){
+				eval("class $method_name extends MFB_Shipping_Method{}");
+			}
+			$shipping_method = new $method_name( $instance_id );
+
 			// Extracting total weight from the WC CART
 			$weight = 0;
 			$dimensions_available = true;
@@ -67,7 +75,7 @@ class MFB_AJAX {
 
 			// We prepare the parcels data depending on whether or not we have product dimensions
 			$parcels = [];
-			if ($dimensions_available) {
+			if ( $dimensions_available && !$shipping_method->force_dimensions_table ) {
 				foreach($products as $product) {
 					for($i = 1; $i <= $product['quantity']; $i++){
 						$parcel = [];
@@ -88,7 +96,7 @@ class MFB_AJAX {
 				$parcel['length']            = $dims->length;
 				$parcel['width']             = $dims->width;
 				$parcel['height']            = $dims->height;
-				$parcel['weight']            = $total_weight;
+				$parcel['weight']            = $weight;
 				$parcels[] = $parcel;
 			}
 

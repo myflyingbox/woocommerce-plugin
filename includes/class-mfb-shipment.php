@@ -246,8 +246,16 @@ class MFB_Shipment {
 			}
 		}
 
+		$shipping_method = $shipment->get_customer_shipping_method( $order );
+
+		if ( $shipping_method ) {
+			$force_dimensions_table = $shipping_method->force_dimensions_table;
+		} else {
+			$force_dimensions_table = false;
+		}
+
 		$parcels = [];
-		if ($dimensions_available) {
+		if ($dimensions_available && !$force_dimensions_table) {
 			foreach($products as $product) {
 				for($i = 1; $i <= $product['quantity']; $i++){
 					$parcel = new stdClass();
@@ -309,35 +317,50 @@ class MFB_Shipment {
 				$methods = array_pop($shipping_methods);
 				$chosen_method = explode(':', $methods['item_meta']['method_id'][0])[0];
 
-        // Testing if the chosen method is listed on the API offers
+				// Testing if the chosen method is listed on the API offers
 				if ( array_key_exists($chosen_method, $this->quote->offers) ) {
 					$this->offer = $this->quote->offers[$chosen_method];
 				} else {
-          // Maybe the offer selected by the customer was not a MFB service.
-          // In this case, we try to select a default service, if applicable.
-          if ( $this->domestic() ) {
-            $default_service = My_Flying_Box_Settings::get_option('mfb_default_domestic_service');
-          } else {
-            $default_service = My_Flying_Box_Settings::get_option('mfb_default_international_service');
-          }
-          if ( array_key_exists($default_service, $this->quote->offers)  ) {
-            $this->offer = $this->quote->offers[$default_service];
-          }
-        }
+					// Maybe the offer selected by the customer was not a MFB service.
+					// In this case, we try to select a default service, if applicable.
+					if ( $this->domestic() ) {
+						$default_service = My_Flying_Box_Settings::get_option('mfb_default_domestic_service');
+					} else {
+						$default_service = My_Flying_Box_Settings::get_option('mfb_default_international_service');
+					}
+					if ( array_key_exists($default_service, $this->quote->offers)  ) {
+						$this->offer = $this->quote->offers[$default_service];
+					}
+				}
 			}
 			$this->save();
 		}
 	}
 
-  public function domestic() {
-    if ( $this->shipper &&
-         $this->recipient &&
-         $this->shipper->country_code == $this->recipient->country_code ) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+	public function get_customer_shipping_method( $order = null ) {
+		if ( null === $order && $this->wc_order_id ) $order = wc_get_order( $this->wc_order_id );
+		if ( null === $order ) return false;
+
+		$shipping_methods = $order->get_shipping_methods();
+		$method = array_pop($shipping_methods);
+
+		// Separating method name (for instanciation) and instance ID (to pass as parameter)
+		$chosen_method = explode( ':', $method['item_meta']['method_id'][0] );
+		$shipping_method = new $chosen_method[0]( $chosen_method[1] );
+
+		return $shipping_method;
+	}
+
+
+	public function domestic() {
+		if ( $this->shipper &&
+				 $this->recipient &&
+				 $this->shipper->country_code == $this->recipient->country_code ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	public function save() {
 		// ID equal to zero, this is a new record
@@ -434,13 +457,13 @@ class MFB_Shipment {
 		return true;
 	}
 
-  public function update_status( $status ) {
-    $this->status = $status;
-    wp_update_post(array(
-      'ID' => $this->id,
-      'post_status' => $this->status
-    ));
-  }
+	public function update_status( $status ) {
+		$this->status = $status;
+		wp_update_post(array(
+			'ID' => $this->id,
+			'post_status' => $this->status
+		));
+	}
 
 
 	public function formatted_address( $address_type ) {
@@ -580,10 +603,10 @@ class MFB_Shipment {
 		$params['thermal_labels'] = $thermal_printing == 'yes' ? true : false;
 
 		if( $this->offer->pickup == true ) {
-      // Forcing first collection available if no date has been previously selected (case of bulk order)
-      if ( $this->collection_date == null || strlen($this->collection_date) == 0 ) {
-        $this->collection_date = $this->offer->collection_dates[0]->date;
-      }
+			// Forcing first collection available if no date has been previously selected (case of bulk order)
+			if ( $this->collection_date == null || strlen($this->collection_date) == 0 ) {
+				$this->collection_date = $this->offer->collection_dates[0]->date;
+			}
 			$params['shipper']['collection_date'] = $this->collection_date;
 		}
 

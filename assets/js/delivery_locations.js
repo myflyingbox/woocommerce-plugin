@@ -9,23 +9,23 @@ var locations_data = [];
 jQuery(window).load(function(){
 
 	jQuery('body').append(map);
-	
-	jQuery('body').delegate('.select-location','click',function(){
-		elements = jQuery(this).attr('id').split('__');
-		key = elements[2];
-		service_code = elements[1];
+
+	jQuery('body').delegate('[data-mfb-action="select-location"]','click',function(){
+		key = jQuery(this).data('mfb-offer-uuid')
+		service_code = jQuery(this).data('mfb-method-id');
+		instance_id = jQuery(this).data('mfb-instance-id');
 		jQuery.ajax({
 			url:      mfb_params.ajaxurl,
-			data: jQuery(this).closest('form.checkout.woocommerce-checkout').serialize()+'&action='+mfb_params.action+'&k='+key+'&s='+service_code,
+			data: jQuery(this).closest('form.checkout.woocommerce-checkout').serialize()+'&action='+mfb_params.action+'&k='+key+'&s='+service_code+'&i='+instance_id,
 			dataType: 'json',
 			timeout:  15000,
 			error:    error_loading_locations,
 			success:  show_locations
 		});
 	});
-	
+
 	jQuery('#map-canvas').delegate('.mfb-select-location','click', select_location);
-	
+
 	jQuery('.mfb-close-map').click(close_gmap);
 });
 
@@ -35,7 +35,7 @@ jQuery(window).load(function(){
 function init_gmap() {
 	jQuery('#map-container').css('display','block');
 	var options = {
-		zoom: 11, 
+		zoom: 11,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 	gmap = new google.maps.Map(document.getElementById("map-canvas"), options);
@@ -57,13 +57,13 @@ function close_gmap() {
 }
 
 function update_zoom_gmap() {
-	
+
 	if (mfb_locations.length == 0 ||  (mfb_locations.length != 0 && markers.length < mfb_locations.length))
 	{
 		return;
-	}	
+	}
 	var bounds = new google.maps.LatLngBounds();
-	
+
 	for(var i = 0;i<markers.length;i++) {
 		if (typeof markers[i] != 'undefined')
 			bounds.extend(markers[i].getPosition());
@@ -81,9 +81,9 @@ function update_zoom_gmap() {
  */
 function show_locations(data) {
 	mfb_locations = data.locations;
-	
+
 	init_gmap();
-	
+
 	// add parcel point markers
 	for (i in mfb_locations){
 		loc = mfb_locations[i];
@@ -97,7 +97,7 @@ function show_locations(data) {
 						'<span>'+address+', '+postal_code+' '+city+'</span><br/>'+
 						'<div class="mfb-opening-hours"><table>';
 			var opening_hours = loc.opening_hours.sort(function(a,b){ return a.day-b.day});
-			
+
 			for (j in opening_hours){
 				day = opening_hours[j];
 					info += '<tr>';
@@ -109,17 +109,17 @@ function show_locations(data) {
 			info += '</table></div>';
 
 			locations_data[i] = info;
-			
+
 			if(geocoder)
 			{
 				geocoder.geocode({ 'address': address + ', ' + postal_code + ' ' + city }, function(results, status) {
-					if(status == google.maps.GeocoderStatus.OK)   
+					if(status == google.maps.GeocoderStatus.OK)
 					{
 						if (i == 0) {
 							gmap.setCenter(results[0].geometry.location);
 						}
 						var marker = new google.maps.Marker({
-							map: gmap, 
+							map: gmap,
 							position: results[0].geometry.location,
 							title : name
 						});
@@ -136,8 +136,8 @@ function show_locations(data) {
 			}
 		})(i);
 	}
-	
-	
+
+
 	// remove info if we click on the map
 	google.maps.event.addListener(gmap,"click",function() {
 		infowindow.close();
