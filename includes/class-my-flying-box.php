@@ -290,6 +290,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		$this->register_post_type( 'mfb_shipment', __( 'Shipments', 'my-flying-box' ), __( 'Shipment', 'my-flying-box' ), '', true );
 		$this->register_post_type( 'mfb_carrier', __( 'Carriers', 'my-flying-box' ), __( 'Carrier', 'my-flying-box' ), '', false );
 		$this->register_post_type( 'mfb_dimension', __( 'Dimensions', 'my-flying-box' ), __( 'Carrier', 'my-flying-box', '', false ) );
+		$this->register_post_type( 'mfb_offer', __( 'Offers', 'my-flying-box' ), __( 'Offer', 'my-flying-box', '', false ) );
 
 
 		$labels = array(
@@ -647,13 +648,18 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		foreach($google_apis as $g) {
 			wp_dequeue_script($g->handle); // Temporarily deregistering the script
 			$unregistered[] = $g->handle;
+
 			// Extracting any specifically mentioned library
 			$qs = parse_url($g->src);
-			$qs = $qs['query'];
+			if ( array_key_exists('query', $qs) ) {
+				$qs = $qs['query'];
+			} else {
+				$qs = '';
+			}
 			parse_str($qs, $params);
-			if(isset($params['libraries']))
+			if ( isset($params['libraries']) ) {
 				$libraries = array_merge($libraries, explode(',', $params['libraries']) );
-
+			}
 		}
 
 		// Updating deprecated dependency information that was based on old script handlers

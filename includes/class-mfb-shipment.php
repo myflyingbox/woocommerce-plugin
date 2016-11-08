@@ -346,8 +346,12 @@ class MFB_Shipment {
 
 		// Separating method name (for instanciation) and instance ID (to pass as parameter)
 		$chosen_method = explode( ':', $method['item_meta']['method_id'][0] );
-		$shipping_method = new $chosen_method[0]( $chosen_method[1] );
 
+		if ( ! class_exists( $chosen_method[0] ) ) {
+			$shipping_method = false;
+		} else {
+			$shipping_method = new $chosen_method[0]( $chosen_method[1] );
+		}
 		return $shipping_method;
 	}
 
