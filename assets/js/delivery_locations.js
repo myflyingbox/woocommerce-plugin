@@ -11,16 +11,30 @@ jQuery(window).load(function(){
 	jQuery('body').append(map);
 
 	jQuery('body').delegate('[data-mfb-action="select-location"]','click',function(){
-		key = jQuery(this).data('mfb-offer-uuid')
-		service_code = jQuery(this).data('mfb-method-id');
-		instance_id = jQuery(this).data('mfb-instance-id');
+		var key = jQuery(this).data('mfb-offer-uuid')
+		var service_code = jQuery(this).data('mfb-method-id');
+		var instance_id = jQuery(this).data('mfb-instance-id');
+
+		// Show a spinner
+		var td = jQuery(this).closest('td');
+		td.addClass( 'processing' ).block({
+			message: null,
+			overlayCSS: {
+				background: '#fff',
+				opacity: 0.6
+			}
+		});
+
 		jQuery.ajax({
 			url:      mfb_params.ajaxurl,
 			data: jQuery(this).closest('form.checkout.woocommerce-checkout').serialize()+'&action='+mfb_params.action+'&k='+key+'&s='+service_code+'&i='+instance_id,
 			dataType: 'json',
 			timeout:  15000,
 			error:    error_loading_locations,
-			success:  show_locations
+			success:  show_locations,
+			complete: function() {
+				td.removeClass( 'processing' ).unblock();
+			}
 		});
 	});
 
