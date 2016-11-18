@@ -12,8 +12,9 @@ jQuery(window).load(function(){
 
 	jQuery('body').delegate('[data-mfb-action="select-location"]','click',function(){
 		var key = jQuery(this).data('mfb-offer-uuid')
-		var service_code = jQuery(this).data('mfb-method-id');
 		var instance_id = jQuery(this).data('mfb-instance-id');
+
+		service_code = jQuery(this).data('mfb-method-id');
 
 		// Show a spinner
 		var td = jQuery(this).closest('td');
