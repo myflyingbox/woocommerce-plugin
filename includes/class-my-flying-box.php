@@ -574,6 +574,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 	 *
 	 */
 	public function add_delivery_location_selector_to_shipping_method_label($full_label, $shipping_rate){
+		global $pagename;
 
 		$method_code = $shipping_rate->method_id;
 		$service_id = $shipping_rate->id;
@@ -585,6 +586,9 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		if ( ! $carrier )
 			return $full_label;
 
+		// Relay selection must happen only during the checkout itself, not on the cart page
+		if ( $pagename == 'cart' )
+			return $full_label;
 
 		if ( ! class_exists( $method_code ))
 			eval("class $method_code extends MFB_Shipping_Method{}");
