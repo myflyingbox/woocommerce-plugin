@@ -120,7 +120,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 
 		// Save selected delivery location during cart checkout
-		add_action( 'woocommerce_checkout_update_order_meta', array( &$this, 'reset_selected_delivery_location' ) );
+		// add_action( 'woocommerce_checkout_update_order_meta', array( &$this, 'reset_selected_delivery_location' ) );
 		add_action( 'woocommerce_checkout_process', array( &$this,'hook_process_order_checkout'));
 		add_action( 'woocommerce_checkout_order_processed', array( &$this,'hook_new_order'));
 
@@ -476,9 +476,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 	 * Reset delivery location, in the case of shop delivery.
 	 */
 	public function reset_selected_delivery_location( $order_id ) {
-		$order = wc_get_order( $order_id );
-
-		update_post_meta( $order->id, '_mfb_delivery_location', '' );
+		update_post_meta( $order_id, '_mfb_delivery_location', '' );
 	}
 
 
@@ -513,8 +511,8 @@ class My_Flying_Box  extends WC_Shipping_Method {
 				$carrier = MFB_Carrier::get_by_code( $carrier_code );
 				update_post_meta( $order_id, '_mfb_carrier_code', $carrier_code );
 
-				if ($carrier && $carrier->shop_delivery) {
-					if (isset($_POST['_delivery_location'])) {
+				if ( $carrier && $carrier->shop_delivery ) {
+					if ( isset($_POST['_delivery_location']) ) {
 						update_post_meta( $order_id, '_mfb_delivery_location', $_POST['_delivery_location'] );
 
 						// Trying to get the details of the location

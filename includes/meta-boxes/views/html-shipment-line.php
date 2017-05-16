@@ -161,7 +161,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				foreach ( $locations as $location ) {
 					echo "<option value='".$location->code."'";
-					$preferred_location = get_post_meta( $theorder->id, '_mfb_delivery_location', true);
+					$preferred_location = get_post_meta( $theorder->get_id(), '_mfb_delivery_location', true);
 					if ( $location->code == $preferred_location ) {
 						echo " selected";
 					}
@@ -175,7 +175,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 				echo '</p>';
 				}
 			?>
-
 			<br/>
 			<button type="button" class="button button-primary book-offer"><?php _e( 'Book this service', 'my-flying-box' ); ?></button>
 		</div>

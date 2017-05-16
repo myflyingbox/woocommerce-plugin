@@ -186,7 +186,7 @@ class MFB_Shipment {
 	public static function create_from_order( $order, $bulk_order_id = null ) {
 
 		$shipment = new self();
-		$shipment->wc_order_id = $order->id;
+		$shipment->wc_order_id = $order->get_id();
 		if ($bulk_order_id == null) {
 			$shipment->status = 'mfb-draft';
 		} else {
@@ -201,24 +201,24 @@ class MFB_Shipment {
 		}
 
 		// Setting recipient data from order shipping address
-		$shipment->recipient->name          = $order->shipping_first_name . ' ' . $order->shipping_last_name;
-		$shipment->recipient->company       = $order->shipping_company;
-		$shipment->recipient->street        = $order->shipping_address_1;
+		$shipment->recipient->name          = $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name();
+		$shipment->recipient->company       = $order->get_shipping_company();
+		$shipment->recipient->street        = $order->get_shipping_address_1();
 
-		$ship_addr2 = trim( $order->shipping_address_2 );
+		$ship_addr2 = trim( $order->get_shipping_address_2() );
 		if ( ! empty($ship_addr2) ) $shipment->recipient->street .= "\n" . $ship_addr2;
 
-		$shipment->recipient->city          = $order->shipping_city;
-		$shipment->recipient->postal_code   = $order->shipping_postcode;
-		$shipment->recipient->state         = $order->shipping_state;
-		$shipment->recipient->country_code  = $order->shipping_country;
+		$shipment->recipient->city          = $order->get_shipping_city();
+		$shipment->recipient->postal_code   = $order->get_shipping_postcode();
+		$shipment->recipient->state         = $order->get_shipping_state();
+		$shipment->recipient->country_code  = $order->get_shipping_country();
 
-		$shipment->recipient->email         = $order->billing_email;
-		$shipment->recipient->phone         = $order->billing_phone;
+		$shipment->recipient->email         = $order->get_billing_email();
+		$shipment->recipient->phone         = $order->get_billing_phone();
 
 
 		// If a location code was associated to the order, we record it here
-		$delivery_location_code = get_post_meta( $order->id, '_mfb_delivery_location', true);
+		$delivery_location_code = get_post_meta( $order->get_id(), '_mfb_delivery_location', true);
 		if ( $delivery_location_code && !empty( $delivery_location_code ) ) {
 			$shipment->delivery_location_code = $delivery_location_code;
 		}
@@ -315,7 +315,7 @@ class MFB_Shipment {
 			if ( count($order->get_shipping_methods()) == 1 ) {
 				$shipping_methods = $order->get_shipping_methods();
 				$methods = array_pop($shipping_methods);
-				$chosen_method = explode(':', $methods['item_meta']['method_id'][0])[0];
+				$chosen_method = explode(':', $methods->get_method_id())[0];
 
 				// Testing if the chosen method is listed on the API offers
 				if ( array_key_exists($chosen_method, $this->quote->offers) ) {
@@ -345,7 +345,7 @@ class MFB_Shipment {
 		$method = array_pop($shipping_methods);
 
 		// Separating method name (for instanciation) and instance ID (to pass as parameter)
-		$chosen_method = explode( ':', $method['item_meta']['method_id'][0] );
+		$chosen_method = explode( ':', $method->get_method_id() );
 
 		if ( ! class_exists( $chosen_method[0] ) ) {
 			$shipping_method = false;
