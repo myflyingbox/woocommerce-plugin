@@ -55,7 +55,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
     require_once( 'includes/meta-boxes/class-mfb-meta-box-bulk-order.php' );
 
 
-    $instance = My_Flying_Box::instance( __FILE__, '0.3' );
+    $instance = My_Flying_Box::instance( __FILE__, '0.4' );
 
     return $instance;
   }
