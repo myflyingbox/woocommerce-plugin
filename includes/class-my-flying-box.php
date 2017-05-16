@@ -112,7 +112,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 		$this->script_suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		register_activation_hook( $this->file, array( $this, 'install' ) );
+		// register_activation_hook( __FILE__, array( $this, 'install' ) );
 
 		// Add delivery location selector for shipment methods supporting it
 		add_filter( 'woocommerce_cart_shipping_method_full_label', array( &$this,'add_delivery_location_selector_to_shipping_method_label'), 10, 2 );
@@ -157,7 +157,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		$api_password = My_Flying_Box_Settings::get_option('mfb_api_password');
 
 		if ($api_env != 'staging' && $api_env != 'production') $api_env = 'staging';
-		$this->api = Lce\Lce::configure($api_login, $api_password, $api_env);
+		$this->api = Lce\Lce::configure($api_login, $api_password, $api_env, '2');
 		$this->api->application = "woocommerce-mfb";
 		$this->api->application_version = $this->_version . " (WOO: " . WC()->version . ")";
 
@@ -415,27 +415,6 @@ class My_Flying_Box  extends WC_Shipping_Method {
 	public function __wakeup () {
 		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?' ), $this->_version );
 	} // End __wakeup ()
-
-	/**
-	 * Installation. Runs on activation.
-	 * @access  public
-	 * @since   1.0.0
-	 * @return  void
-	 */
-	public function install () {
-		$this->_log_version_number();
-
-	} // End install ()
-
-	/**
-	 * Log the plugin version number.
-	 * @access  public
-	 * @since   1.0.0
-	 * @return  void
-	 */
-	private function _log_version_number () {
-		update_option( $this->_token . '_version', $this->_version );
-	} // End _log_version_number ()
 
 
 	private function includes() {
