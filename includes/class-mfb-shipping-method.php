@@ -281,14 +281,14 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		if ( $this->get_option('flatrate_pricing') == 'yes' ) $this->load_flat_rates( $recipient_country );
 
 		// Extracting total weight from the WC CART
-		$weight = 0;
+		$total_weight = 0;
 		$dimensions_available = true;
 		$products = [];
 		foreach ( WC()->cart->get_cart() as $item_id => $values ) {
 			$product = $values['data'];
 			if( $product->needs_shipping() ) {
 				$product_weight = $product->get_weight() ? wc_format_decimal( wc_get_weight($product->get_weight(),'kg'), 2 ) : 0;
-				$weight += ($product_weight*$values['quantity']);
+				$total_weight += ($product_weight*$values['quantity']);
 
 				if ($product->get_length() > 0 && $product->get_width() > 0 && $product->get_height() > 0) {
 					$products[] = ['name' => $product->get_title(), 'price' => wc_format_decimal($product->get_price()), 'quantity' => $values['quantity'], 'weight' => $product->get_weight(), 'length' => $product->get_length(), 'width' => $product->get_width(), 'height' => $product->get_height()];
@@ -298,8 +298,8 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			}
 		}
 
-		if ( 0 == $weight)
-			$weight = 0.2;
+		if ( 0 == $total_weight)
+			$total_weight = 0.2;
 
 		// Loading existing quote, if available, so as not to send useless requests to the API
 		$saved_quote_id = WC()->session->get('myflyingbox_shipment_quote_id');
@@ -330,7 +330,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			// In some cases, we can avoid calling the API altogether, improving performances.
 			if ( $this->get_option('reduce_api_calls') == 'yes' && $this->get_option('flatrate_pricing') == 'yes' ) {
 
-				$price = $this->get_flatrate_price( $weight, $recipient_country );
+				$price = $this->get_flatrate_price( $total_weight, $recipient_country );
 
 				$rate = array(
 					'id'      => $this->get_rate_id(),
@@ -357,7 +357,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				}
 			} else {
 				$parcel = [];
-				$dims = MFB_Dimension::get_for_weight( $weight );
+				$dims = MFB_Dimension::get_for_weight( $total_weight );
 
 				# We should use weight/dimensions correspondance; if we don't have any, we can't get a tariff...
 				if (!$dims) return false;
@@ -427,7 +427,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 			// Overriding the API price is we use flatrate pricing
 			if ( $this->get_option('flatrate_pricing') == 'yes') {
-				$price = $this->get_flatrate_price( $weight, $recipient_country );
+				$price = $this->get_flatrate_price( $total_weight, $recipient_country );
 			}
 
 			$price = apply_filters( 'mfb_shipping_rate_price', $price, $this->id );
