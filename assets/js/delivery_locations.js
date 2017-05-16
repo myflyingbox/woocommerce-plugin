@@ -65,7 +65,9 @@ function close_gmap() {
 	jQuery('#map-container').css('display','none');
 	jQuery('#map-canvas').html('');
 	for (var i = 0; i < markers.length; i++) {
-		markers[i].setMap(null);
+		if ( markers[i] != undefined) {
+			markers[i].setMap(null);
+		}
 	}
 	markers = [];
 	locations_data = [];
