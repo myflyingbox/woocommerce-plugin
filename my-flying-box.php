@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: My Flying Box
- * Version: 0.3
+ * Version: 0.4
  * Plugin URI: http://www.myflyingbox.com
  * Description: Integrated Shipping services through My Flying Box API.
  * Author: Thomas Belliard (My Flying Box)
