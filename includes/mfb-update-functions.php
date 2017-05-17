@@ -49,6 +49,24 @@ function mfb_update_05_api_v2_services() {
     if ( array_key_exists( $carrier->code, $new_services ) ) {
       $new_code = trim( $new_services[$carrier->code][0] );
       $old_code = $carrier->code;
+
+      // First, we get all instance_ids of the shipping method
+      $shipping_method_instances_rows = $wpdb->get_results( "
+        SELECT instance_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods
+        WHERE method_id = '{$old_code}'
+      " );
+
+      // Now we can update the settings of the shipping method instance
+      foreach ( $shipping_method_instances_rows as $shipping_method_instance_row ) {
+        $instance_id = $shipping_method_instance_row->instance_id;
+        $old_setting_string = 'woocommerce_'.$old_code.'_'.$instance_id.'_settings';
+        $new_setting_string = 'woocommerce_'.$new_code.'_'.$instance_id.'_settings';
+        $wpdb->query( "UPDATE {$wpdb->prefix}options
+                       SET option_name = '{$new_setting_string}'
+                       WHERE option_name = '{$old_setting_string}';
+                    " );
+      }
+
       update_post_meta( $carrier->id, '_code', $new_code );
       $wpdb->query( "UPDATE {$wpdb->prefix}woocommerce_shipping_zone_methods
                      SET method_id = '{$new_code}'
