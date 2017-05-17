@@ -47,11 +47,24 @@ function mfb_update_05_api_v2_services() {
 
   foreach($carriers as $carrier) {
     if ( array_key_exists( $carrier->code, $new_services ) ) {
-      update_post_meta( $carrier->id, '_code', trim( $new_services[$carrier->code][0] ) );
+      $new_code = trim( $new_services[$carrier->code][0] );
+      $old_code = $carrier->code;
+      update_post_meta( $carrier->id, '_code', $new_code );
+      $wpdb->query( "UPDATE {$wpdb->prefix}woocommerce_shipping_zone_methods
+                     SET method_id = '{$new_code}'
+                     WHERE method_id = '{$old_code}';
+                  " );
     }
   }
 
-  MFB_Carrier::refresh_from_api();
+  // We try to refresh the carriers from API. But we do not necessarily have a working access,
+  // so we do not raise any exceptions in case this fails.
+  try {
+    MFB_Carrier::refresh_from_api();
+  } catch (Exception $e) {
+    // Do nothing...
+  }
+
 
   return true;
 }
