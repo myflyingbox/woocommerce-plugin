@@ -69,8 +69,9 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	private function load_destination_restrictions() {
 		// Loading included destinations first
 		$rules = array();
+		$included_postcodes = $this->get_option('included_postcodes');
 
-		if(!empty($this->get_option('included_postcodes')))
+		if(!empty($included_postcodes))
 		{
 			foreach( explode(',', $this->get_option('included_postcodes')) as $part1) {
 				foreach( explode('\r\n', $part1) as $part2 ) {
@@ -98,7 +99,8 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 		// Loading excluded destinations
 		$rules = array();
-		if(!empty($this->get_option('excluded_postcodes')))
+		$excluded_postcodes = $this->get_option('excluded_postcodes');
+		if(!empty($excluded_postcodes))
 		{
 			foreach( explode(',', $this->get_option('excluded_postcodes')) as $part1) {
 				foreach( explode("\n", $part1) as $part2 ) {
@@ -127,7 +129,8 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	public function load_flat_rates( $country ) {
 		$this->flat_rates = array();
 		$rates = array();
-		if(!empty($this->get_option('flatrate_prices')))
+		$flatrate_prices = $this->get_option('flatrate_prices');
+		if(!empty($flatrate_prices))
 		{
 			foreach( explode(',', $this->get_option('flatrate_prices')) as $part1) {
 				foreach( explode(PHP_EOL, $part1) as $part2 ) {
