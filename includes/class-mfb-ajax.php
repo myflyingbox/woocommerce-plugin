@@ -101,6 +101,11 @@ class MFB_AJAX {
 			}
 
 			// And then we build the quote request params' array
+			$recipient_city = (isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1) ? $_REQUEST['shipping_city'] : $_REQUEST['billing_city'];
+			$recipient_postal_code = (isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1) ? $_REQUEST['shipping_postcode'] : $_REQUEST['billing_postcode'];
+			$recipient_country = (isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1) ? $_REQUEST['shipping_country'] : $_REQUEST['billing_country'];
+			$recipient_company_name = (isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1) ? $_REQUEST['shipping_company'] : $_REQUEST['billing_company'];
+
 			$params = array(
 				'shipper' => array(
 					'city'         => My_Flying_Box_Settings::get_option('mfb_shipper_city'),
@@ -108,10 +113,10 @@ class MFB_AJAX {
 					'country'      => My_Flying_Box_Settings::get_option('mfb_shipper_country_code')
 				),
 				'recipient' => array(
-					'city'         => ( isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_city'] : $_REQUEST['billing_city'] ),
-					'postal_code'  => ( isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_postcode'] : $_REQUEST['billing_postcode'] ),
-					'country'      => ( isset($_REQUEST['ship_to_different_address']) && $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_country'] : $_REQUEST['billing_country'] ),
-					'is_a_company' => ( isset($_REQUEST['ship_to_different_address']) && !empty( $_REQUEST['ship_to_different_address'] == 1 ? $_REQUEST['shipping_company'] : $_REQUEST['billing_company'] ))
+					'city'         => $recipient_city,
+					'postal_code'  => $recipient_postal_code,
+					'country'      => $recipient_country,
+					'is_a_company' => !empty( $recipient_company_name )
 				),
 				'parcels' => $parcels
 			);
