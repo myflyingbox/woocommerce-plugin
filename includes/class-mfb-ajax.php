@@ -253,6 +253,11 @@ class MFB_AJAX {
 			if ( $offer->relay ) {
 				$shipment->delivery_location_code = $_POST['relay_code'];
 			}
+			if ( $_POST['insurance'] == '1'  ) {
+				$shipment->insured = true;
+			} else {
+				$shipment->insured = false;
+			}
 			$shipment->save();
 			try {
 				$shipment->place_booking();

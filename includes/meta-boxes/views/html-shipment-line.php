@@ -120,7 +120,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php foreach ($offers as $offer) {
 					echo "<option data-offer_id='".$offer->id."' value='".$offer->product_code."'";
 					if ( $shipment->offer && $shipment->offer->product_code == $offer->product_code ) echo " selected='selected'";
-					echo ">".$offer->product_name." - ".$offer->formatted_price()."</option>";
+					echo ">".$offer->full_service_name()." - ".$offer->formatted_price()."</option>";
 				}
 				?>
 			</select>
@@ -174,8 +174,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php
 				echo '</p>';
 				}
+
+				if ( $shipment->is_insurable() && $shipment->offer && $shipment->offer->insurance_price_in_cents ) {
+
+					echo '<p>';
+					echo '<input id="mfb_ad_valorem_insurance" name="_mfb_insure" type="checkbox" value="1"';
+					echo ' />';
+					echo '<label for="mfb_ad_valorem_insurance">';
+					echo _e('Ad-valorem insurance', 'my-flying-box' );
+					echo '</label>';
+					echo '<br/>';
+					echo _e('Insurable value: ', 'my-flying-box' );
+					echo '<b>'.number_format($shipment->insurable_value(), 2, ',', ' ').' EUR</b>';
+					echo '<br/>';
+					echo _e('Insurance cost: ', 'my-flying-box' );
+					echo '<b>'.$shipment->offer->formatted_insurance_price().'</b>';
+					echo '</p>';
+				} else {
+					echo '<p>';
+					echo _e('Ad valorem insurance not available.', 'my-flying-box' );
+					echo '</p>';
+				}
 			?>
-			<br/>
 			<button type="button" class="button button-primary book-offer"><?php _e( 'Book this service', 'my-flying-box' ); ?></button>
 		</div>
 				<?php
@@ -184,7 +204,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 		?>
 			<div class="mfb-booked-offer">
 				<div class="offer-details" data-offer_id="<?php echo $shipment->offer->id ?>">
-					<p><?php echo $shipment->offer->product_name ?> (<?php echo $shipment->offer->formatted_price(); ?>)</p>
+					<p>
+						<?php
+							echo $shipment->offer->full_service_name().' ('. $shipment->offer->formatted_price().')';
+							echo '<br/>';
+							if ( $shipment->insured && $shipment->offer && $shipment->offer->insurance_price_in_cents ) {
+								echo _e('Insured value: ', 'my-flying-box' );
+								echo number_format($shipment->insurable_value(), 2, ',', ' ').' EUR';
+								echo ' (';
+								echo _e('cost: ', 'my-flying-box' );
+								echo $shipment->offer->formatted_insurance_price();
+								echo ')';
+							} else {
+								echo _e('No insurance.', 'my-flying-box' );
+							}
+						 ?>
+					</p>
 					<button type="button" class="button button-primary download-labels"><?php _e( 'Download labels', 'my-flying-box' ); ?></button>
 				</div>
 				<?php
@@ -202,7 +237,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				?>
 
 				<?php
-				if ( $shipment->delivery_location ) {
+				if ( $shipment->offer->relay && $shipment->delivery_location ) {
 					echo '<p>';
 					_e('Delivery location:', 'my-flying-box');
 					echo '<br/>';

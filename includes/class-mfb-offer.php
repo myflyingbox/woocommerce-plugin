@@ -1,9 +1,9 @@
 <?php
 /**
  * MFB_Offer
- * 
+ *
  * Offer saved from API response, with corresponding offers.
- * 
+ *
  */
 
 class MFB_Offer {
@@ -11,12 +11,14 @@ class MFB_Offer {
 	public $id = 0;
 	public $quote_id = 0;
 	public $api_offer_uuid = 0;
+	public $carrier_code = null;
 	public $product_code = null;
 	public $product_name = null;
 	public $base_price_in_cents = 0;
 	public $total_price_in_cents = 0;
+	public $insurance_price_in_cents = null;
 	public $currency = null;
-	
+
 	public $pickup = false;
 	public $dropoff = false;
 	public $relay = false;
@@ -26,11 +28,11 @@ class MFB_Offer {
 	public $post = null;
 
 	public function __construct() {
-		
+
 	}
 
 	public static function get( $offer_id ) {
-		
+
 		if ( is_numeric( $offer_id ) ) {
 			$instance = new self();
 			$instance->id   = absint( $offer_id );
@@ -50,10 +52,10 @@ class MFB_Offer {
 			'meta_key' => '_api_uuid',
 			'meta_value' => $uuid
 		);
-		
+
 		// The Query
 		$query = get_posts( $args );
-		
+
 		if ( count($query) > 0 ) {
 			return self::get($query[0]->ID);
 		} else {
@@ -63,8 +65,9 @@ class MFB_Offer {
 
 	public function populate() {
 		$this->quote_id       = $this->post->post_parent;
-		
+
 		$this->api_offer_uuid       = get_post_meta( $this->id, '_api_uuid', true );
+		$this->carrier_code         = get_post_meta( $this->id, '_carrier_code', true );
 		$this->product_code         = get_post_meta( $this->id, '_product_code', true );
 		$this->product_name         = get_post_meta( $this->id, '_product_name', true );
 		$this->pickup               = get_post_meta( $this->id, '_pickup', true );
@@ -72,13 +75,14 @@ class MFB_Offer {
 		$this->relay                = get_post_meta( $this->id, '_relay', true );
 		$this->base_price_in_cents  = get_post_meta( $this->id, '_base_price_in_cents', true );
 		$this->total_price_in_cents = get_post_meta( $this->id, '_total_price_in_cents', true );
+		$this->insurance_price_in_cents = get_post_meta( $this->id, '_insurance_price_in_cents', true );
 		$this->currency             = get_post_meta( $this->id, '_currency', true );
 		$this->collection_dates     = get_post_meta( $this->id, '_collection_dates', true );
-		
+
 	}
 
 	public static function get_all_for_quote( $quote_id ) {
-		
+
 		$all_offers = get_children( array(
 			'post_type' 	  => 'mfb_offer',
 			'post_status'   => 'any',
@@ -87,13 +91,13 @@ class MFB_Offer {
 		));
 
 		$offers = array();
-		
+
 		foreach($all_offers as $offer) {
 			$offers[] = self::get($offer->ID);
 		}
-		
+
 		uasort($offers, array('self', 'sort_offers_by_price'));
-		
+
 		return $offers;
 	}
 
@@ -108,16 +112,37 @@ class MFB_Offer {
 	public function final_base_price_in_cents() {
 		return $this->base_price_in_cents;
 	}
-	
+
 	// Returns the final price, formatted, with currency
 	public function formatted_price() {
 		return ($this->final_base_price_in_cents() / 100).' '.$this->currency;
 	}
-	
+
+	public function formatted_insurance_price() {
+		if ($this->insurance_price_in_cents) {
+			return (number_format($this->insurance_price_in_cents / 100, 2, ',', ' ')).' '.$this->currency;
+		} else {
+			return '';
+		}
+	}
+
+	public function carrier_name() {
+		if ( strlen($this->carrier_code) > 4 ) {
+				 return ucfirst($this->carrier_code);
+			} else {
+				 return strtoupper($this->carrier_code);
+		 }
+	}
+
+	// Service name that includes carrier name
+	public function full_service_name() {
+		return $this->carrier_name().' '.$this->product_name;
+	}
+
 
 	public function save() {
 
-		// ID equal to zero, this is a new record    
+		// ID equal to zero, this is a new record
 		if ($this->id == 0) {
 			$offer = array(
 				'post_type' => 'mfb_offer',
@@ -135,6 +160,8 @@ class MFB_Offer {
 			update_post_meta( $this->id, '_api_uuid',             $this->api_offer_uuid );
 			update_post_meta( $this->id, '_base_price_in_cents',  $this->base_price_in_cents );
 			update_post_meta( $this->id, '_total_price_in_cents', $this->total_price_in_cents );
+			update_post_meta( $this->id, '_insurance_price_in_cents', $this->insurance_price_in_cents );
+			update_post_meta( $this->id, '_carrier_code',         $this->carrier_code );
 			update_post_meta( $this->id, '_product_code',         $this->product_code );
 			update_post_meta( $this->id, '_product_name',         $this->product_name );
 			update_post_meta( $this->id, '_pickup',               $this->pickup );
@@ -142,7 +169,7 @@ class MFB_Offer {
 			update_post_meta( $this->id, '_relay',                $this->relay );
 			update_post_meta( $this->id, '_currency',             $this->currency );
 			update_post_meta( $this->id, '_collection_dates',     $this->collection_dates );
-			
+
 		}
 	}
 
@@ -153,7 +180,7 @@ class MFB_Offer {
 	public function get_delivery_locations($params) {
 
 		$api_offer = Lce\Resource\Offer::find($this->api_offer_uuid);
-		
+
 		return $api_offer->available_delivery_locations($params);
 	}
 }

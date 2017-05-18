@@ -21,6 +21,7 @@ class MFB_Shipment {
 	public $offer = null;
 	public $collection_date = null; // Selected collection date at time of booking.
 	public $delivery_location_code = null; // Selected relay delivery at time of booking.
+	public $insured = false; // Do we insure this shipment?
 
 	public $delivery_location = null; // std Object containing the selected delivery location characteristics
 
@@ -97,6 +98,7 @@ class MFB_Shipment {
 		$this->collection_date = get_post_meta( $this->id, '_collection_date', true ); // Selected collection date
 		$this->delivery_location_code = get_post_meta( $this->id, '_delivery_location_code', true ); // Selected relay
 		$this->delivery_location      = get_post_meta( $this->id, '_delivery_location', true ); // Selected relay (full object with details)
+		$this->insured                = get_post_meta( $this->id, '_insured', true ); // Do we insure this shipment?
 
 
 		// Loading Shipper and Recipient
@@ -439,6 +441,8 @@ class MFB_Shipment {
 		update_post_meta( $this->id, '_collection_date', $this->collection_date );
 		update_post_meta( $this->id, '_delivery_location_code', $this->delivery_location_code );
 
+		update_post_meta( $this->id, '_insured', $this->insured );
+
 		// Saving the delivery location details, if applicable
 		if ( $this->offer && $this->offer->relay == true && !empty($this->delivery_location_code) ) {
 			$loc_params = array(
@@ -502,6 +506,26 @@ class MFB_Shipment {
 		$line = $parcel->length.'x'.$parcel->width.'x'.$parcel->height.'cm, '.$parcel->weight.'kg | '.$parcel->value.' € | '.$parcel->description.' ('.$parcel->country_of_origin.')';
 		return $line;
 	}
+
+	public function total_value()
+	{
+			$total_value = 0.0;
+			foreach ($this->parcels as $parcel) {
+					$total_value = $total_value + $parcel->value;
+			}
+			return $total_value;
+	}
+
+	public function is_insurable()
+	{
+			return ($this->total_value() < 2000);
+	}
+
+	public function insurable_value()
+	{
+			return $this->total_value();
+	}
+
 	// Completely remove a shipment from the database
 	public function destroy() {
 		return wp_delete_post( $this->id );
@@ -513,15 +537,23 @@ class MFB_Shipment {
 			if ($this->status != 'mfb-draft' && $this->status != 'mfb-processing') return false;
 
 			$parcels = array();
+
 			foreach( $this->parcels as $parcel ) {
-				$parcels[] = array(
+				$params = array(
 					'length' => $parcel->length,
 					'width'  => $parcel->width,
 					'height'  => $parcel->height,
 					'weight'  => $parcel->weight
 				);
 
+				if ($this->is_insurable()) {
+					$params['insured_value'] = $parcel->value;
+					$params['insured_currency'] = 'EUR';
+				}
+
+				$parcels[] = $params;
 			}
+
 			$params = array(
 				'shipper' => array(
 					'city'         => $this->shipper->city,
@@ -551,6 +583,7 @@ class MFB_Shipment {
 					$offer = new MFB_Offer();
 					$offer->quote_id              = $quote->id;
 					$offer->api_offer_uuid        = $api_offer->id;
+					$offer->carrier_code          = $api_offer->product->carrier_code;
 					$offer->product_code          = $api_offer->product->code;
 					$offer->product_name          = $api_offer->product->name;
 					$offer->pickup                = $api_offer->product->pick_up;
@@ -560,6 +593,9 @@ class MFB_Shipment {
 					$offer->base_price_in_cents   = $api_offer->price->amount_in_cents;
 					$offer->total_price_in_cents  = $api_offer->total_price->amount_in_cents;
 					$offer->currency              = $api_offer->total_price->currency;
+					if ($api_offer->insurance_price) {
+						$offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
+					}
 					$offer->save();
 				}
 				$this->quote = $quote;
@@ -621,6 +657,9 @@ class MFB_Shipment {
 		foreach( $this->parcels as $parcel ) {
 			$params['parcels'][] = array('description' => $parcel->description, 'value' => $parcel->value, 'currency' => 'EUR', 'country_of_origin' => $parcel->country_of_origin);
 		}
+
+		// Insurance
+		$params['insure_shipment'] = $this->insured;
 
 		// Placing the order on the API
 		$api_order = Lce\Resource\Order::place($this->offer->api_offer_uuid, $params);
