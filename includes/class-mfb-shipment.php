@@ -662,7 +662,9 @@ class MFB_Shipment {
 		}
 
 		// Insurance
-		$params['insure_shipment'] = $this->insured;
+		if ( $this->insured ) {
+			$params['insure_shipment'] = true;
+		}
 
 		// Placing the order on the API
 		$api_order = Lce\Resource\Order::place($this->offer->api_offer_uuid, $params);
