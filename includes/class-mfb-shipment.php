@@ -293,8 +293,11 @@ class MFB_Shipment {
 			$parcels[] = $parcel;
 		}
 
-
 		$shipment->parcels = $parcels;
+
+		if ( $total_value <= 2000 && My_Flying_Box_Settings::get_option('mfb_insure_by_default') == 'yes' ) {
+			$shipment->insured = true;
+		}
 
 		$shipment->save();
 

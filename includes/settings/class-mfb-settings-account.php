@@ -112,7 +112,15 @@ class MFB_Settings_Account extends MFB_Settings_Page {
 				'default'       => 'no',
 				'type'          => 'checkbox',
 				'autoload'      => false
-			)
+			),
+      array(
+        'id'            => 'mfb_insure_by_default',
+        'title'         => __( 'Insurance', 'my-flying-box' ),
+        'desc'          => __( 'Insure shipments by default (taken into account when calculating shipping cost during checkout and for bulk orders)', 'my-flying-box' ),
+        'default'       => 'no',
+        'type'          => 'checkbox',
+        'autoload'      => false
+      ),
 			)
 		);
 		return apply_filters( 'woocommerce_get_settings_' . $this->id, $settings );

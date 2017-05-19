@@ -179,6 +179,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					echo '<p>';
 					echo '<input id="mfb_ad_valorem_insurance" name="_mfb_insure" type="checkbox" value="1"';
+					if ( $shipment->insured ) {
+						echo ' CHECKED';
+					}
 					echo ' />';
 					echo '<label for="mfb_ad_valorem_insurance">';
 					echo _e('Ad-valorem insurance', 'my-flying-box' );

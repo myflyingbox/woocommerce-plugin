@@ -118,8 +118,12 @@ class MFB_Offer {
 		return ($this->final_base_price_in_cents() / 100).' '.$this->currency;
 	}
 
+	public function is_insurable() {
+		return (true == $this->insurance_price_in_cents);
+	}
+
 	public function formatted_insurance_price() {
-		if ($this->insurance_price_in_cents) {
+		if ( $this->is_insurable() ) {
 			return (number_format($this->insurance_price_in_cents / 100, 2, ',', ' ')).' '.$this->currency;
 		} else {
 			return '';

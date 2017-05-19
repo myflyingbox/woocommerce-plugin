@@ -285,6 +285,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 		// Extracting total weight from the WC CART
 		$total_weight = 0;
+		$total_value = wc_format_decimal(0);
 		$dimensions_available = true;
 		$products = [];
 		foreach ( WC()->cart->get_cart() as $item_id => $values ) {
@@ -292,6 +293,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			if( $product->needs_shipping() ) {
 				$product_weight = $product->get_weight() ? wc_format_decimal( wc_get_weight($product->get_weight(),'kg'), 2 ) : 0;
 				$total_weight += ($product_weight*$values['quantity']);
+				$total_value += (wc_format_decimal($product->get_price()*$values['quantity']));
 
 				if ($product->get_length() > 0 && $product->get_width() > 0 && $product->get_height() > 0) {
 					$products[] = ['name' => $product->get_title(), 'price' => wc_format_decimal($product->get_price()), 'quantity' => $values['quantity'], 'weight' => $product->get_weight(), 'length' => $product->get_length(), 'width' => $product->get_width(), 'height' => $product->get_height()];
@@ -355,6 +357,13 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 						$parcel['width']             = $product['width'];
 						$parcel['height']            = $product['height'];
 						$parcel['weight']            = $product['weight'];
+
+						// Applying insurance data if applicable
+						if ($total_value <= 2000 && My_Flying_Box_Settings::get_option('mfb_insure_by_default') == 'yes') {
+							$parcel['insured_value'] = $product['price'];
+							$parcel['insured_currency'] = 'EUR';
+						}
+
 						$parcels[] = $parcel;
 					}
 				}
@@ -369,6 +378,12 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				$parcel['width']             = $dims->width;
 				$parcel['height']            = $dims->height;
 				$parcel['weight']            = $total_weight;
+
+				// Applying insurance data if applicable
+				if ($total_value <= 2000 && My_Flying_Box_Settings::get_option('mfb_insure_by_default') == 'yes') {
+					$parcel['insured_value'] = $total_value;
+					$parcel['insured_currency'] = 'EUR';
+				}
 				$parcels[] = $parcel;
 			}
 
@@ -410,6 +425,9 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 					$offer->product_code = $api_offer->product->code;
 					$offer->base_price_in_cents = $api_offer->price->amount_in_cents;
 					$offer->total_price_in_cents = $api_offer->total_price->amount_in_cents;
+					if ($api_offer->insurance_price) {
+						$offer->insurance_price_in_cents = $api_offer->insurance_price->amount_in_cents;
+					}
 					$offer->currency = $api_offer->total_price->currency;
 					$offer->save();
 				}
@@ -427,6 +445,10 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 		if ( isset($quote->offers[$this->id]) ) {
 			$price = $quote->offers[$this->id]->base_price_in_cents / 100;
+			// Applying insurance cost if applicable
+			if ( $quote->offers[$this->id]->is_insurable() && My_Flying_Box_Settings::get_option('mfb_insure_by_default') == 'yes' ) {
+				$price += ($quote->offers[$this->id]->insurance_price_in_cents / 100);
+			}
 
 			// Overriding the API price is we use flatrate pricing
 			if ( $this->get_option('flatrate_pricing') == 'yes') {
