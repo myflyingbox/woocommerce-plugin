@@ -349,6 +349,9 @@ class MFB_Shipment {
 		$shipping_methods = $order->get_shipping_methods();
 		$method = array_pop($shipping_methods);
 
+		// There was no shipping method specified in the order, so we just skip altogether
+		if ( null === $method ) return false;
+
 		// Separating method name (for instanciation) and instance ID (to pass as parameter)
 		$chosen_method = explode( ':', $method->get_method_id() );
 
