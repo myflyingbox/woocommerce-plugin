@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: My Flying Box
- * Version: 0.5
+ * Version: 0.6
  * Plugin URI: http://www.myflyingbox.com
  * Description: Integrated Shipping services through My Flying Box API.
  * Author: Thomas Belliard (My Flying Box)
@@ -55,7 +55,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
     require_once( 'includes/meta-boxes/class-mfb-meta-box-order-shipping.php' );
     require_once( 'includes/meta-boxes/class-mfb-meta-box-bulk-order.php' );
 
-    $instance = My_Flying_Box::instance( __FILE__, '0.5' );
+    $instance = My_Flying_Box::instance( __FILE__, '0.6' );
 
     return $instance;
   }
