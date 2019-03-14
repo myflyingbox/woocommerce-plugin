@@ -577,7 +577,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 			$full_label .= '<br/><span class="description">'.$method->description.'</span>';
 
 		// Add a selector of available delivery locations, pulled from the API
-		if ( ( (stristr(WC()->cart->get_checkout_url(), $_SERVER['REQUEST_URI']) ||  (stristr(WC()->cart->get_checkout_url(), $_SERVER['HTTP_REFERER'] ) ) ) )
+		if ( ( (stristr(wc_get_checkout_url(), $_SERVER['REQUEST_URI']) ||  (stristr(wc_get_checkout_url(), $_SERVER['HTTP_REFERER'] ) ) ) )
 					&& in_array($service_id , WC()->session->get('chosen_shipping_methods') ) ) {
 
 			if ($carrier->shop_delivery) {
