@@ -288,15 +288,20 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		$total_value = wc_format_decimal(0);
 		$dimensions_available = true;
 		$products = [];
+		$cart_content = [];
 		foreach ( WC()->cart->get_cart() as $item_id => $values ) {
 			$product = $values['data'];
 			if( $product->needs_shipping() ) {
+				// We will store the quantity for each product ID, so we can check later if
+				// the quote is still valid for a given cart
+				$cart_content[$product->get_id()] = $values['quantity'];
+
 				$product_weight = $product->get_weight() ? wc_format_decimal( wc_get_weight($product->get_weight(),'kg'), 2 ) : 0;
 				$total_weight += ($product_weight*$values['quantity']);
 				$total_value += (wc_format_decimal($product->get_price()*$values['quantity']));
 
 				if ($product->get_length() > 0 && $product->get_width() > 0 && $product->get_height() > 0) {
-					$products[] = ['name' => $product->get_title(), 'price' => wc_format_decimal($product->get_price()), 'quantity' => $values['quantity'], 'weight' => $product->get_weight(), 'length' => $product->get_length(), 'width' => $product->get_width(), 'height' => $product->get_height()];
+					$products[] = ['id' => $product->get_id(), 'name' => $product->get_title(), 'price' => wc_format_decimal($product->get_price()), 'quantity' => $values['quantity'], 'weight' => $product->get_weight(), 'length' => $product->get_length(), 'width' => $product->get_width(), 'height' => $product->get_height()];
 				} else {
 					$dimensions_available = false;
 				}
@@ -331,12 +336,10 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			WC()->session->set( 'myflyingbox_shipment_quote_id', null );
 			WC()->session->set( 'myflyingbox_shipment_quote_timestamp', null );
 
-
 			// In some cases, we can avoid calling the API altogether, improving performances.
 			if ( $this->get_option('reduce_api_calls') == 'yes' && $this->get_option('flatrate_pricing') == 'yes' ) {
 
 				$price = $this->get_flatrate_price( $total_weight, $recipient_country );
-
 				$rate = array(
 					'id'      => $this->get_rate_id(),
 					'label' 	=> $this->get_title(),
@@ -414,6 +417,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			$quote = new MFB_Quote();
 			$quote->api_quote_uuid = $api_quote->id;
 			$quote->params         = $params;
+			$quote->cart_content   = $cart_content;
 
 			if ($quote->save()) {
 				// Now we create the offers
@@ -469,12 +473,36 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	// Checking whether a quote is still valid for the given params
 	private function quote_still_valid( $quote_id, $params ) {
 		$quote = MFB_Quote::get( $quote_id );
+		# First, we check the destination
+		$same_destination = false;
 		if (
 			$quote &&
 			$quote->params['recipient']['city']        == $params['destination']['city'] &&
 			$quote->params['recipient']['postal_code'] == $params['destination']['postcode'] &&
 			$quote->params['recipient']['country']     == $params['destination']['country']
 		) {
+			$same_destination = true;
+		}
+
+		$same_content = true;
+		if ( $quote && $quote->cart_content ) {
+			$cart_content = array();
+			foreach( $params['contents'] as $content ) {
+				if ( $quote->cart_content[$content['product_id']] !== $content['quantity'] ) {
+					// We don't have a matching quantity for a product in the cart
+					$same_content = false;
+				}
+			}
+			// We don't have the same number of articles in the cart? Not valid for reuse.
+			if (count($quote->cart_content) !== count($params['contents'])) {
+				$same_content = false;
+			}
+		} else {
+			// No cart data, quote is not considered valid for reuse.
+			$same_content = false;
+		}
+
+		if ($same_destination && $same_content) {
 			return true;
 		} else {
 			return false;
