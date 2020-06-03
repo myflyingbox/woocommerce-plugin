@@ -115,15 +115,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<td>
 		<?php if ( $shipment->status == 'mfb-draft' ) { ?>
 		<div class="mfb-available-offers">
-			<?php $offers = $shipment->quote->offers ?>
-				<select name="_mfb_selected_offer" class="offer-selector" style="width: 250px; font-size: 0.9em;">
-				<?php foreach ($offers as $offer) {
-					echo "<option data-offer_id='".$offer->id."' value='".$offer->product_code."'";
-					if ( $shipment->offer && $shipment->offer->product_code == $offer->product_code ) echo " selected='selected'";
-					echo ">".$offer->full_service_name()." - ".$offer->formatted_price()."</option>";
-				}
-				?>
-			</select>
+			<?php if ( $shipment->quote ) { ?>
+				<?php $offers = $shipment->quote->offers ?>
+					<select name="_mfb_selected_offer" class="offer-selector" style="width: 250px; font-size: 0.9em;">
+					<?php foreach ($offers as $offer) {
+						echo "<option data-offer_id='".$offer->id."' value='".$offer->product_code."'";
+						if ( $shipment->offer && $shipment->offer->product_code == $offer->product_code ) echo " selected='selected'";
+						echo ">".$offer->full_service_name()." - ".$offer->formatted_price()."</option>";
+					}
+					?>
+				</select>
+
 
 			<?php
 				if ($shipment->offer && true == $shipment->offer->pickup) {
@@ -202,7 +204,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<button type="button" class="button button-primary book-offer"><?php _e( 'Book this service', 'my-flying-box' ); ?></button>
 		</div>
 				<?php
-
+			} else {
+				echo '<p>';
+				echo _e('No offer available. Is all the data correct?', 'my-flying-box' );
+				echo '</p>';
+			}
 		} else {
 		?>
 			<div class="mfb-booked-offer">
