@@ -2,7 +2,7 @@
 Contributors: tbelliard
 Tags: wordpress, plugin, template, woocommerce
 Requires at least: 3.9
-Tested up to: 4.6
+Tested up to: 5.4
 Stable tag: 1.0
 License: MIT
 License URI: http://opensource.org/licenses/MIT
@@ -19,14 +19,9 @@ You will need a My Flying Box account to use this plugin. Contact us at info@myf
 
 == Installation ==
 
-Installing "My Flying Box" can only be done from source at the moment:
+Go to the 'releases' page https://github.com/myflyingbox/woocommerce-plugin/releases and download the latest package (woocommerce-myflyingbox-v*.zip).
 
-1. Go to your Wordpress plugin folder (WP_ROOT/wp-content/plugins/)
-2. git clone --recursive https://github.com/myflyingbox/woocommerce-plugin.git my-flying-box
-3. cd my-flying-box/includes/lib/php-lce
-4. curl -s http://getcomposer.org/installer | php
-5. php composer.phar install
-6. Open WordPress admin panel, and activate the module
+Upload this package through the standard wordpress extension installation mechanisms.
 
 == Development ==
 
@@ -38,8 +33,17 @@ Styles are managed with Less, and compiled with Grunt.
 First, install grunt: npm install -g grunt-cli
 Then, at the root of the plugin, run grunt: grunt
 
+=== Installation from source
+
+Installation from source needs composer to load dependencies.
+
+1. Go to your Wordpress plugin folder (WP_ROOT/wp-content/plugins/)
+2. git clone --recursive https://github.com/myflyingbox/woocommerce-plugin.git my-flying-box
+3. cd my-flying-box/includes/lib/php-lce
+4. curl -s http://getcomposer.org/installer | php
+5. php composer.phar install
+6. Open WordPress admin panel, and activate the module
 
 == Changelog ==
 
 Please see release history on Github (https://github.com/myflyingbox/woocommerce-plugin/releases)
-
