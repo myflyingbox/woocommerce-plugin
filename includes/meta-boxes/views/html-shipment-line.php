@@ -48,6 +48,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<a class="edit_parcel" href="#"><img src="<?php echo WC()->plugin_url() ?>/assets/images/icons/edit.png" alt="<?php _e( 'Edit shipper address', 'my-flying-box' ) ?>" width="14" /></a>
 								<?php if ( $key > 0) { ?>
 								<a class="delete_parcel" href="#"></a>
+								<span class="spinner delete-parcel-spinner"></span>
 								<?php } ?>
 							<?php } ?>
 						</p>
@@ -72,7 +73,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</select>
 						<br/>
 						<button class="button cancel_parcel_form"><?php _e( 'Cancel', 'my-flying-box' ) ?></button>
-						<button class="button submit_parcel_form"><?php _e( 'Submit', 'my-flying-box' ) ?></button>
+						<button class="button submit_parcel_form"><span class="spinner"></span><?php _e( 'Submit', 'my-flying-box' ) ?></button>
 					</div>
 				</div>
 			<?php
@@ -106,7 +107,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</select>
 						<br/>
 						<button class="button cancel_parcel_form"><?php _e( 'Cancel', 'my-flying-box' ) ?></button>
-						<button class="button submit_parcel_form"><?php _e( 'Submit', 'my-flying-box' ) ?></button>
+						<button class="button submit_parcel_form"><span class="spinner"></span><?php _e( 'Submit', 'my-flying-box' ) ?></button>
 					</div>
 				</div>
 			<?php } ?>
@@ -201,7 +202,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					echo '</p>';
 				}
 			?>
-			<button type="button" class="button button-primary book-offer"><?php _e( 'Book this service', 'my-flying-box' ); ?></button>
+			<button type="button" class="button button-primary book-offer"><span class="spinner"></span><?php _e( 'Book this service', 'my-flying-box' ); ?></button>
 		</div>
 				<?php
 			} else {

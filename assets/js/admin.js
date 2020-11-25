@@ -62,6 +62,7 @@ jQuery( function ( $ ) {
 			var relay_code = '';
 			var insurance = '0';
 
+			$( this ).find( '.spinner' ).addClass( 'is-active' );
 			if ( date_selector ) {
 				pickup_date = date_selector.val();
 			}
@@ -178,6 +179,7 @@ jQuery( function ( $ ) {
 			event.preventDefault();
 			var action = 'mfb_update_recipient';
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
+			$( this ).find( '.spinner' ).addClass( 'is-active' );
 			$.ajax({
 				url:  mfb_js_resources.ajax_url,
 				data: $( this ).closest('div.recipient_form_container').find('input, textarea, select').serialize()+'&action='+action+'&shipment_id='+shipment_id,
@@ -192,6 +194,7 @@ jQuery( function ( $ ) {
 			event.preventDefault();
 			var action = 'mfb_update_shipper';
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
+			$( this ).find( '.spinner' ).addClass( 'is-active' );
 			$.ajax({
 				url:  mfb_js_resources.ajax_url,
 				data: $( this ).closest('div.shipper_form_container').find('input, textarea, select').serialize()+'&action='+action+'&shipment_id='+shipment_id,
@@ -207,6 +210,7 @@ jQuery( function ( $ ) {
 			var action = 'mfb_update_parcel';
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
 			var parcel_index = $( this ).closest('div.parcel').data('parcel_index');
+			$( this ).find( '.spinner' ).addClass( 'is-active' );
 			$.ajax({
 				url:  mfb_js_resources.ajax_url,
 				data: $( this ).closest('div.parcel-form').find('input, select').serialize()+'&action='+action+'&shipment_id='+shipment_id+"&parcel_index="+parcel_index,
@@ -223,6 +227,7 @@ jQuery( function ( $ ) {
 			var action = 'mfb_delete_parcel';
 			var shipment_id = $( this ).closest('tr').data('shipment_id');
 			var parcel_index = $( this ).closest('div.parcel').data('parcel_index');
+			$( this ).closest('div.parcel').find( '.spinner.delete-parcel-spinner' ).addClass( 'is-active' );
 			$.ajax({
 				url:  mfb_js_resources.ajax_url,
 				data: 'action='+action+'&shipment_id='+shipment_id+"&parcel_index="+parcel_index,
