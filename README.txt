@@ -2,7 +2,7 @@
 Contributors: tbelliard
 Tags: wordpress, plugin, template, woocommerce
 Requires at least: 3.9
-Tested up to: 5.4
+Tested up to: 5.5
 Stable tag: 1.0
 License: MIT
 License URI: http://opensource.org/licenses/MIT
@@ -30,8 +30,15 @@ Here are some useful commands for developing on this module.
 === CSS
 
 Styles are managed with Less, and compiled with Grunt.
-First, install grunt: npm install -g grunt-cli
-Then, at the root of the plugin, run grunt: grunt
+
+Make sure to install nodejs, with nvm:
+curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+source ~/.profile
+
+Then run: npm install
+This will install all dependencies based on package-lock.json
+
+Finally, run grunt to compile JS and CSS, using npx, the tool provided by nvm to run module executables in the current nvm context: npx grunt
 
 === Installation from source
 
