@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-$shipment = $thebulkorder->get_shipment_for_order( $wc_order->id );
+$shipment = $thebulkorder->get_shipment_for_order( $wc_order->get_id() );
 
 if ( $shipment ) {
 
@@ -16,7 +16,7 @@ if ( $shipment ) {
 <tr class="shipment" data-shipment_id="<?php echo $shipment->id; ?>">
 
   <td><?php
-    echo '<a href="' . admin_url( 'post.php?post=' . absint( $wc_order->id ) . '&action=edit' ) . '" class="row-title">';
+    echo '<a href="' . admin_url( 'post.php?post=' . absint( $wc_order->get_id() ) . '&action=edit' ) . '" class="row-title">';
     echo $wc_order->get_order_number();
     echo '</a>';
   ?></td>
@@ -108,7 +108,7 @@ if ( $shipment ) {
 
         foreach ( $locations as $location ) {
           echo "<option value='".$location->code."'";
-          $preferred_location = get_post_meta( $theorder->id, '_mfb_delivery_location');
+          $preferred_location = get_post_meta( $theorder->get_id(), '_mfb_delivery_location');
           if ( $location->code == $preferred_location[0] ) {
             echo " selected";
           }
@@ -190,16 +190,24 @@ if ( $shipment ) {
 } else {
 
   ?>
-<tr class="shipment" data-order_id="<?php echo $wc_order->id; ?>">
+<tr class="shipment" data-order_id="<?php echo $wc_order->get_id(); ?>">
 
   <td><?php echo $wc_order->get_order_number(); ?></td>
 
   <td colspan="6"><?php
-    if (MFB_Shipment::get_last_booked_for_order( $wc_order->id ) != null) {
-      _e('This order already has a booked shipment. You cannot create a new shipment through bulk processing.', 'my-flying-box');
-    } else {
-      _e('No shipment has been generated yet for this order.', 'my-flying-box');
-    }
+		if ( $thebulkorder->return_shipments ) {
+			if (MFB_Shipment::get_last_booked_for_order( $wc_order->get_id(), true ) != null) {
+	      _e('This order already has a booked return shipment. You cannot create a new return shipment through bulk processing.', 'my-flying-box');
+	    } else {
+	      _e('No return shipment has been booked yet for this order.', 'my-flying-box');
+	    }
+		} else {
+			if (MFB_Shipment::get_last_booked_for_order( $wc_order->get_id() ) != null) {
+	      _e('This order already has a booked shipment. You cannot create a new shipment through bulk processing.', 'my-flying-box');
+	    } else {
+	      _e('No shipment has been generated yet for this order.', 'my-flying-box');
+	    }
+		}
     ?>
     </td>
 </tr>

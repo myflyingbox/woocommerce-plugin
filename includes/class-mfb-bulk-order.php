@@ -12,6 +12,7 @@ class MFB_Bulk_Order {
   public $orders = array();
 
   public $status = null;
+  public $return_shipments = false;
 
 
 
@@ -39,6 +40,8 @@ class MFB_Bulk_Order {
     foreach( $this->wc_order_ids as $wc_order_id ){
       $this->orders[] = wc_get_order( $wc_order_id );
     }
+
+		$this->return_shipments = get_post_meta( $this->id, '_return_shipments', true );
   }
 
   public function save() {
@@ -64,6 +67,7 @@ class MFB_Bulk_Order {
     ));
 
     update_post_meta( $this->id, '_wc_order_ids', $this->wc_order_ids );
+    update_post_meta( $this->id, '_return_shipments', $this->return_shipments );
 
     foreach( $this->wc_order_ids as $wc_order_id ) {
         update_post_meta( $wc_order_id, '_mfb_bulk_order_id', $this->id );
@@ -139,17 +143,28 @@ class MFB_Bulk_Order {
   public function add_order( $order ) {
 
     // Order already included in this bulk order
-    if ( in_array( $order->id, $this->wc_order_ids ) ) {
+    if ( in_array( $order->get_id(), $this->wc_order_ids ) ) {
       return array('success' => false, 'error' => 'already_included');
     }
 
-    // Order already has a booked MFB shipment, so can't be included in a bulk order to avoid doubles
-    if ( MFB_Shipment::get_last_booked_for_order( $order->id ) != null ) {
-      return array('success' => false, 'error' => 'already_shipped');
+    if ( $this->return_shipments ) {
+      // For return shipments, at least one booked shipment must be present and it must
+      // not be a return shipment.
+      $latest = MFB_Shipment::get_last_booked_for_order( $order->get_id() );
+      if ( $latest == null) {
+        return array('success' => false, 'error' => 'no_initial_shipment');
+      } else if ( $latest->is_return ) {
+        return array('success' => false, 'error' => 'already_returned');
+      }
+    } else {
+      // Order already has a booked MFB shipment, so can't be included in a bulk order to avoid doubles
+      if ( MFB_Shipment::get_last_booked_for_order( $order->get_id() ) != null ) {
+        return array('success' => false, 'error' => 'already_shipped');
+      }
     }
 
     // All good, adding the order to the list.
-    $this->wc_order_ids[] = $order->id;
+    $this->wc_order_ids[] = $order->get_id();
     $this->orders[] = $order;
 
     // try {

@@ -150,6 +150,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		// Load Background Process class, to make the hook available when cron is run
 		if ( is_admin() ) {
 			$queue = new MFB_Bulk_Order_Background_Process();
+			$queue_returns = new MFB_Bulk_Order_Return_Background_Process();
 		}
 
 		$api_env = My_Flying_Box_Settings::get_option('mfb_api_env');
@@ -441,6 +442,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		// Checking if dependency is met
 		if ( class_exists( 'WP_Background_Process' ) ) {
 			include_once( 'class-mfb-bulk-order-background-process.php' );
+			include_once( 'class-mfb-bulk-order-return-background-process.php' );
 		}
 	}
 

@@ -49,6 +49,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
       require_once( 'includes/lib/wp-background-process.php' );
     }
     require_once( 'includes/class-mfb-bulk-order-background-process.php' );
+    require_once( 'includes/class-mfb-bulk-order-return-background-process.php' );
     require_once( 'includes/class-my-flying-box-multiple-shipment.php' );
 
     // Load view elements
