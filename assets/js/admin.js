@@ -25,7 +25,8 @@ jQuery( function ( $ ) {
 				.on( 'click',  'div.mfb-booked-offer button.download-labels',									this.download_labels )
 				.on( 'click',  'div.parcel div.parcel-form button.submit_parcel_form',				this.submit_parcel_form )
 				.on( 'change', 'div.mfb-available-offers select.offer-selector',							this.update_selected_offer )
-				.on( 'click',  'a.delete-shipment',		this.delete_shipment );
+				.on( 'click',  'a.delete-shipment',						this.delete_shipment )
+				.on( 'click',  'button.add-return-shipment',	this.add_return_shipment );
 
 
 			$( '#myflyingbox-bulk-shipments' )
@@ -121,6 +122,23 @@ jQuery( function ( $ ) {
 		delete_shipment: function() {
 			var data = {
 				action:   'mfb_delete_shipment',
+				shipment_id: $( this ).closest('tr').data('shipment_id')
+			};
+
+			$.ajax({
+				url:  mfb_js_resources.ajax_url,
+				data: data,
+				type: 'POST',
+				success: function( response ) {
+					window.location.reload();
+				}
+			});
+			return false;
+		},
+
+		add_return_shipment: function() {
+			var data = {
+				action:   'mfb_create_return_shipment',
 				shipment_id: $( this ).closest('tr').data('shipment_id')
 			};
 

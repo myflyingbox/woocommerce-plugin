@@ -22,6 +22,7 @@ class MFB_Shipment {
 	public $collection_date = null; // Selected collection date at time of booking.
 	public $delivery_location_code = null; // Selected relay delivery at time of booking.
 	public $insured = false; // Do we insure this shipment?
+	public $return = false; // Is this a return shipment?
 
 	public $delivery_location = null; // std Object containing the selected delivery location characteristics
 
@@ -99,6 +100,7 @@ class MFB_Shipment {
 		$this->delivery_location_code = get_post_meta( $this->id, '_delivery_location_code', true ); // Selected relay
 		$this->delivery_location      = get_post_meta( $this->id, '_delivery_location', true ); // Selected relay (full object with details)
 		$this->insured                = get_post_meta( $this->id, '_insured', true ); // Do we insure this shipment?
+		$this->return                 = get_post_meta( $this->id, '_return', true ); // Is this a return shipment?
 
 
 		// Loading Shipper and Recipient
@@ -185,7 +187,7 @@ class MFB_Shipment {
 	}
 
 
-	public static function create_from_order( $order, $bulk_order_id = null ) {
+	public static function create_from_order( $order, $bulk_order_id = null, $return_shipment = false ) {
 
 		$shipment = new self();
 		$shipment->wc_order_id = $order->get_id();
@@ -196,27 +198,46 @@ class MFB_Shipment {
 		}
 
 		$shipment->bulk_order_id = $bulk_order_id;
+		$shipment->return = $return_shipment;
+
+		// How do we use the fixed address defined in the module?
+		// If return shipment, the fixed address it the recipient.
+		// Otherwise it is the shipper.
+		if ( $return_shipment ) {
+			$fixed_address_attribute = 'recipient';
+		} else {
+			$fixed_address_attribute = 'shipper';
+		}
 
 		// Setting default shipper data
 		foreach( self::$address_fields as $fieldname ) {
-			$shipment->shipper->$fieldname = get_option( 'mfb_shipper_'.$fieldname );
+			$shipment->$fixed_address_attribute->$fieldname = get_option( 'mfb_shipper_'.$fieldname );
+		}
+
+		// How do we use the dynamic address defined by the customer?
+		// If return shipment, the dynamic address it the shipper.
+		// Otherwise it is the recipient.
+		if ( $return_shipment ) {
+			$dynamic_address_attribute = 'shipper';
+		} else {
+			$dynamic_address_attribute = 'recipient';
 		}
 
 		// Setting recipient data from order shipping address
-		$shipment->recipient->name          = $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name();
-		$shipment->recipient->company       = $order->get_shipping_company();
-		$shipment->recipient->street        = $order->get_shipping_address_1();
+		$shipment->$dynamic_address_attribute->name          = $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name();
+		$shipment->$dynamic_address_attribute->company       = $order->get_shipping_company();
+		$shipment->$dynamic_address_attribute->street        = $order->get_shipping_address_1();
 
 		$ship_addr2 = trim( $order->get_shipping_address_2() );
-		if ( ! empty($ship_addr2) ) $shipment->recipient->street .= "\n" . $ship_addr2;
+		if ( ! empty($ship_addr2) ) $shipment->$dynamic_address_attribute->street .= "\n" . $ship_addr2;
 
-		$shipment->recipient->city          = $order->get_shipping_city();
-		$shipment->recipient->postal_code   = $order->get_shipping_postcode();
-		$shipment->recipient->state         = $order->get_shipping_state();
-		$shipment->recipient->country_code  = $order->get_shipping_country();
+		$shipment->$dynamic_address_attribute->city          = $order->get_shipping_city();
+		$shipment->$dynamic_address_attribute->postal_code   = $order->get_shipping_postcode();
+		$shipment->$dynamic_address_attribute->state         = $order->get_shipping_state();
+		$shipment->$dynamic_address_attribute->country_code  = $order->get_shipping_country();
 
-		$shipment->recipient->email         = $order->get_billing_email();
-		$shipment->recipient->phone         = $order->get_billing_phone();
+		$shipment->$dynamic_address_attribute->email         = $order->get_billing_email();
+		$shipment->$dynamic_address_attribute->phone         = $order->get_billing_phone();
 
 
 		// If a location code was associated to the order, we record it here
@@ -310,6 +331,62 @@ class MFB_Shipment {
 
 		return $shipment;
 	}
+
+
+		public static function create_from_shipment( $mfb_shipment_id, $return_shipment = false ) {
+
+			$origin_shipment = self::get( $mfb_shipment_id );
+
+			$shipment = new self();
+			$shipment->wc_order_id = $origin_shipment->wc_order_id;
+			if ($bulk_order_id == null) {
+				$shipment->status = 'mfb-draft';
+			} else {
+				$shipment->status = 'mfb-processing';
+			}
+
+			// For a return shipment, all is reversed
+			if ( $return_shipment ) {
+				$shipper_address_attribute 		= 'recipient';
+				$recipient_address_attribute 	= 'shipper';
+			} else {
+				$shipper_address_attribute 		= 'shipper';
+				$recipient_address_attribute 	= 'recipient';
+			}
+
+			// Setting address data
+			foreach( self::$address_fields as $fieldname ) {
+				$shipment->$shipper_address_attribute->$fieldname 	= $origin_shipment->shipper->$fieldname;
+				$shipment->$recipient_address_attribute->$fieldname = $origin_shipment->recipient->$fieldname;
+			}
+
+			// If a location code was associated to the order, we record it here, unless
+			// this is a return shipment in which case this is not applicable anymore.
+			if ( !$return_shipment ) {
+				$shipment->delivery_location_code = $origin_shipment->delivery_location_code;
+			}
+
+			// Initialize a default parcel based on total weight of order and dimensions if available
+			for( $i = 1; $i <= $origin_shipment->parcels_count; $i++ ) {
+				$shipment->parcels[$i-1] = new stdClass(); // Initializing parcel object
+				foreach( self::$parcel_fields as $fieldname ) { // Looping on each parcel attribute
+					$shipment->parcels[$i-1]->$fieldname = $origin_shipment->parcels[$i-1]->$fieldname;
+				}
+			}
+
+			$shipment->insured = $origin_shipment->insured;
+
+			$shipment->save();
+
+			// All good. Now we try to get a quote straight away.
+			$quote = $shipment->get_new_quote();
+
+			$shipment->save();
+
+			$shipment->autoselect_offer( $order );
+
+			return $shipment;
+		}
 
 	public function autoselect_offer( $order = null ) {
 		if ( $this->quote && $this->wc_order_id ) {

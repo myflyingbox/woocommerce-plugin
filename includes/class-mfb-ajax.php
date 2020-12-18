@@ -17,6 +17,7 @@ class MFB_AJAX {
 		$ajax_events = array(
 			'get_delivery_locations'                          => true,
 			'create_shipment'                                 => false,
+			'create_return_shipment'                          => false,
 			'book_offer'                                      => false,
 			'delete_shipment'                                 => false,
 			'delete_bulk_order'                               => false,
@@ -225,6 +226,19 @@ class MFB_AJAX {
 		$order_id = intval( $_POST['order_id'] );
 		$order = new WC_Order( $order_id );
 		$shipment = MFB_Shipment::create_from_order( $order );
+		$response['data'] = 'success';
+		$response['shipment'] = $shipment;
+
+		// Whatever the outcome, send the Response back
+		wp_send_json( $response );
+	}
+
+	public static function create_return_shipment () {
+		// We create a ready-to-confirm shipment object based on existing order
+		$origin_shipment_id = intval( $_POST['shipment_id'] );
+
+		// Second parameter means we want a return shipment
+		$shipment = MFB_Shipment::create_from_shipment( $origin_shipment_id, true );
 		$response['data'] = 'success';
 		$response['shipment'] = $shipment;
 
