@@ -105,6 +105,24 @@ class MFB_Settings_Account extends MFB_Settings_Page {
 					'default'   => '',
 					'required' => false
 				),
+				array(
+					'id'      => 'mfb_default_domestic_return_service',
+					'title'     => __( 'Default service for return shipments (domestic)', 'my-flying-box' ),
+					'desc' => __( 'Only used in back-office when generating return shipments.', 'my-flying-box' ),
+					'type'      => 'select',
+					'options'   => array( '' => __( 'Select a service...', 'my-flying-box' ) ) + MFB_Carrier::get_all_for_select(),
+					'default'   => '',
+					'required' => false
+				),
+				array(
+					'id'      => 'mfb_default_international_return_service',
+					'title'     => __( 'Default service for return shipments (international)', 'my-flying-box' ),
+					'desc' => __( 'Only used in back-office when generating return shipments.', 'my-flying-box' ),
+					'type'      => 'select',
+					'options'   => array( '' => __( 'Select a service...', 'my-flying-box' ) ) + MFB_Carrier::get_all_for_select(),
+					'default'   => '',
+					'required' => false
+				),
 			array(
 				'id'            => 'mfb_thermal_printing',
 				'title'         => __( 'Thermal printing', 'my-flying-box' ),

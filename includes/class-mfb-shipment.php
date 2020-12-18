@@ -22,7 +22,7 @@ class MFB_Shipment {
 	public $collection_date = null; // Selected collection date at time of booking.
 	public $delivery_location_code = null; // Selected relay delivery at time of booking.
 	public $insured = false; // Do we insure this shipment?
-	public $return = false; // Is this a return shipment?
+	public $is_return = false; // Is this a return shipment?
 
 	public $delivery_location = null; // std Object containing the selected delivery location characteristics
 
@@ -100,7 +100,7 @@ class MFB_Shipment {
 		$this->delivery_location_code = get_post_meta( $this->id, '_delivery_location_code', true ); // Selected relay
 		$this->delivery_location      = get_post_meta( $this->id, '_delivery_location', true ); // Selected relay (full object with details)
 		$this->insured                = get_post_meta( $this->id, '_insured', true ); // Do we insure this shipment?
-		$this->return                 = get_post_meta( $this->id, '_return', true ); // Is this a return shipment?
+		$this->is_return              = get_post_meta( $this->id, '_is_return', true ); // Is this a return shipment?
 
 
 		// Loading Shipper and Recipient
@@ -162,7 +162,7 @@ class MFB_Shipment {
 		return $shipments;
 	}
 
-	public static function get_last_booked_for_order( $order_id ) {
+	public static function get_last_booked_for_order( $order_id, $return = false ) {
 
 		$all_shipments = get_children( array(
 			'post_type'     => 'mfb_shipment',
@@ -176,7 +176,10 @@ class MFB_Shipment {
 		$shipments = array();
 
 		foreach($all_shipments as $shipment) {
-			$shipments[] = self::get($shipment->ID);
+			$shipment = self::get($shipment->ID);
+			if ( $shipment->is_return == $return ) {
+				$shipments[] = $shipment;
+			}
 		}
 
 		if ( !empty( $shipments ) ) {
@@ -198,7 +201,7 @@ class MFB_Shipment {
 		}
 
 		$shipment->bulk_order_id = $bulk_order_id;
-		$shipment->return = $return_shipment;
+		$shipment->is_return = $return_shipment;
 
 		// How do we use the fixed address defined in the module?
 		// If return shipment, the fixed address it the recipient.
@@ -269,7 +272,12 @@ class MFB_Shipment {
 			}
 		}
 
-		$shipping_method = $shipment->get_customer_shipping_method( $order );
+		if ( $shipment->is_return ) {
+			$shipping_method = $shipment->get_customer_shipping_method( $order );
+		} else {
+			$shipping_method = false;
+		}
+
 
 		if ( $shipping_method ) {
 			$force_dimensions_table = $shipping_method->force_dimensions_table;
@@ -333,7 +341,7 @@ class MFB_Shipment {
 	}
 
 
-		public static function create_from_shipment( $mfb_shipment_id, $return_shipment = false ) {
+		public static function create_from_shipment( $mfb_shipment_id, $return_shipment = false, $bulk_order_id = null ) {
 
 			$origin_shipment = self::get( $mfb_shipment_id );
 
@@ -344,12 +352,16 @@ class MFB_Shipment {
 			} else {
 				$shipment->status = 'mfb-processing';
 			}
+			
+			$shipment->bulk_order_id = $bulk_order_id;
 
 			// For a return shipment, all is reversed
 			if ( $return_shipment ) {
+				$shipment->is_return = true;
 				$shipper_address_attribute 		= 'recipient';
 				$recipient_address_attribute 	= 'shipper';
 			} else {
+				$shipment->is_return = false;
 				$shipper_address_attribute 		= 'shipper';
 				$recipient_address_attribute 	= 'recipient';
 			}
@@ -366,7 +378,7 @@ class MFB_Shipment {
 				$shipment->delivery_location_code = $origin_shipment->delivery_location_code;
 			}
 
-			// Initialize a default parcel based on total weight of order and dimensions if available
+			// Initialize parcels on the basis of origin shipment parcels
 			for( $i = 1; $i <= $origin_shipment->parcels_count; $i++ ) {
 				$shipment->parcels[$i-1] = new stdClass(); // Initializing parcel object
 				foreach( self::$parcel_fields as $fieldname ) { // Looping on each parcel attribute
@@ -379,44 +391,56 @@ class MFB_Shipment {
 			$shipment->save();
 
 			// All good. Now we try to get a quote straight away.
+			// get_new_quote will call autoselect_offer, which will save the shipment as well.
+			// So we will reload the shipment to make sure that the data is up to date.
 			$quote = $shipment->get_new_quote();
-
-			$shipment->save();
-
-			$shipment->autoselect_offer( $order );
+			$shipment->populate();
 
 			return $shipment;
 		}
 
 	public function autoselect_offer( $order = null ) {
-		if ( $this->quote && $this->wc_order_id ) {
-			if ( null === $order ) $order = wc_get_order( $this->wc_order_id );
-			$this->offer = null;
+		if ( $this->is_return ) {
+			// For return shipments, always use services defined in config.
+			if ( $this->domestic() ) {
+				$default_service = My_Flying_Box_Settings::get_option('mfb_default_domestic_return_service');
+			} else {
+				$default_service = My_Flying_Box_Settings::get_option('mfb_default_international_return_service');
+			}
 
-			// Auto-setting the offer based on what the customer has chosen
-			if ( count($order->get_shipping_methods()) == 1 ) {
-				$shipping_methods = $order->get_shipping_methods();
-				$methods = array_pop($shipping_methods);
-				$chosen_method = explode(':', $methods->get_method_id())[0];
+			if ( $default_service && array_key_exists($default_service, $this->quote->offers)  ) {
+				$this->offer = $this->quote->offers[$default_service];
+			}
+		} else {
+			if ( $this->quote && $this->wc_order_id ) {
+				if ( null === $order ) $order = wc_get_order( $this->wc_order_id );
+				$this->offer = null;
 
-				// Testing if the chosen method is listed on the API offers
-				if ( array_key_exists($chosen_method, $this->quote->offers) ) {
-					$this->offer = $this->quote->offers[$chosen_method];
-				} else {
-					// Maybe the offer selected by the customer was not a MFB service.
-					// In this case, we try to select a default service, if applicable.
-					if ( $this->domestic() ) {
-						$default_service = My_Flying_Box_Settings::get_option('mfb_default_domestic_service');
+				// Auto-setting the offer based on what the customer has chosen
+				if ( count($order->get_shipping_methods()) == 1 ) {
+					$shipping_methods = $order->get_shipping_methods();
+					$methods = array_pop($shipping_methods);
+					$chosen_method = explode(':', $methods->get_method_id())[0];
+
+					// Testing if the chosen method is listed on the API offers
+					if ( array_key_exists($chosen_method, $this->quote->offers) ) {
+						$this->offer = $this->quote->offers[$chosen_method];
 					} else {
-						$default_service = My_Flying_Box_Settings::get_option('mfb_default_international_service');
-					}
-					if ( array_key_exists($default_service, $this->quote->offers)  ) {
-						$this->offer = $this->quote->offers[$default_service];
+						// Maybe the offer selected by the customer was not a MFB service.
+						// In this case, we try to select a default service, if applicable.
+						if ( $this->domestic() ) {
+							$default_service = My_Flying_Box_Settings::get_option('mfb_default_domestic_service');
+						} else {
+							$default_service = My_Flying_Box_Settings::get_option('mfb_default_international_service');
+						}
+						if ( array_key_exists($default_service, $this->quote->offers)  ) {
+							$this->offer = $this->quote->offers[$default_service];
+						}
 					}
 				}
 			}
-			$this->save();
 		}
+		$this->save();
 	}
 
 	public function get_customer_shipping_method( $order = null ) {
@@ -525,6 +549,7 @@ class MFB_Shipment {
 		update_post_meta( $this->id, '_delivery_location_code', $this->delivery_location_code );
 
 		update_post_meta( $this->id, '_insured', $this->insured );
+		update_post_meta( $this->id, '_is_return', $this->is_return );
 
 		// Saving the delivery location details, if applicable
 		if ( $this->offer && $this->offer->relay == true && !empty($this->delivery_location_code) ) {
@@ -684,8 +709,6 @@ class MFB_Shipment {
 				$this->quote = $quote;
 				$this->offer = null;
 				$this->save();
-
-
 			}
 			// Refreshing the quote, to get the offers loaded properly
 			$quote->populate();
