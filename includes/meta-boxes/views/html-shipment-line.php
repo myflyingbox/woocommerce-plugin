@@ -264,9 +264,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 		<?php
 		}
-
+		if ( !$shipment->is_return ) {
+			?>
+			<button type="button" class="button button-primary add-return-shipment"><span class="spinner"></span><?php _e( 'Add return shipment', 'my-flying-box' ); ?></button>
+		<?php
+		}
 		?>
-		<button type="button" class="button button-primary add-return-shipment"><span class="spinner"></span><?php _e( 'Add return shipment', 'my-flying-box' ); ?></button>
 	</td>
 
 	<td>
