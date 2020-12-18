@@ -142,6 +142,7 @@ class MFB_Carrier extends WC_Shipping_Method {
 		$this->active       = ($this->post->post_status == 'mfb-active') ? true : false;
 
 		$this->code               = get_post_meta( $this->id, '_code', true );
+		$this->carrier_name       = get_post_meta( $this->id, '_carrier_name', true);
 		$this->shop_delivery      = get_post_meta( $this->id, '_shop_delivery', true);
 		$this->pickup_supported   = get_post_meta( $this->id, '_pickup_supported', true);
 		$this->dropoff_supported  = get_post_meta( $this->id, '_dropoff_supported', true);
@@ -197,7 +198,7 @@ class MFB_Carrier extends WC_Shipping_Method {
     $options = array();
     $carriers = self::get_all();
     foreach ($carriers as $carrier) {
-      $options[$carrier->code] = $carrier->name;
+      $options[$carrier->code] = $carrier->carrier_name.' - '.$carrier->name;
     }
     return $options;
   }
@@ -240,7 +241,7 @@ class MFB_Carrier extends WC_Shipping_Method {
 					update_post_meta( $carrier->id, '_shop_delivery',      ($product->preset_delivery_location == 1 ? true : false) );
 					update_post_meta( $carrier->id, '_pickup_supported',   ($product->pick_up == 1 ? true : false) );
 					update_post_meta( $carrier->id, '_dropoff_supported',  ($product->drop_off == 1 ? true : false) );
-
+					update_post_meta( $carrier->id, '_carrier_name',  		 self::convert_carrier_code_to_carrier_name($product->carrier_code) );
 				}
 			}
 		}
@@ -283,12 +284,30 @@ class MFB_Carrier extends WC_Shipping_Method {
 				update_post_meta( $carrier_id, '_shop_delivery',      $api_service->preset_delivery_location );
 				update_post_meta( $carrier_id, '_pickup_supported',   $api_service->pick_up );
 				update_post_meta( $carrier_id, '_dropoff_supported',  $api_service->drop_off );
+				update_post_meta( $carrier_id, '_carrier_name',  			self::convert_carrier_code_to_carrier_name($api_service->carrier_code) );
 
 				return self::get( $carrier_id );
 			}
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * For a given carrier code (dhl, mondial_relay, etc.), return a human-friendly
+	 * carrier name (DHL, Mondial Relay).
+	 */
+	public static function convert_carrier_code_to_carrier_name( $carrier_code ) {
+		if ( strlen($carrier_code) > 4 ) {
+				 $str = '';
+				 $parts = explode('_',$carrier_code);
+				 foreach($parts as $part){
+					 $str.= ucfirst($part).' ';
+				 }
+				 return trim($str);
+			} else {
+				 return strtoupper($carrier_code);
+		 }
 	}
 
 	/**
