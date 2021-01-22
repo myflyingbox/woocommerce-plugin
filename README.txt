@@ -51,6 +51,11 @@ Installation from source needs composer to load dependencies.
 5. php composer.phar install
 6. Open WordPress admin panel, and activate the module
 
+== Translations ==
+
+Wordpress uses gettext to manage translations. The easiest way to update plugin translations is to use a tool like POEdit.
+
+
 == Changelog ==
 
 Please see release history on Github (https://github.com/myflyingbox/woocommerce-plugin/releases)

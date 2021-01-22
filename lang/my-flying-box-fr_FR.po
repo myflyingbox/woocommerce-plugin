@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Flying Box 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-18 18:07+0200\n"
-"PO-Revision-Date: 2020-12-18 18:10+0200\n"
+"POT-Creation-Date: 2021-01-22 11:36+0200\n"
+"PO-Revision-Date: 2021-01-22 11:39+0200\n"
 "Last-Translator: thomas <thomas@lce.io>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.4.1\n"
 "X-Poedit-KeywordsList: _:1;gettext:1;dgettext:2;ngettext:1,2;dngettext:2,3;"
 "__:1;_e:1;_c:1;_n:1,2;_n_noop:1,2;_nc:1,2;__ngettext:1,2;__ngettext_noop:1,2;"
 "_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;_nx_js:1,2,3c;"
@@ -57,7 +57,7 @@ msgstr ""
 msgid "Error while booking shipment for Order %s: %s"
 msgstr "Erreur lors de la confirmation de l'expédition pour la commande %s: %s"
 
-#: includes/class-mfb-bulk-order-return-background-process.php:39
+#: includes/class-mfb-bulk-order-return-background-process.php:38
 msgid ""
 "The return shipment could not be booked (probably no offer could be "
 "automatically selected)"
@@ -65,7 +65,7 @@ msgstr ""
 "L'expédition retour n'a pas pu être enregistrée (aucune offre n'a pu être "
 "sélectionnée de manière automatique ?)"
 
-#: includes/class-mfb-bulk-order-return-background-process.php:42
+#: includes/class-mfb-bulk-order-return-background-process.php:41
 #, php-format
 msgid "Error while booking return shipment for Order %s: %s"
 msgstr ""
@@ -77,39 +77,39 @@ msgstr ""
 msgid "Bulk shipment #%s has been processed."
 msgstr "L'expédition en masse #%s a été traitée."
 
-#: includes/class-mfb-shipping-method.php:196
+#: includes/class-mfb-shipping-method.php:287
 msgid "Enable"
 msgstr "Activer"
 
-#: includes/class-mfb-shipping-method.php:198
+#: includes/class-mfb-shipping-method.php:289
 msgid "Enable this service"
 msgstr "Activer ce service"
 
-#: includes/class-mfb-shipping-method.php:202
+#: includes/class-mfb-shipping-method.php:293
 msgid "Title"
 msgstr "Titre"
 
-#: includes/class-mfb-shipping-method.php:204
+#: includes/class-mfb-shipping-method.php:295
 msgid "This controls the title which the user sees during checkout."
 msgstr "Défini le nom du service que le client verra à la commande."
 
-#: includes/class-mfb-shipping-method.php:209
+#: includes/class-mfb-shipping-method.php:300
 #: includes/views/html-admin-carriers-list.php:24
 msgid "Description"
 msgstr "Description"
 
-#: includes/class-mfb-shipping-method.php:211
+#: includes/class-mfb-shipping-method.php:302
 msgid ""
 "This controls the description of this shipping method, which the user sees "
 "during checkout."
 msgstr ""
 "Définit la description du du service, visible par le client à la commande."
 
-#: includes/class-mfb-shipping-method.php:216
+#: includes/class-mfb-shipping-method.php:307
 msgid "Tracking URL"
 msgstr "URL de tracking"
 
-#: includes/class-mfb-shipping-method.php:218
+#: includes/class-mfb-shipping-method.php:309
 msgid ""
 "Put the variable TRACKING_NUMBER in the URL, it will be automatically "
 "replaced with the real tracking number when generating the link."
@@ -117,11 +117,35 @@ msgstr ""
 "Placez la variable TRACKING_NUMBER dans l'URL, elle sera automatiquement "
 "remplacée par le numéro de suivi lors de la génération du lien."
 
-#: includes/class-mfb-shipping-method.php:223
+#: includes/class-mfb-shipping-method.php:314
+msgid "Minimum weight"
+msgstr "Poids minimum"
+
+#: includes/class-mfb-shipping-method.php:316
+msgid ""
+"If total weight of the cart is below this value, the service will not be "
+"proposed."
+msgstr ""
+"Si le poids total du panier est inférieur à cette valeur, le service ne sera "
+"pas proposé."
+
+#: includes/class-mfb-shipping-method.php:321
+msgid "Maximum weight"
+msgstr "Poids maximum"
+
+#: includes/class-mfb-shipping-method.php:323
+msgid ""
+"If total weight of the cart is above this value, the service will not be "
+"proposed."
+msgstr ""
+"Si le poids total du panier est supérieur à cette valeur, le service ne sera "
+"pas proposé."
+
+#: includes/class-mfb-shipping-method.php:328
 msgid "Included postcodes"
 msgstr "Codes postaux inclus"
 
-#: includes/class-mfb-shipping-method.php:225
+#: includes/class-mfb-shipping-method.php:330
 msgid ""
 "Limits the service only to these postcodes. One rule per line (or same line "
 "and separated by a comma), using the following format: XX-YYYYY (XX = alpha2 "
@@ -136,11 +160,11 @@ msgstr ""
 "ne spécifié que les codes pays sans codes postaux. Lasisez vide pour "
 "n'appliquer aucune limitation."
 
-#: includes/class-mfb-shipping-method.php:231
+#: includes/class-mfb-shipping-method.php:336
 msgid "Excluded postcodes"
 msgstr "Codes postaux exclus"
 
-#: includes/class-mfb-shipping-method.php:233
+#: includes/class-mfb-shipping-method.php:338
 msgid ""
 "Excludes postcodes matching this list. One rule per line, using the "
 "following format: XX-YYYYY (XX = alpha2 country code, YYYYY = full postcode "
@@ -154,11 +178,11 @@ msgstr ""
 "ne spécifié que les codes pays sans codes postaux. Lasisez vide pour "
 "n'appliquer aucune limitation."
 
-#: includes/class-mfb-shipping-method.php:239
+#: includes/class-mfb-shipping-method.php:344
 msgid "Flat-rate pricing"
 msgstr "Tarif fixe"
 
-#: includes/class-mfb-shipping-method.php:241
+#: includes/class-mfb-shipping-method.php:346
 msgid ""
 "Check to enable pricing based on flat-rate pricing table, as defined below. "
 "When enabled, the prices returned by the API will not be used."
@@ -167,11 +191,11 @@ msgstr ""
 "au poids. Lorsque cette option est activée, les tarifs retournés par l'API "
 "MyFlyingBox seront ignorés."
 
-#: includes/class-mfb-shipping-method.php:245
+#: includes/class-mfb-shipping-method.php:350
 msgid "Flat-rate prices"
 msgstr "Tarifs fixe"
 
-#: includes/class-mfb-shipping-method.php:247
+#: includes/class-mfb-shipping-method.php:352
 msgid ""
 "Prices are based on weight, so you can define as many rules as you want in "
 "the following format: Weight (up to, in kg, e.g. 6 or 7.5) | Price (float "
@@ -182,11 +206,11 @@ msgstr ""
 "par ex. 6 ou 7.5) | Prix (décimal avec un séparateur point, par ex. 3.54). "
 "Une règle par ligne."
 
-#: includes/class-mfb-shipping-method.php:253
+#: includes/class-mfb-shipping-method.php:358
 msgid "Reduce API calls"
 msgstr "Limiter les appels API"
 
-#: includes/class-mfb-shipping-method.php:255
+#: includes/class-mfb-shipping-method.php:360
 msgid ""
 "Check to limit the number of API calls, improving performance of checkout "
 "process. WARNING: use only in conjunction with flatrate pricing (internal or "
@@ -204,11 +228,11 @@ msgstr ""
 "si le service est disponible ou non pour la destination saisie par le "
 "client ; il vous faut donc impérativement utiliser un autre mécanisme!"
 
-#: includes/class-mfb-shipping-method.php:259
+#: includes/class-mfb-shipping-method.php:364
 msgid "Force dimensions table"
 msgstr "Forcer le tableau de dimensions"
 
-#: includes/class-mfb-shipping-method.php:261
+#: includes/class-mfb-shipping-method.php:366
 msgid ""
 "Check to force the use of the weight/dimensions table (defined in module "
 "settings) to determine the packlist, instead of using product dimensions "
@@ -782,10 +806,12 @@ msgid ""
 "This order already has a booked return shipment. You cannot create a new "
 "return shipment through bulk processing."
 msgstr ""
+"Cette commande a déjà une expédition retour. Vous ne pouvez pas ajouter "
+"d'expédition retour à travers le traitement en masse."
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:202
 msgid "No return shipment has been booked yet for this order."
-msgstr ""
+msgstr "Aucune expédition retour n'a encore été générée pour cette commande."
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:206
 msgid ""

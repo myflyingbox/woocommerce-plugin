@@ -15,6 +15,8 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 	public $included_destinations = array();
 	public $excluded_destinations = array();
+	public $min_weight = null;
+	public $max_weight = null;
 
 	public $flat_rates = array();
 
@@ -58,6 +60,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		$this->method_description = $this->description;
 
 		$this->load_destination_restrictions();
+		$this->load_weight_restrictions();
 
 		// Actions
 		// add_filter( 'woocommerce_calculated_shipping',  array( $this, 'calculate_shipping'));
@@ -126,6 +129,39 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		}
 	}
 
+	private function load_weight_restrictions() {
+		$setting_value = $this->get_option('min_weight');
+		if ( !empty($setting_value) && is_numeric($setting_value) ) {
+			$this->min_weight = (float)wc_format_decimal($setting_value);
+		}
+		$setting_value = $this->get_option('max_weight');
+		if ( !empty($setting_value) && is_numeric($setting_value) ) {
+			$this->max_weight = (float)wc_format_decimal($setting_value);
+		}
+	}
+
+
+
+	//
+	// Loads flat rates for this shipping method.
+	//
+	// The flat rate DSL is pretty complex. All rate definitions must be separated by either
+	// a line break (PHP_EOL) or a comma.
+	//
+	// Here is the list of possible valid formats:
+	// 6|12.5 -> costs 12,5 for cart up to 6kg.
+	// ES|6|12.5 -> costs 12,5 for cart up to 6kg, only if destination country is ES
+	// 3|6|12.5 -> costs 12,5 for cart between 3 and 6 kg
+	// ES|3|6|12.5 -> costs 12,5 for cart between 3 and 6 kg, only if destination country is ES
+	//
+	// And for all above examples, it is also possible to limit the rate to a set of specific
+	// shipping classes, by adding a double pipe followed by a list of ;-separated IDs: "||5;22"
+	// Examples:
+	// 6|12.5||5;22
+	// ES|6|12.5||5;22
+	//
+	// If there is any rule with a country prefix, that means that all other rules that do not have
+	// the same country prefix will be totally ignored.
 	public function load_flat_rates( $country ) {
 		$this->flat_rates = array();
 		$rates = array();
@@ -142,48 +178,103 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		$country_specific_pricelist = false;
 
 		$valid_rates = array(); // Storing applicable rates (for current country)
+
 		foreach( $rates as $rate ) {
-			$split = explode('|', $rate);
+			$split1 = explode('||', $rate); // Extracting shipping classes, if applicable
+			$split2 = explode('|', $split1[0]);
 
-			// No country specific rate
-			if ( count($split) == 2) {
-				$weight = trim($split[0]);
-				$price = trim($split[1]);
-				$valid_rates[] = array( null, (float)$weight, (float)$price );
-			// Rate for specific country
-			} else if ( count($split) == 3 && $country != null ) {
-				$rate_country = trim($split[0]);
-				$weight = trim($split[1]);
-				$price = trim($split[2]);
+			// Extracting shipping classes, if present
+			if ( count($split1) == 2 ) {
+				$shipping_classes = array_map('intval', explode(';', $split1[1]));
+			} else {
+				$shipping_classes = null;
+			}
+
+			// Extracting country, if present
+			if ( preg_match("/^[a-z]{2}$/i", $split2[0]) ) {
+				$rate_country = array_shift($split2);
 				if ( $rate_country == $country ) {
-					// We have at least one tariff specific to this country, to we'll ignore any generic tariff
+					// We have at least one tariff specific to this country, so we'll ignore any generic tariff
 					$country_specific_pricelist = true;
-					$valid_rates[] = array( $country, (float)$weight, (float)$price );
 				}
+			} else {
+				$rate_country = null;
 			}
+
+			// Now we only have the weight and price characteristics, with two possible syntaxes:
+			// min weight, max weight, price
+			// max weight, price (min weight is implied by previous valid rate)
+			if ( count($split2) == 2) {
+				$min_weight = null;
+				$max_weight = (float)trim($split2[0]);
+				$rate_price = (float)trim($split2[1]);
+			} else {
+				$min_weight = (float)trim($split2[0]);
+				$max_weight = (float)trim($split2[1]);
+				$rate_price = (float)trim($split2[2]);
+			}
+
+			// Saving rate in temporary array, awaiting further cleanup.
+			$valid_rates[] = array( $rate_country, $min_weight, $max_weight, $rate_price, $shipping_classes );
 		}
-		// Removing duplicates, keeping only latest defined rate and rates applicable to this country, if applicable
-		$weights = array();
+
+		// Keeping only rates that match the applicable country
 		$applicable_country = $country_specific_pricelist ? $country : null;
-		foreach ( array_reverse($valid_rates) as $rate ) {
-			if ( !in_array( $rate[1], $weights ) && $rate[0] == $applicable_country ) {
-				$this->flat_rates[] = array($rate[1], $rate[2]);
+		$rates_for_country = array();
+		foreach ( $valid_rates as $rate ) {
+			if ( $rate[0] == $applicable_country ) {
+				$rates_for_country[] = array('min_weight' => $rate[1], 'max_weight' => $rate[2], 'price' => $rate[3], 'shipping_classes' => $rate[4]);
 			}
-			$weights[] = $rate[1];
 		}
 
-		// Sorting by weight
-		$weights = array();
-		foreach($this->flat_rates as $key => $value){
-			$weights[$key] = $value[1];
-		}
-		array_multisort($weights, SORT_ASC, SORT_NUMERIC, $this->flat_rates);
+		// Now we only have rates that we really want to return. But we must ensure that
+		// all min-weights are set.
+		// For this purpose, we need to first separate the rates based on their applicable shipping classes.
+		$rates_by_shipping_class = array();
+		$shipping_class_identifiers = array();
+		foreach ( $rates_for_country as $rate ) {
 
-		// And finally, setting 'previous_weight' values to ease extraction
-		$previous_weight = 0;
-		foreach($this->flat_rates as $key => $value) {
-			$this->flat_rates[$key] = array($previous_weight, $value[0], $value[1]);
-			$previous_weight = $value[0];
+			if ( $rate['shipping_classes'] == null ) {
+				$shipping_class_identifiers[] = 'none';
+				if ( !array_key_exists('none', $rates_by_shipping_class) )
+					$rates_by_shipping_class['none'] = array();
+
+				$rates_by_shipping_class['none'][] = $rate;
+
+			} else {
+				$class_identifier = join('-',$rate['shipping_classes']);
+				$shipping_class_identifiers[] = $class_identifier;
+				if ( !array_key_exists($class_identifier, $rates_by_shipping_class) )
+					$rates_by_shipping_class[$class_identifier] = array();
+
+				$rates_by_shipping_class[$class_identifier][] = $rate;
+			}
+		}
+
+		// The data is organized. Now we parse all rate series (grouped by shipping class)
+		// and add min-weight information wherever this is not already specified.
+		$shipping_class_identifiers = array_unique($shipping_class_identifiers);
+
+		foreach ($shipping_class_identifiers as $class_id) {
+			$rates_for_class = $rates_by_shipping_class[$class_id];
+
+			// Sorting by max weight
+			$weights = array();
+			foreach( $rates_for_class as $rate ){
+				$weights[] = $rate['max_weight'];
+			}
+			array_multisort($weights, SORT_ASC, SORT_NUMERIC, $rates_for_class);
+
+			$previous_weight = 0;
+			foreach( $rates_for_class as $rate ) {
+				if ($rate['min_weight'] == null) {
+					$rate['min_weight'] = $previous_weight;
+				}
+				// Now we register the rate in the dedicated instance attributes.
+				// All rates now have a min weight, max weight, price, and shipping class IDs.
+				$this->flat_rates[] = $rate;
+				$previous_weight = $rate['max_weight'];
+			}
 		}
 	}
 
@@ -216,6 +307,20 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				'title'       => __( 'Tracking URL', 'my-flying-box' ),
 				'type'        => 'text',
 				'description' => __( 'Put the variable TRACKING_NUMBER in the URL, it will be automatically replaced with the real tracking number when generating the link.', 'my-flying-box' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
+			'min_weight' => array(
+				'title'       => __( 'Minimum weight', 'my-flying-box' ),
+				'type'        => 'number',
+				'description' => __( 'If total weight of the cart is below this value, the service will not be proposed.', 'my-flying-box' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
+			'max_weight' => array(
+				'title'       => __( 'Maximum weight', 'my-flying-box' ),
+				'type'        => 'number',
+				'description' => __( 'If total weight of the cart is above this value, the service will not be proposed.', 'my-flying-box' ),
 				'default'     => '',
 				'desc_tip'    => true,
 			),
@@ -278,6 +383,21 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		$recipient_postal_code = ( isset($package['destination']['postcode'])  ? $package['destination']['postcode'] : '' );
 		$recipient_country = ( isset($package['destination']['country'])   ? $package['destination']['country']  : '' );
 
+
+		// We extract the list of shipping classes present in the cart. This may be needed when
+		// using static rate definitions.
+		$shipping_classes = array();
+		foreach ($package['contents'] as $item) {
+			$product               = $item['data'];
+			$shipping_class_id = $product->get_shipping_class();
+			if ( $shipping_class_id != 0 ) {
+				$shipping_classes[] = $shipping_class_id;
+			} else {
+				$shipping_classes[] = null;
+			}
+		}
+		$shipping_classes = array_unique($shipping_classes);
+
 		// If this destination is not supported by this method, no need to go further either
 		if ( ! $this->destination_supported( $recipient_postal_code, $recipient_country) ) return false;
 
@@ -308,6 +428,14 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			}
 		}
 
+		// Now that we have the weight, we'll check that we can use this service
+		if ( $this->min_weight && $total_weight < $this->min_weight ) return false;
+		if ( $this->max_weight && $total_weight > $this->max_weight ) return false;
+
+
+
+		// We force a minimum of 0.2 for the rest of the processing. Sending a parcel
+		// with weight = 0 is simply not physically possible.
 		if ( 0 == $total_weight)
 			$total_weight = 0.2;
 
@@ -339,7 +467,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			// In some cases, we can avoid calling the API altogether, improving performances.
 			if ( $this->get_option('reduce_api_calls') == 'yes' && $this->get_option('flatrate_pricing') == 'yes' ) {
 
-				$price = $this->get_flatrate_price( $total_weight, $recipient_country );
+				$price = $this->get_flatrate_price( $total_weight, $shipping_classes );
 				$rate = array(
 					'id'      => $this->get_rate_id(),
 					'label' 	=> $this->get_title(),
@@ -456,7 +584,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 			// Overriding the API price is we use flatrate pricing
 			if ( $this->get_option('flatrate_pricing') == 'yes') {
-				$price = $this->get_flatrate_price( $total_weight, $recipient_country );
+				$price = $this->get_flatrate_price( $total_weight, $shipping_classes );
 			}
 
 			$price = apply_filters( 'mfb_shipping_rate_price', $price, $this->id );
@@ -466,7 +594,9 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				'cost' => $price,
 				'taxes' => apply_filters( 'mfb_shipping_rate_taxes', '', $this->id, $price ),
 			);
-			$this->add_rate( $rate );
+			if ( $rate['cost'] ) {
+				$this->add_rate( $rate );
+			}
 		}
 	}
 
@@ -488,7 +618,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		if ( $quote && $quote->cart_content ) {
 			$cart_content = array();
 			foreach( $params['contents'] as $content ) {
-				if ( $quote->cart_content[$content['product_id']] !== $content['quantity'] ) {
+				if ( !array_key_exists($content['product_id'], $quote->cart_content) || $quote->cart_content[$content['product_id']] !== $content['quantity'] ) {
 					// We don't have a matching quantity for a product in the cart
 					$same_content = false;
 				}
@@ -509,9 +639,43 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		}
 	}
 
-	private function get_flatrate_price( $weight ) {
-		foreach( $this->flat_rates as $rate ) {
-			if ( $weight > $rate[0] && $weight < $rate[1] ) return $rate[2];
+	// Returns the matching rate for a given cart weight and all applicable shipping classes.
+	// Only one rate will be returned: the most expensive.
+	// Note: if more than one shipping class is passed, a rate must be found for every
+	// shipping class provided. If that is not the case, no rate will be returned.
+	// In case several rates match (default rules, distinct rates for different classes),
+	// only the most expensive will be returned.
+	private function get_flatrate_price( $weight, $shipping_classes ) {
+		$matching_rates = array();
+
+		if ( empty($shipping_classes) || count($shipping_classes) == 0 ) {
+		  // When having no shipping classes, we will only consider rates without shipping class definition.
+			foreach( $this->flat_rates as $rate ) {
+				if ( $weight >= $rate['min_weight'] && $weight < $rate['max_weight'] && $rate['shipping_classes'] == null ) {
+					$matching_rates[] = $rate['price'];
+				}
+			}
+		} else {
+			// When having shipping classes, we must find at least one rate per shipping class.
+			// If we have at least one rate per shipping class, we will return the highest one.
+			foreach( $shipping_classes as $shipping_class ) {
+				$rate_found = false;
+				foreach( $this->flat_rates as $rate ) {
+					if ( ( $rate['shipping_classes'] == null || in_array($shipping_class, $rate['shipping_classes']) ) && $weight >= $rate['min_weight'] && $weight < $rate['max_weight'] ) {
+						$rate_found = true;
+						$matching_rates[] = $rate['price'];
+					}
+				}
+				// If the current shipping class has no matching rate, we will no return any price.
+				if ( $rate_found === false ) return false;
+			}
+		}
+		// Now we have an array of matching rates (can be empty).
+		// We will return the highest rate registered:
+		if ( count($matching_rates) == 0 ) {
+			return false;
+		} else {
+			return max($matching_rates);
 		}
 	}
 
@@ -567,5 +731,4 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		// We made it through without any exclusion match, we can return true!
 		return apply_filters( 'mfb_shipping_method_destination_supported', $supported );
 	}
-
 }
