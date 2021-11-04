@@ -28,7 +28,7 @@ jQuery(window).load(function(){
 
 		jQuery.ajax({
 			url:      mfb_params.ajaxurl,
-			data: jQuery(this).closest('form.checkout.woocommerce-checkout').serialize()+'&action='+mfb_params.action+'&k='+key+'&s='+service_code+'&i='+instance_id,
+			data: jQuery('form.checkout.woocommerce-checkout').serialize()+'&action='+mfb_params.action+'&k='+key+'&s='+service_code+'&i='+instance_id,
 			dataType: 'json',
 			timeout:  15000,
 			error:    error_loading_locations,
