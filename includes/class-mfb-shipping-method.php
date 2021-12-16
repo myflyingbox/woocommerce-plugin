@@ -576,7 +576,11 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		WC()->session->set( 'myflyingbox_shipment_quote_timestamp', $_SERVER['REQUEST_TIME'] );
 
 		if ( isset($quote->offers[$this->id]) ) {
-			$price = $quote->offers[$this->id]->base_price_in_cents / 100;
+			if (My_Flying_Box_Settings::get_option('mfb_use_total_price_with_vat') == 'yes') {
+				$price = $quote->offers[$this->id]->total_price_in_cents / 100;
+			} else {
+				$price = $quote->offers[$this->id]->base_price_in_cents / 100;
+			}
 			// Applying insurance cost if applicable
 			if ( $quote->offers[$this->id]->is_insurable() && My_Flying_Box_Settings::get_option('mfb_insure_by_default') == 'yes' ) {
 				$price += ($quote->offers[$this->id]->insurance_price_in_cents / 100);

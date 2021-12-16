@@ -139,6 +139,14 @@ class MFB_Settings_Account extends MFB_Settings_Page {
         'type'          => 'checkbox',
         'autoload'      => false
       ),
+      array(
+        'id'            => 'mfb_use_total_price_with_vat',
+        'title'         => __( 'Use price with VAT', 'my-flying-box' ),
+        'desc'          => __( 'If checked, the shipping cost returned by the module during checkout and in back-office will include VAT (when applicable). Only use this option if you are not VAT-registered and you do not use WooCommerce VAT mechanisms.', 'my-flying-box' ),
+        'default'       => 'no',
+        'type'          => 'checkbox',
+        'autoload'      => false
+      ),
 			)
 		);
 		return apply_filters( 'woocommerce_get_settings_' . $this->id, $settings );

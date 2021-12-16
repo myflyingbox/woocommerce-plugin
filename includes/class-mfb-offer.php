@@ -110,7 +110,11 @@ class MFB_Offer {
 
 	// If any price alterations must happen, that goes here
 	public function final_base_price_in_cents() {
-		return $this->base_price_in_cents;
+		if (My_Flying_Box_Settings::get_option('mfb_use_total_price_with_vat') == 'yes') {
+			return $this->total_price_in_cents;
+		} else {
+			return $this->base_price_in_cents;
+		}
 	}
 
 	// Returns the final price, formatted, with currency
