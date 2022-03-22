@@ -264,11 +264,8 @@ class MFB_Shipment {
 				$total_weight += wc_format_decimal( $_product->get_weight() * $item['qty'] );
 				$total_value  += wc_format_decimal( isset( $item['line_total'] ) ? $item['line_total'] : 0 );
 
-				if ($_product->get_length() > 0 && $_product->get_width() > 0 && $_product->get_height() > 0) {
-					$products[] = ['name' => $_product->get_title(), 'price' => wc_format_decimal($_product->get_price()), 'quantity' => $item['qty'], 'weight' => $_product->get_weight(), 'length' => $_product->get_length(), 'width' => $_product->get_width(), 'height' => $_product->get_height()];
-				} else {
-					$dimensions_available = false;
-				}
+				$products[] = ['name' => $_product->get_title(), 'price' => wc_format_decimal($_product->get_price()), 'quantity' => $item['qty'], 'weight' => $_product->get_weight(), 'length' => $_product->get_length(), 'width' => $_product->get_width(), 'height' => $_product->get_height()];
+
 			}
 		}
 
@@ -285,36 +282,17 @@ class MFB_Shipment {
 			$force_dimensions_table = false;
 		}
 
+		$calculated_parcels = self::parcel_data_from_items( $products, true );
 		$parcels = [];
-		if ($dimensions_available && !$force_dimensions_table) {
-			foreach($products as $product) {
-				for($i = 1; $i <= $product['quantity']; $i++){
-					$parcel = new stdClass();
-					$parcel->length            = $product['length'];
-					$parcel->width             = $product['width'];
-					$parcel->height            = $product['height'];
-					$parcel->weight            = $product['weight'];
-					$parcel->description       = $product['name'];
-					$parcel->country_of_origin = get_option( 'mfb_default_origin_country' );
-					$parcel->value             = $product['price'];
-					$parcel->shipper_reference   = '';
-					$parcel->recipient_reference = '';
-					$parcel->customer_reference  = '';
-					$parcel->tracking_number     = '';
-					$parcels[] = $parcel;
-				}
-			}
-		} else {
+		foreach($calculated_parcels as $p) {
 			$parcel = new stdClass();
-			$dims = MFB_Dimension::get_for_weight( $total_weight );
-
-			$parcel->length            = $dims->length;
-			$parcel->width             = $dims->width;
-			$parcel->height            = $dims->height;
-			$parcel->weight            = $total_weight;
+			$parcel->length            = $p['length'];
+			$parcel->width             = $p['width'];
+			$parcel->height            = $p['height'];
+			$parcel->weight            = $p['weight'];
 			$parcel->description       = get_option( 'mfb_default_parcel_description' );
 			$parcel->country_of_origin = get_option( 'mfb_default_origin_country' );
-			$parcel->value             = $total_value;
+			$parcel->value             = $p['insured_value'];
 			$parcel->shipper_reference   = '';
 			$parcel->recipient_reference = '';
 			$parcel->customer_reference  = '';
@@ -352,7 +330,7 @@ class MFB_Shipment {
 			} else {
 				$shipment->status = 'mfb-processing';
 			}
-			
+
 			$shipment->bulk_order_id = $bulk_order_id;
 
 			// For a return shipment, all is reversed
@@ -801,6 +779,280 @@ class MFB_Shipment {
 			}
 		}
 		return $links;
+	}
+
+	// Returns an array of parcel data to make a quote request, based on the
+	// the characteristics of the products passed as argument.
+	// Products data must be properly extracted beforehands, either from cart or from
+	// order.
+	public static function parcel_data_from_items($products, $with_value = false) {
+			$parcels = array();
+			$articles = array();
+			$ignore_dimensions = false;
+			$missing_dimension = false;
+			$missing_dimensions_details = '';
+			$ignored_articles = 0;
+			$total_articles = 0;
+			$total_weight = 0;
+			$total_value = 0;
+			// First, we test whether we have dimensions for all articles. If not,
+			// We fall back to the weight/dimensions table.
+			// If some articles have dimensions and other have no dimensions at all (no weight either), then we totally ignore them
+			// The following loop initializes an array of articles with dimensions, that we can use later to determine final pack-list.
+			foreach ($products as $product) {
+					$total_articles++;
+
+					$weight = $product['weight'];
+					$total_weight += ($weight*$product['quantity']);
+					$total_value += ($product['price']*$product['quantity']);
+
+					// Some carriers check that length is long enough, but don't care much about other dimensions...
+					$dims = array(
+						(int)$product['length'],
+						(int)$product['width'],
+						(int)$product['height']
+					);
+					sort($dims);
+
+					$length = $dims[2];
+					$width = $dims[1];
+					$height = $dims[0];
+
+					if ($length <= 0 && $width <= 0 && $height <= 0 && $weight <= 0) {
+							// This product has no dimension at all, it will be ignored alltogether.
+							$ignored_articles++;
+							continue;
+					} else if ( My_Flying_Box_Settings::get_option('mfb_force_dimensions_table') == 'yes' ) {
+							// Forcing use of weight only
+							$ignore_dimensions = true;
+					} else if ($length <= 0 || $width <= 0 || $height <= 0 || $weight <= 0) {
+							// Some dimensions are missing, so whatever the situation for other products,
+							// we will not use real dimensions for parcel simulation, but fall back
+							// to standard weight/dimensions correspondance table.
+							$ignore_dimensions = true;
+							$missing_dimension = true;
+							$missing_dimensions_details .= "$length x $width x $height - $weight kg "; // Used for debug output below.
+					} else {
+							// We have all dimensions for this product.
+							// Some carriers do not accept any parcel below 1cm on any side (DHL). Forcing 1cm mini dimension.
+							if ($length < 1) {
+									$length = 1;
+							}
+							if ($width < 1) {
+									$width = 1;
+							}
+							if ($height < 1) {
+									$height = 1;
+							}
+					}
+					// The same product can be added multiple times. We save articles unit by unit.
+					for ($i=0; $i<$product['quantity']; $i++) {
+							$articles[] = array(
+								'length' => $length,
+								'height' => $height,
+								'width' => $width,
+								'weight' => $weight,
+								'value' => $product['price']
+							);
+					}
+			}
+
+			// If all articles were ignored, we just do our best with what we have, which means not much!
+			if ($ignored_articles == $total_articles) {
+					$weight = round($total_weight, 3);
+					if ($weight <= 0) {
+							$weight = 0.1; // As ignored artices do not have weight, this will probably be the weight used.
+					}
+					$dimension = MFB_Dimension::get_for_weight( $weight );
+					$parcels =  array(
+							array('length' => $dimension->length,
+										'width' => $dimension->width,
+										'height' => $dimension->height
+							)
+					);
+					if ($with_value) {
+						$parcels[0]['insured_value'] = $total_value;
+						$parcels[0]['insured_currency'] = 'EUR';
+					}
+			} else if ($ignore_dimensions) {
+
+					// In this case, two possibilities:
+					//  - if we have a maximum weight per package set in the config, we
+					//    have to spread articles in as many packages as needed.
+					//  - otherwise, just use the default strategy: total weight + corresponding dimension based on table
+					$max_real_weight = My_Flying_Box_Settings::get_option('mfb_max_real_weight_per_package');
+					if ($max_real_weight && $max_real_weight > 0) {
+						// We must now spread every article in virtual parcels, respecting
+						// the defined maximum real weight.
+						$parcels = array();
+						foreach($articles as $key => $article) {
+								if (count($parcels) == 0 || bccomp($article['weight'], $max_real_weight, 3) > 0) {
+										// If first article, initialize new parcel.
+										// If article has a weight above the limit, it gets its own package.
+										$p = array('weight' => $article['weight']);
+										if ($with_value) {
+											$p['insured_value'] = $article['value'];
+											$p['insured_currency'] = 'EUR';
+										}
+										$parcels[] = $p;
+										continue;
+								} else {
+										foreach($parcels as &$parcel) {
+												// Trying to fit the article in an existing parcel.
+												$cumulated_weight = bcadd($parcel['weight'], $article['weight'], 3);
+												if ($cumulated_weight <= $max_real_weight) {
+													$parcel['weight'] = $cumulated_weight;
+													if ($with_value) {
+														$parcel['insured_value'] += $article['value'];
+													}
+													unset($article); // Security, to avoid double treatment of the same article.
+													break;
+												}
+										}
+										unset($parcel); // Unsetting reference to last $parcel of the loop, to avoid any bad surprise later!
+
+										// If we could not fit the article in any existing package,
+										// we simply initialize a new one, and that's it.
+										if (isset($article)) {
+												$p = array('weight' => $article['weight']);
+												if ($with_value) {
+													$p['insured_value'] = $article['value'];
+													$p['insured_currency'] = 'EUR';
+												}
+												$parcels[] = $p;
+												continue;
+										}
+								}
+						}
+						// Article weight has been spread to relevant parcels. Now we must
+						// define parcel dimensions, based on weight.
+						foreach($parcels as &$parcel) {
+								// First, ensuring the weight is not zero!
+								if ($parcel['weight'] <= 0) {
+										$parcel['weight'] = 0.1;
+								}
+								$dimension = MFB_Dimension::get_for_weight( $parcel['weight'] );
+								$parcel['length'] = $dimension->length;
+								$parcel['height'] = $dimension->height;
+								$parcel['width'] = $dimension->width;
+						}
+						unset($parcel); // Unsetting reference to last $parcel of the loop, to avoid any bad surprise later!
+
+						// Our parcels are now ready.
+
+					} else {
+							// Simple case: no dimensions, and no maximum real weight.
+							// We just take the total weight and find the corresponding dimensions.
+							$weight = round($total_weight, 3);
+							if ($weight <= 0) {
+									$weight = 0.1;
+							}
+							$dimension = MFB_Dimension::get_for_weight( $weight );
+							$parcels =  array(
+									array('length' => $dimension->length,
+												'height' => $dimension->height,
+												'width' => $dimension->width,
+												'weight' => $weight,
+									),
+							);
+							if ($with_value) {
+								$parcels[0]['insured_value'] = $total_value;
+								$parcels[0]['insured_currency'] = 'EUR';
+							}
+
+					}
+			} else {
+					// We have dimensions for all articles, so this is a bit more complex.
+					// We proceed like above, but we also take into account the dimensions of the articles,
+					// in two ways: to determine the dimensions of the packages, and to check, on this basis, the max
+					// volumetric weight of the package.
+
+					$max_real_weight = My_Flying_Box_Settings::get_option('mfb_max_real_weight_per_package');
+					$max_volumetric_weight = My_Flying_Box_Settings::get_option('mfb_max_volumetric_weight_per_package');
+
+					if ($max_real_weight && $max_real_weight > 0 && $max_volumetric_weight && $max_volumetric_weight > 0) {
+						// We must now spread every article in virtual parcels, respecting
+						// the defined maximum real weight and volumetric weight, based on dimensions.
+						$parcels = array();
+						foreach($articles as $key => $article) {
+								$article_volumetric_weight = $article['length']*$article['width']*$article['height']/5000;
+								if (count($parcels) == 0 || bccomp($article['weight'], $max_real_weight, 3) >= 0 || bccomp($article_volumetric_weight, $max_volumetric_weight, 3) >= 0) {
+										// If first article, initialize new parcel.
+										// If article has a weight above the limit, it gets its own package.
+										$p = array(
+												'length' => $article['length'],
+												'width' => $article['width'],
+												'height' => $article['height'],
+												'weight' => $article['weight']
+										);
+										if ($with_value) {
+											$p['insured_value'] = $article['value'];
+											$p['insured_currency'] = 'EUR';
+										}
+										$parcels[] = $p;
+
+										continue;
+								} else {
+										foreach($parcels as &$parcel) {
+												// Trying to fit the article in an existing parcel.
+												$cumulated_weight = bcadd($parcel['weight'], $article['weight'], 3);
+												$new_parcel_length = max($parcel['length'], $article['length']);
+												$new_parcel_width = max($parcel['width'], $article['width']);
+												$new_parcel_height = (int)$parcel['height'] + (int)$article['height'];
+												$new_parcel_volumetric_weight = (int)$new_parcel_length*(int)$new_parcel_width*(int)$new_parcel_height/5000;
+
+												if (bccomp($cumulated_weight, $max_real_weight, 3) <= 0 && bccomp($new_parcel_volumetric_weight, $max_volumetric_weight, 3) <= 0) {
+													$parcel['weight'] = $cumulated_weight;
+													$parcel['length'] = $new_parcel_length;
+													$parcel['width'] = $new_parcel_width;
+													$parcel['height'] = $new_parcel_height;
+													if ($with_value) {
+														$parcel['insured_value'] += $article['value'];
+													}
+													unset($article); // Security, to avoid double treatment of the same article.
+													break;
+												}
+										}
+										unset($parcel); // Unsetting reference to last $parcel of the loop, to avoid any bad surprise later!
+
+										// If we could not fit the article in any existing package,
+										// we simply initialize a new one, and that's it.
+										if (isset($article)) {
+												$p = array(
+														'length' => $article['length'],
+														'width' => $article['width'],
+														'height' => $article['height'],
+														'weight' => $article['weight']
+												);
+												if ($with_value) {
+													$p['insured_value'] = $article['value'];
+													$p['insured_currency'] = 'EUR';
+												}
+												$parcels[] = $p;
+												continue;
+										}
+								}
+						}
+					} else {
+						// If we are here, it means we do not want to spread articles in parcels of specific characteristics.
+						// So we just have one parcel per article.
+						$parcels = [];
+						foreach($articles as $article) {
+							$p = array(
+									'length' => $article['length'],
+									'width' => $article['width'],
+									'height' => $article['height'],
+									'weight' => $article['weight']
+							);
+							if ($with_value) {
+								$p['insured_value'] = $article['value'];
+								$p['insured_currency'] = 'EUR';
+							}
+							$parcels[] = $p;
+						}
+					}
+			}
+			return $parcels;
 	}
 
 }

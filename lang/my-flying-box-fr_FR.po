@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Flying Box 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-16 08:46+0200\n"
-"PO-Revision-Date: 2021-12-16 08:48+0200\n"
+"POT-Creation-Date: 2022-03-22 11:38+0200\n"
+"PO-Revision-Date: 2022-03-22 11:39+0200\n"
 "Last-Translator: thomas <thomas@lce.io>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -1124,6 +1124,46 @@ msgstr ""
 "à la fois dans le tunnel de commande et en back-office. N'utilisez cette "
 "option que si vous n'êtes pas asujetti à la TVA et que vous n'utilisez pas "
 "les mécanismes de TVA de WooCommerce."
+
+#: includes/settings/class-mfb-settings-account.php:152
+msgid "Force use of dimensions table"
+msgstr "Forcer l'utilisation du tableau poids/dimensions"
+
+#: includes/settings/class-mfb-settings-account.php:153
+msgid ""
+"If checked, the pack-list calculation mechanisms will always use the package "
+"dimensions per weight defined in the module settings even when item "
+"dimensions are available and would allow for dynamic calculations of package "
+"measurements."
+msgstr ""
+"Si coché, les mécanismes de calcul du colisage utiliseront systématiquement "
+"les dimensions définies dans le tableau de correspondance poids/dimensions, "
+"même si les dimensions des articles ont été définies et permettraient un "
+"calcul dynamique des mesures du colis."
+
+#: includes/settings/class-mfb-settings-account.php:160
+msgid "Max real weight per package"
+msgstr "Poids réel maximum par colis"
+
+#: includes/settings/class-mfb-settings-account.php:161
+msgid ""
+"In KG. Used to determine how to spread articles in a cart into several "
+"simulated parcels, based on real weight."
+msgstr ""
+"En KG. Utilisé pour déterminer comment répartir les articles d'un panier "
+"dans plusieurs colis simulés, en se basant sur le poids réel."
+
+#: includes/settings/class-mfb-settings-account.php:168
+msgid "Max volumetric weight per package"
+msgstr "Poinds volumétrique maximum par colis"
+
+#: includes/settings/class-mfb-settings-account.php:169
+msgid ""
+"In KG. Used to determine how to spread articles in a cart into several "
+"simulated parcels, based on volumetric weight."
+msgstr ""
+"En KG. Utilisé pour déterminer comment répartir les articles d'un panier "
+"dans plusieurs colis simulés, en se basant sur le poids volumétrique."
 
 #: includes/settings/class-mfb-settings-carriers.php:37
 msgid "List of carriers"

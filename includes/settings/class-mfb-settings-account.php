@@ -123,30 +123,54 @@ class MFB_Settings_Account extends MFB_Settings_Page {
 					'default'   => '',
 					'required' => false
 				),
-			array(
-				'id'            => 'mfb_thermal_printing',
-				'title'         => __( 'Thermal printing', 'my-flying-box' ),
-				'desc'          => __( 'Get shipment labels in a thermal-printer friendly format', 'my-flying-box' ),
-				'default'       => 'no',
-				'type'          => 'checkbox',
-				'autoload'      => false
-			),
-      array(
-        'id'            => 'mfb_insure_by_default',
-        'title'         => __( 'Insurance', 'my-flying-box' ),
-        'desc'          => __( 'Insure shipments by default (taken into account when calculating shipping cost during checkout and for bulk orders)', 'my-flying-box' ),
-        'default'       => 'no',
-        'type'          => 'checkbox',
-        'autoload'      => false
-      ),
-      array(
-        'id'            => 'mfb_use_total_price_with_vat',
-        'title'         => __( 'Use price with VAT', 'my-flying-box' ),
-        'desc'          => __( 'If checked, the shipping cost returned by the module during checkout and in back-office will include VAT (when applicable). Only use this option if you are not VAT-registered and you do not use WooCommerce VAT mechanisms.', 'my-flying-box' ),
-        'default'       => 'no',
-        'type'          => 'checkbox',
-        'autoload'      => false
-      ),
+				array(
+					'id'            => 'mfb_thermal_printing',
+					'title'         => __( 'Thermal printing', 'my-flying-box' ),
+					'desc'          => __( 'Get shipment labels in a thermal-printer friendly format', 'my-flying-box' ),
+					'default'       => 'no',
+					'type'          => 'checkbox',
+					'autoload'      => false
+				),
+	      array(
+	        'id'            => 'mfb_insure_by_default',
+	        'title'         => __( 'Insurance', 'my-flying-box' ),
+	        'desc'          => __( 'Insure shipments by default (taken into account when calculating shipping cost during checkout and for bulk orders)', 'my-flying-box' ),
+	        'default'       => 'no',
+	        'type'          => 'checkbox',
+	        'autoload'      => false
+	      ),
+	      array(
+	        'id'            => 'mfb_use_total_price_with_vat',
+	        'title'         => __( 'Use price with VAT', 'my-flying-box' ),
+	        'desc'          => __( 'If checked, the shipping cost returned by the module during checkout and in back-office will include VAT (when applicable). Only use this option if you are not VAT-registered and you do not use WooCommerce VAT mechanisms.', 'my-flying-box' ),
+	        'default'       => 'no',
+	        'type'          => 'checkbox',
+	        'autoload'      => false
+	      ),
+	      array(
+	        'id'            => 'mfb_force_dimensions_table',
+	        'title'         => __( 'Force use of dimensions table', 'my-flying-box' ),
+	        'desc'          => __( 'If checked, the pack-list calculation mechanisms will always use the package dimensions per weight defined in the module settings even when item dimensions are available and would allow for dynamic calculations of package measurements.', 'my-flying-box' ),
+	        'default'       => 'no',
+	        'type'          => 'checkbox',
+	        'autoload'      => false
+	      ),
+	      array(
+	        'id'            => 'mfb_max_real_weight_per_package',
+	        'title'         => __( 'Max real weight per package', 'my-flying-box' ),
+	        'desc'          => __( 'In KG. Used to determine how to spread articles in a cart into several simulated parcels, based on real weight.', 'my-flying-box' ),
+	        'default'       => '',
+	        'type'          => 'number',
+	        'autoload'      => false
+	      ),
+	      array(
+	        'id'            => 'mfb_max_volumetric_weight_per_package',
+	        'title'         => __( 'Max volumetric weight per package', 'my-flying-box' ),
+	        'desc'          => __( 'In KG. Used to determine how to spread articles in a cart into several simulated parcels, based on volumetric weight.', 'my-flying-box' ),
+	        'default'       => '',
+	        'type'          => 'number',
+	        'autoload'      => false
+	      ),
 			)
 		);
 		return apply_filters( 'woocommerce_get_settings_' . $this->id, $settings );

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Flying Box 1.0\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/WordPress-Plugin-Template\n"
-"POT-Creation-Date: 2021-12-16 08:45+0200\n"
+"POT-Creation-Date: 2022-03-22 11:38+0200\n"
 "POT-Revision-Date: Mon Jun 29 2015 15:32:06 GMT+0300 (EEST)\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
@@ -1045,6 +1045,37 @@ msgid ""
 "If checked, the shipping cost returned by the module during checkout and in "
 "back-office will include VAT (when applicable). Only use this option if you are "
 "not VAT-registered and you do not use WooCommerce VAT mechanisms."
+msgstr ""
+
+#: ../includes/settings/class-mfb-settings-account.php:152
+msgid "Force use of dimensions table"
+msgstr ""
+
+#: ../includes/settings/class-mfb-settings-account.php:153
+msgid ""
+"If checked, the pack-list calculation mechanisms will always use the package "
+"dimensions per weight defined in the module settings even when item dimensions "
+"are available and would allow for dynamic calculations of package measurements."
+msgstr ""
+
+#: ../includes/settings/class-mfb-settings-account.php:160
+msgid "Max real weight per package"
+msgstr ""
+
+#: ../includes/settings/class-mfb-settings-account.php:161
+msgid ""
+"In KG. Used to determine how to spread articles in a cart into several "
+"simulated parcels, based on real weight."
+msgstr ""
+
+#: ../includes/settings/class-mfb-settings-account.php:168
+msgid "Max volumetric weight per package"
+msgstr ""
+
+#: ../includes/settings/class-mfb-settings-account.php:169
+msgid ""
+"In KG. Used to determine how to spread articles in a cart into several "
+"simulated parcels, based on volumetric weight."
 msgstr ""
 
 #: ../includes/settings/class-mfb-settings-carriers.php:37

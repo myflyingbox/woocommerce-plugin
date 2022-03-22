@@ -406,7 +406,6 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		// Extracting total weight from the WC CART
 		$total_weight = 0;
 		$total_value = wc_format_decimal(0);
-		$dimensions_available = true;
 		$products = [];
 		$cart_content = [];
 		foreach ( WC()->cart->get_cart() as $item_id => $values ) {
@@ -420,11 +419,8 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				$total_weight += ($product_weight*$values['quantity']);
 				$total_value += (wc_format_decimal($product->get_price()*$values['quantity']));
 
-				if ($product->get_length() > 0 && $product->get_width() > 0 && $product->get_height() > 0) {
-					$products[] = ['id' => $product->get_id(), 'name' => $product->get_title(), 'price' => wc_format_decimal($product->get_price()), 'quantity' => $values['quantity'], 'weight' => $product->get_weight(), 'length' => $product->get_length(), 'width' => $product->get_width(), 'height' => $product->get_height()];
-				} else {
-					$dimensions_available = false;
-				}
+				$products[] = ['id' => $product->get_id(), 'name' => $product->get_title(), 'price' => wc_format_decimal($product->get_price()), 'quantity' => $values['quantity'], 'weight' => $product->get_weight(), 'length' => $product->get_length(), 'width' => $product->get_width(), 'height' => $product->get_height()];
+
 			}
 		}
 
@@ -478,45 +474,9 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			}
 			// If we continue to run here, that means we must get a quote from the API.
 
-			// We prepare the parcels data depending on whether or not we have product dimensions
-			$parcels = [];
-			if ($dimensions_available && !$this->force_dimensions_table ) {
-				foreach($products as $product) {
-					for($i = 1; $i <= $product['quantity']; $i++){
-						$parcel = [];
-						$parcel['length']            = $product['length'];
-						$parcel['width']             = $product['width'];
-						$parcel['height']            = $product['height'];
-						$parcel['weight']            = $product['weight'];
-
-						// Applying insurance data if applicable
-						if ($total_value <= 2000 && My_Flying_Box_Settings::get_option('mfb_insure_by_default') == 'yes') {
-							$parcel['insured_value'] = $product['price'];
-							$parcel['insured_currency'] = 'EUR';
-						}
-
-						$parcels[] = $parcel;
-					}
-				}
-			} else {
-				$parcel = [];
-				$dims = MFB_Dimension::get_for_weight( $total_weight );
-
-				# We should use weight/dimensions correspondance; if we don't have any, we can't get a tariff...
-				if (!$dims) return false;
-
-				$parcel['length']            = $dims->length;
-				$parcel['width']             = $dims->width;
-				$parcel['height']            = $dims->height;
-				$parcel['weight']            = $total_weight;
-
-				// Applying insurance data if applicable
-				if ($total_value <= 2000 && My_Flying_Box_Settings::get_option('mfb_insure_by_default') == 'yes') {
-					$parcel['insured_value'] = $total_value;
-					$parcel['insured_currency'] = 'EUR';
-				}
-				$parcels[] = $parcel;
-			}
+			// We prepare the parcels data based on products inside this shipment
+			$include_insured_value = My_Flying_Box_Settings::get_option('mfb_insure_by_default') == 'yes';
+			$parcels = MFB_Shipment::parcel_data_from_items( $products, $include_insured_value );
 
 			// We need destination info to be able to send a quote
 			if ( empty($recipient_postal_code) || empty($recipient_country) ) return false;
