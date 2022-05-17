@@ -558,7 +558,19 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				'cost' => $price,
 				'taxes' => apply_filters( 'mfb_shipping_rate_taxes', '', $this->id, $price ),
 			);
-			if ( $rate['cost'] ) {
+
+			// A rate is valid if it is more than 0, unless we are using flatrate pricing,
+			// where the merchant can specify a free shipping rate manually.
+			$valid_rate = false;
+			if ( is_numeric($rate['cost']) ) {
+				if ( $this->get_option('flatrate_pricing') == 'yes' && $rate['cost'] >= 0 ) {
+					$valid_rate = true;
+				} elseif ($rate['cost'] > 0) {
+					$valid_rate = true;
+				}
+			}
+
+			if ( $valid_rate ) {
 				$this->add_rate( $rate );
 			}
 		}
