@@ -17,6 +17,8 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 	public $excluded_destinations = array();
 	public $min_weight = null;
 	public $max_weight = null;
+	public $min_order_price = null;
+	public $max_order_price = null;
 
 	public $flat_rates = array();
 
@@ -61,6 +63,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 
 		$this->load_destination_restrictions();
 		$this->load_weight_restrictions();
+		$this->load_order_price_restrictions();
 
 		// Actions
 		// add_filter( 'woocommerce_calculated_shipping',  array( $this, 'calculate_shipping'));
@@ -137,6 +140,17 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		$setting_value = $this->get_option('max_weight');
 		if ( !empty($setting_value) && is_numeric($setting_value) ) {
 			$this->max_weight = (float)wc_format_decimal($setting_value);
+		}
+	}
+
+	private function load_order_price_restrictions() {
+		$setting_value = $this->get_option('min_order_price');
+		if ( !empty($setting_value) && is_numeric($setting_value) ) {
+			$this->min_order_price = (float)wc_format_decimal($setting_value);
+		}
+		$setting_value = $this->get_option('max_order_price');
+		if ( !empty($setting_value) && is_numeric($setting_value) ) {
+			$this->max_order_price = (float)wc_format_decimal($setting_value);
 		}
 	}
 
@@ -324,6 +338,20 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
+			'min_order_price' => array(
+				'title'       => __( 'Minimum order price', 'my-flying-box' ),
+				'type'        => 'number',
+				'description' => __( 'If total price of the cart is below this value, the service will not be proposed.', 'my-flying-box' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
+			'max_order_price' => array(
+				'title'       => __( 'Maximum order price', 'my-flying-box' ),
+				'type'        => 'number',
+				'description' => __( 'If total price of the cart is above this value, the service will not be proposed.', 'my-flying-box' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
 			'included_postcodes' => array(
 				'title'       => __( 'Included postcodes', 'my-flying-box' ),
 				'type'        => 'textarea',
@@ -379,6 +407,12 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		// If this shipping method is not enabled, no need to proceed any further
 		if ( ! $this->enabled ) return false;
 
+		// First exclusion test: only proceed if the total price of the cart is within
+		// defined limitations.
+		if ( $this->max_order_price && WC()->cart->get_subtotal() > $this->max_order_price ) return false;
+		if ( $this->min_order_price && WC()->cart->get_subtotal() < $this->min_order_price ) return false;
+
+
 		$recipient_city = (isset($package['destination']['city']) && !empty($package['destination']['city']) ? $package['destination']['city']     : '');
 		$recipient_postal_code = ( isset($package['destination']['postcode'])  ? $package['destination']['postcode'] : '' );
 		$recipient_country = ( isset($package['destination']['country'])   ? $package['destination']['country']  : '' );
@@ -427,8 +461,6 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 		// Now that we have the weight, we'll check that we can use this service
 		if ( $this->min_weight && $total_weight < $this->min_weight ) return false;
 		if ( $this->max_weight && $total_weight > $this->max_weight ) return false;
-
-
 
 		// We force a minimum of 0.2 for the rest of the processing. Sending a parcel
 		// with weight = 0 is simply not physically possible.

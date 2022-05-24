@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Flying Box 1.0\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/WordPress-Plugin-Template\n"
-"POT-Creation-Date: 2022-03-22 11:38+0200\n"
+"POT-Creation-Date: 2022-05-24 17:13+0300\n"
 "POT-Revision-Date: Mon Jun 29 2015 15:32:06 GMT+0300 (EEST)\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
@@ -70,68 +70,88 @@ msgstr ""
 msgid "Bulk shipment #%s has been processed."
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:287
+#: ../includes/class-mfb-shipping-method.php:301
 msgid "Enable"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:289
+#: ../includes/class-mfb-shipping-method.php:303
 msgid "Enable this service"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:293
+#: ../includes/class-mfb-shipping-method.php:307
 msgid "Title"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:295
+#: ../includes/class-mfb-shipping-method.php:309
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:300
+#: ../includes/class-mfb-shipping-method.php:314
 #: ../includes/views/html-admin-carriers-list.php:24
 msgid "Description"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:302
+#: ../includes/class-mfb-shipping-method.php:316
 msgid ""
 "This controls the description of this shipping method, which the user sees "
 "during checkout."
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:307
+#: ../includes/class-mfb-shipping-method.php:321
 msgid "Tracking URL"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:309
+#: ../includes/class-mfb-shipping-method.php:323
 msgid ""
 "Put the variable TRACKING_NUMBER in the URL, it will be automatically replaced "
 "with the real tracking number when generating the link."
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:314
+#: ../includes/class-mfb-shipping-method.php:328
 msgid "Minimum weight"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:316
+#: ../includes/class-mfb-shipping-method.php:330
 msgid ""
 "If total weight of the cart is below this value, the service will not be "
 "proposed."
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:321
+#: ../includes/class-mfb-shipping-method.php:335
 msgid "Maximum weight"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:323
+#: ../includes/class-mfb-shipping-method.php:337
 msgid ""
 "If total weight of the cart is above this value, the service will not be "
 "proposed."
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:328
+#: ../includes/class-mfb-shipping-method.php:342
+msgid "Minimum order price"
+msgstr ""
+
+#: ../includes/class-mfb-shipping-method.php:344
+msgid ""
+"If total price of the cart is below this value, the service will not be "
+"proposed."
+msgstr ""
+
+#: ../includes/class-mfb-shipping-method.php:349
+msgid "Maximum order price"
+msgstr ""
+
+#: ../includes/class-mfb-shipping-method.php:351
+msgid ""
+"If total price of the cart is above this value, the service will not be "
+"proposed."
+msgstr ""
+
+#: ../includes/class-mfb-shipping-method.php:356
 msgid "Included postcodes"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:330
+#: ../includes/class-mfb-shipping-method.php:358
 msgid ""
 "Limits the service only to these postcodes. One rule per line (or same line and "
 "separated by a comma), using the following format: XX-YYYYY (XX = alpha2 "
@@ -140,11 +160,11 @@ msgid ""
 "to apply no limitation."
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:336
+#: ../includes/class-mfb-shipping-method.php:364
 msgid "Excluded postcodes"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:338
+#: ../includes/class-mfb-shipping-method.php:366
 msgid ""
 "Excludes postcodes matching this list. One rule per line, using the following "
 "format: XX-YYYYY (XX = alpha2 country code, YYYYY = full postcode or just "
@@ -152,32 +172,32 @@ msgid ""
 "without postcodes (just \"XX\")."
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:344
+#: ../includes/class-mfb-shipping-method.php:372
 msgid "Flat-rate pricing"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:346
+#: ../includes/class-mfb-shipping-method.php:374
 msgid ""
 "Check to enable pricing based on flat-rate pricing table, as defined below. "
 "When enabled, the prices returned by the API will not be used."
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:350
+#: ../includes/class-mfb-shipping-method.php:378
 msgid "Flat-rate prices"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:352
+#: ../includes/class-mfb-shipping-method.php:380
 msgid ""
 "Prices are based on weight, so you can define as many rules as you want in the "
 "following format: Weight (up to, in kg, e.g. 6 or 7.5) | Price (float with dot "
 "as separator, e.g. 3.54). One rule per line."
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:358
+#: ../includes/class-mfb-shipping-method.php:386
 msgid "Reduce API calls"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:360
+#: ../includes/class-mfb-shipping-method.php:388
 msgid ""
 "Check to limit the number of API calls, improving performance of checkout "
 "process. WARNING: use only in conjunction with flatrate pricing (internal or "
@@ -187,11 +207,11 @@ msgid ""
 "so you must use another mechanism for this!"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:364
+#: ../includes/class-mfb-shipping-method.php:392
 msgid "Force dimensions table"
 msgstr ""
 
-#: ../includes/class-mfb-shipping-method.php:366
+#: ../includes/class-mfb-shipping-method.php:394
 msgid ""
 "Check to force the use of the weight/dimensions table (defined in module "
 "settings) to determine the packlist, instead of using product dimensions even "
