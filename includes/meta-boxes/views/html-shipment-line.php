@@ -43,6 +43,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="parcel-data">
 						<p>
 							<?php echo MFB_Shipment::formatted_parcel_line( $parcel ); ?>
+							<?php echo $shipment->parcel_tracking_link( $parcel ); ?>
 
 							<?php if ( $shipment->status == 'mfb-draft' ) { ?>
 								<a class="edit_parcel" href="#"><img src="<?php echo WC()->plugin_url() ?>/assets/images/icons/edit.png" alt="<?php _e( 'Edit shipper address', 'my-flying-box' ) ?>" width="14" /></a>

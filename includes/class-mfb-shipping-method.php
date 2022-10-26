@@ -320,7 +320,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			'tracking_url' => array(
 				'title'       => __( 'Tracking URL', 'my-flying-box' ),
 				'type'        => 'text',
-				'description' => __( 'Put the variable TRACKING_NUMBER in the URL, it will be automatically replaced with the real tracking number when generating the link.', 'my-flying-box' ),
+				'description' => __( 'Put the variables TRACKING_NUMBER and POSTAL_CODE (optional) in the URL, they will be automatically replaced with the real tracking number and the receiver postal code when generating the link.', 'my-flying-box' ),
 				'default'     => '',
 				'desc_tip'    => true,
 			),

@@ -593,6 +593,24 @@ class MFB_Shipment {
 		return $line;
 	}
 
+	public function parcel_tracking_link( $parcel ) {
+		$carrier = MFB_Carrier::get_by_code( $this->offer->product_code );
+
+		if ($parcel->tracking_number && strlen($parcel->tracking_number) > 0) {
+			if ($carrier && $carrier->tracking_url) {
+				$line = "<br/><a href='". $carrier->tracking_url_for( $parcel->tracking_number, $this->receiver->postal_code ) .
+					"' target='_blank'>".
+					sprintf(__('Tracking: %s', 'my-flying-box'), $parcel->tracking_number).
+					"</a>";
+				} else {
+				$line = "<br/>".sprintf(__('Tracking: %s', 'my-flying-box'), $parcel->tracking_number);
+				}
+		} else {
+			$line = '';
+		}
+		return $line;
+	}
+
 	public function total_value()
 	{
 			$total_value = 0.0;
@@ -774,7 +792,7 @@ class MFB_Shipment {
 			$tracking_numbers = array_unique( $tracking_numbers );
 			$tracking_numbers = array_filter( $tracking_numbers, function($v){ return !empty($v);});
 			foreach( $tracking_numbers as $tracking_number ) {
-				$links[] = array(	'link' => str_replace( 'TRACKING_NUMBER', $tracking_number, $carrier->tracking_url ),
+				$links[] = array(	'link' => $carrier->tracking_url_for( $tracking_number, $this->receiver->postal_code ),
 													'code' => $tracking_number);
 			}
 		}

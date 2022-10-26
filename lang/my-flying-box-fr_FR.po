@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Flying Box 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-24 17:13+0300\n"
-"PO-Revision-Date: 2022-05-24 17:13+0300\n"
+"POT-Creation-Date: 2022-10-26 10:14+0300\n"
+"PO-Revision-Date: 2022-10-26 10:15+0300\n"
 "Last-Translator: thomas <thomas@lce.io>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 3.0.1\n"
 "X-Poedit-KeywordsList: _:1;gettext:1;dgettext:2;ngettext:1,2;dngettext:2,3;"
 "__:1;_e:1;_c:1;_n:1,2;_n_noop:1,2;_nc:1,2;__ngettext:1,2;__ngettext_noop:1,2;"
 "_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;_nx_js:1,2,3c;"
@@ -77,6 +77,11 @@ msgstr ""
 msgid "Bulk shipment #%s has been processed."
 msgstr "L'expédition en masse #%s a été traitée."
 
+#: includes/class-mfb-shipment.php:603 includes/class-mfb-shipment.php:606
+#, php-format
+msgid "Tracking: %s"
+msgstr "Suivi : %s"
+
 #: includes/class-mfb-shipping-method.php:301
 msgid "Enable"
 msgstr "Activer"
@@ -111,11 +116,13 @@ msgstr "URL de tracking"
 
 #: includes/class-mfb-shipping-method.php:323
 msgid ""
-"Put the variable TRACKING_NUMBER in the URL, it will be automatically "
-"replaced with the real tracking number when generating the link."
+"Put the variables TRACKING_NUMBER and POSTAL_CODE (optional) in the URL, "
+"they will be automatically replaced with the real tracking number and the "
+"receiver postal code when generating the link."
 msgstr ""
-"Placez la variable TRACKING_NUMBER dans l'URL, elle sera automatiquement "
-"remplacée par le numéro de suivi lors de la génération du lien."
+"Placez les variables TRACKING_NUMBER et POSTAL_CODE (optionnel) dans l'URL, "
+"elles seront automatiquement remplacées par le numéro de suivi et le code "
+"postal du destinataire lors de la génération du lien."
 
 #: includes/class-mfb-shipping-method.php:328
 msgid "Minimum weight"
@@ -796,32 +803,32 @@ msgstr ""
 "page dans quelques secondes."
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:79
-#: includes/meta-boxes/views/html-shipment-line.php:135
+#: includes/meta-boxes/views/html-shipment-line.php:136
 msgid "Select pickup date:"
 msgstr "Choisir date d'enlèvement :"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:98
-#: includes/meta-boxes/views/html-shipment-line.php:154
+#: includes/meta-boxes/views/html-shipment-line.php:155
 msgid "Select delivery location:"
 msgstr "Choisir point relais :"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:127
-#: includes/meta-boxes/views/html-shipment-line.php:205
+#: includes/meta-boxes/views/html-shipment-line.php:206
 msgid "Book this service"
 msgstr "Commander cette expédition"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:143
-#: includes/meta-boxes/views/html-shipment-line.php:233
+#: includes/meta-boxes/views/html-shipment-line.php:234
 msgid "Download labels"
 msgstr "Télécharger étiquettes"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:149
-#: includes/meta-boxes/views/html-shipment-line.php:239
+#: includes/meta-boxes/views/html-shipment-line.php:240
 msgid "Tracking:"
 msgstr "Suivi :"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:162
-#: includes/meta-boxes/views/html-shipment-line.php:252
+#: includes/meta-boxes/views/html-shipment-line.php:253
 msgid "Delivery location:"
 msgstr "Point de livraison :"
 
@@ -910,14 +917,14 @@ msgid "Email"
 msgstr "Email"
 
 #: includes/meta-boxes/views/html-shipment-address-cell.php:49
-#: includes/meta-boxes/views/html-shipment-line.php:75
-#: includes/meta-boxes/views/html-shipment-line.php:109
+#: includes/meta-boxes/views/html-shipment-line.php:76
+#: includes/meta-boxes/views/html-shipment-line.php:110
 msgid "Cancel"
 msgstr "Annuler"
 
 #: includes/meta-boxes/views/html-shipment-address-cell.php:50
-#: includes/meta-boxes/views/html-shipment-line.php:76
-#: includes/meta-boxes/views/html-shipment-line.php:110
+#: includes/meta-boxes/views/html-shipment-line.php:77
+#: includes/meta-boxes/views/html-shipment-line.php:111
 msgid "Submit"
 msgstr "Enregister"
 
@@ -926,82 +933,82 @@ msgstr "Enregister"
 msgid "Bulk %s"
 msgstr ""
 
-#: includes/meta-boxes/views/html-shipment-line.php:48
+#: includes/meta-boxes/views/html-shipment-line.php:49
 msgid "Edit shipper address"
 msgstr "Modifier l'adresse expéditeur"
 
-#: includes/meta-boxes/views/html-shipment-line.php:57
-#: includes/meta-boxes/views/html-shipment-line.php:91
+#: includes/meta-boxes/views/html-shipment-line.php:58
+#: includes/meta-boxes/views/html-shipment-line.php:92
 msgid "l"
 msgstr "L"
 
-#: includes/meta-boxes/views/html-shipment-line.php:58
-#: includes/meta-boxes/views/html-shipment-line.php:92
+#: includes/meta-boxes/views/html-shipment-line.php:59
+#: includes/meta-boxes/views/html-shipment-line.php:93
 msgid "w"
 msgstr "l"
 
-#: includes/meta-boxes/views/html-shipment-line.php:59
-#: includes/meta-boxes/views/html-shipment-line.php:93
+#: includes/meta-boxes/views/html-shipment-line.php:60
+#: includes/meta-boxes/views/html-shipment-line.php:94
 msgid "h"
 msgstr "h"
 
-#: includes/meta-boxes/views/html-shipment-line.php:60
-#: includes/meta-boxes/views/html-shipment-line.php:94
+#: includes/meta-boxes/views/html-shipment-line.php:61
+#: includes/meta-boxes/views/html-shipment-line.php:95
 msgid "weight"
 msgstr "poids"
 
-#: includes/meta-boxes/views/html-shipment-line.php:62
-#: includes/meta-boxes/views/html-shipment-line.php:96
+#: includes/meta-boxes/views/html-shipment-line.php:63
+#: includes/meta-boxes/views/html-shipment-line.php:97
 msgid "goods description"
 msgstr "descrip. contenu"
 
-#: includes/meta-boxes/views/html-shipment-line.php:64
-#: includes/meta-boxes/views/html-shipment-line.php:98
+#: includes/meta-boxes/views/html-shipment-line.php:65
+#: includes/meta-boxes/views/html-shipment-line.php:99
 msgid "value"
 msgstr "valeur"
 
-#: includes/meta-boxes/views/html-shipment-line.php:66
-#: includes/meta-boxes/views/html-shipment-line.php:100
+#: includes/meta-boxes/views/html-shipment-line.php:67
+#: includes/meta-boxes/views/html-shipment-line.php:101
 msgid "Origin:"
 msgstr "Origine :"
 
-#: includes/meta-boxes/views/html-shipment-line.php:87
+#: includes/meta-boxes/views/html-shipment-line.php:88
 msgid "Add new parcel"
 msgstr "Ajouter un colis"
 
-#: includes/meta-boxes/views/html-shipment-line.php:190
+#: includes/meta-boxes/views/html-shipment-line.php:191
 msgid "Ad-valorem insurance"
 msgstr "Assurance ad-valorem"
 
-#: includes/meta-boxes/views/html-shipment-line.php:193
+#: includes/meta-boxes/views/html-shipment-line.php:194
 msgid "Insurable value: "
 msgstr "Valeur assurable : "
 
-#: includes/meta-boxes/views/html-shipment-line.php:196
+#: includes/meta-boxes/views/html-shipment-line.php:197
 msgid "Insurance cost: "
 msgstr "Coût de l'assurance : "
 
-#: includes/meta-boxes/views/html-shipment-line.php:201
+#: includes/meta-boxes/views/html-shipment-line.php:202
 msgid "Ad valorem insurance not available."
 msgstr "Assurance ad-valorem non disponible."
 
-#: includes/meta-boxes/views/html-shipment-line.php:210
+#: includes/meta-boxes/views/html-shipment-line.php:211
 msgid "No offer available. Is all the data correct?"
 msgstr "Aucune offre disponible. Est-ce que les données sont correctes ?"
 
-#: includes/meta-boxes/views/html-shipment-line.php:222
+#: includes/meta-boxes/views/html-shipment-line.php:223
 msgid "Insured value: "
 msgstr "Valeur assurée : "
 
-#: includes/meta-boxes/views/html-shipment-line.php:225
+#: includes/meta-boxes/views/html-shipment-line.php:226
 msgid "cost: "
 msgstr "coût : "
 
-#: includes/meta-boxes/views/html-shipment-line.php:229
+#: includes/meta-boxes/views/html-shipment-line.php:230
 msgid "No insurance."
 msgstr "Pas d'assurance."
 
-#: includes/meta-boxes/views/html-shipment-line.php:269
+#: includes/meta-boxes/views/html-shipment-line.php:270
 msgid "Add return shipment"
 msgstr "Ajouter expédition retour"
 
@@ -1360,6 +1367,13 @@ msgstr "Enregistrer"
 msgctxt "on date at time"
 msgid "%s @ %s"
 msgstr ""
+
+#~ msgid ""
+#~ "Put the variable TRACKING_NUMBER in the URL, it will be automatically "
+#~ "replaced with the real tracking number when generating the link."
+#~ msgstr ""
+#~ "Placez la variable TRACKING_NUMBER dans l'URL, elle sera automatiquement "
+#~ "remplacée par le numéro de suivi lors de la génération du lien."
 
 #~ msgid ""
 #~ "If total price of the cart is at or above this value, the service will "

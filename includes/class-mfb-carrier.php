@@ -148,7 +148,7 @@ class MFB_Carrier extends WC_Shipping_Method {
 		$this->dropoff_supported  = get_post_meta( $this->id, '_dropoff_supported', true);
 
 		$method_options           = get_option('woocommerce_'.$this->code.'_settings');
-		$this->tracking_url       = ( isset($method_options['tracking_url']) && !empty( $method_options['tracking_url'] )) ? $method_options['tracking_url'] : null;
+		$this->tracking_url       = ( isset($method_options['tracking_url']) && !empty( $method_options['tracking_url'] )) ? $method_options['tracking_url'] : $this->guess_tracking_url();
 	}
 
 
@@ -330,6 +330,47 @@ class MFB_Carrier extends WC_Shipping_Method {
 		} else {
 			return false;
 		}
+	}
+
+	public function guess_tracking_url() {
+		if (preg_match('/^dhl/', $this->code)) {
+			$link = 'http://www.dhl.fr/fr/dhl_express/suivi_expedition.html?AWB=TRACKING_NUMBER';
+		} else if (preg_match('/^ups/', $this->code)) {
+			$link = 'https://wwwapps.ups.com/WebTracking/track?loc=fr_FR&track.x=Track&trackNums=TRACKING_NUMBER';
+		} else if (preg_match('/^chronopost/', $this->code)) {
+			$link = 'http://www.chronopost.fr/fr/chrono_suivi_search?listeNumerosLT=TRACKING_NUMBER';
+		} else if (preg_match('/^colissimo/', $this->code)) {
+			$link = 'http://www.colissimo.fr/portail_colissimo/suivre.do?colispart=TRACKING_NUMBER';
+		} else if (preg_match('/^correos_express/', $this->code)) {
+			$link = 'https://s.correosexpress.com/SeguimientoSinCP/search?request_locale=es_ES&shippingNumber=TRACKING_NUMBER';
+		} else if (preg_match('/^bpost/', $this->code)) {
+			$link = 'https://track.bpost.cloud/btr/web/#/search?itemCode=TRACKING_NUMBER&lang=fr&postalCode=POSTAL_CODE';
+		} else if (preg_match('/^dpd/', $this->code)) {
+			$link = 'https://trace.dpd.fr/fr/trace/TRACKING_NUMBER';
+		} else if (preg_match('/^fedex/', $this->code)) {
+			$link = 'https://www.fedex.com/fedextrack/?trknbr=TRACKING_NUMBER';
+		} else if (preg_match('/^purolator/', $this->code)) {
+			$link = 'https://www.purolator.com/en/shipping/tracker?pin=TRACKING_NUMBER';
+		} else if (preg_match('/^usps/', $this->code)) {
+			$link = 'https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=TRACKING_NUMBER';
+		} else if (preg_match('/^zeleris/', $this->code)) {
+			$link = 'https://www.zeleris.com/seguimiento_envio.aspx?id_seguimiento=TRACKING_NUMBER';
+		} else if (preg_match('/^mondial_relay/', $this->code)) {
+			$link = 'https://www.mondialrelay.fr/suivi-de-colis/?numeroExpedition=TRACKING_NUMBER&codePostal=POSTAL_CODE';
+		} else {
+			$link = null;
+		}
+		return $link;
+	}
+
+	public function tracking_url_for( $tracking_number, $destination_postal_code ) {
+		// Getting the reference URL
+		$link = $this->tracking_url;
+		// Replacing tracking number
+		$link = str_replace( 'TRACKING_NUMBER', $tracking_number, $link );
+		// Replacing postal code
+		$link = str_replace( 'POSTAL_CODE', $destination_postal_code, $link );
+		return $link;
 	}
 
 	public function save() {

@@ -738,7 +738,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 				$tracking_numbers = array_unique( $tracking_numbers );
 				$tracking_numbers = array_filter( $tracking_numbers, function($v){ return !empty($v);});
 				foreach( $tracking_numbers as $tracking_number ) {
-					$links[] = array(	'link' => str_replace( 'TRACKING_NUMBER', $tracking_number, $carrier->tracking_url ),
+					$links[] = array(	'link' => $carrier->tracking_url_for( $tracking_number, $shipment->receiver->postal_code ),
 														'code' => $tracking_number);
 				}
 			}
