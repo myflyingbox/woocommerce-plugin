@@ -665,7 +665,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		wp_enqueue_script( 'google-api-grouped', '//maps.googleapis.com/maps/api/js?'.$library.'sensor=false&key='.$google_api_key, array(), '', true);
 
 
-		wp_enqueue_script( 'mfb_delivery_locations','/wp-content/plugins/my-flying-box/assets/js/delivery_locations.js',array( 'jquery', 'google-api-grouped' ) );
+		wp_enqueue_script( 'mfb_delivery_locations', plugins_url().'/my-flying-box/assets/js/delivery_locations.js', array( 'jquery', 'google-api-grouped' ) );
 		wp_localize_script( 'mfb_delivery_locations', 'plugin_url', plugins_url() );
 		wp_localize_script( 'mfb_delivery_locations', 'lang', $translations );
 		wp_localize_script( 'mfb_delivery_locations', 'map', My_Flying_Box::generate_google_map_html_container() );
