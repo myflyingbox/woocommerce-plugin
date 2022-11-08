@@ -20,7 +20,10 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once( 'includes/class-mfb-install.php' );
-register_activation_hook( __FILE__, array( 'MFB_Install', 'install' ) );
+
+// Systematic trigger of install/update. The process starts with a very simple version
+// compare, so the performance cost is minimal. 
+add_action('admin_init', array( 'MFB_Install', 'install') );
 
 /**
  * Check if WooCommerce is active

@@ -16,16 +16,16 @@ class MFB_Install {
   );
 
   public static function install () {
-
-    # Loading corresponding functions
-    include_once( 'mfb-update-functions.php' );
-
+    
     # Initializing version comparison data
     $current_mfb_version = MFB()->_version;
     $current_db_version = get_option( 'myflyingbox_db_version', null );
-
+    
     // Already up to date? Stop right now.
     if ( $current_db_version == $current_mfb_version ) return;
+
+    # Loading corresponding functions
+    include_once( 'mfb-update-functions.php' );
 
     // We don't seem to be up to date. We check whether we need to execute some update
     // functions as declared in the $db_updates array.
