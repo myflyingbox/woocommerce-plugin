@@ -62,7 +62,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<br/>
 						<input name="_parcel_<?php echo $key; ?>_description" placeholder="<?php _e("goods description", 'my-flying-box') ?>" type="text" value="<?php echo $parcel->description; ?>"/>
 						<br/>
-						<input name="_parcel_<?php echo $key; ?>_value" placeholder="<?php _e("value", 'my-flying-box') ?>" type="text" value="<?php echo $parcel->value; ?>" style="width: 60px; text-align: right;"/>€
+						<label for="_parcel_<?php echo $key; ?>_insurable_value"><?php _e("Insurable value", 'my-flying-box') ?></label>
+						<input name="_parcel_<?php echo $key; ?>_insurable_value" placeholder="<?php _e("Insurable value", 'my-flying-box') ?>" type="text" value="<?php echo $parcel->insurable_value; ?>" style="width: 80px; text-align: right;"/>€
+						<br/>
+						<label for="_parcel_<?php echo $key; ?>_value"><?php _e("Content value", 'my-flying-box') ?></label>
+						<input name="_parcel_<?php echo $key; ?>_value" placeholder="<?php _e("Content value", 'my-flying-box') ?>" type="text" value="<?php echo $parcel->value; ?>" style="width: 80px; text-align: right;"/>€
+						<br/>
 						<?php $countries = WC()->countries->__get( 'countries' ) ?>
 							<?php _e("Origin:", 'my-flying-box') ?><select name="_parcel_<?php echo $key; ?>_country_of_origin" style="width: 120px;">
 							<option value='<?php echo $parcel->country_of_origin ?>' selected><?php echo $countries[$parcel->country_of_origin] ?></option>
@@ -81,6 +86,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 			}
 
 		if ( $shipment->status == 'mfb-draft' ) {
+			//
+			// NEW PARCEL FORM
+			//
 		?>
 				<div class="parcel" data-parcel_index="new">
 					<div class="parcel-data">
@@ -96,7 +104,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<br/>
 						<input name="_parcel_new_description" placeholder="<?php _e("goods description", 'my-flying-box') ?>" type="text"/>
 						<br/>
-						<input name="_parcel_new_value" placeholder="<?php _e("value", 'my-flying-box') ?>" type="text" style="width: 60px; text-align: right;"/>€
+						<label for="_parcel_new_insurable_value"><?php _e("Insurable value", 'my-flying-box') ?></label>
+						<input name="_parcel_new_insurable_value" placeholder="<?php _e("Insurable value", 'my-flying-box') ?>" type="text" value="<?php echo $parcel->insurable_value; ?>" style="width: 80px; text-align: right;"/>€
+						<br/>
+						<label for="_parcel_new_value"><?php _e("Content value", 'my-flying-box') ?></label>
+						<input name="_parcel_new_value" placeholder="<?php _e("Content value", 'my-flying-box') ?>" type="text" value="<?php echo $parcel->value; ?>" style="width: 80px; text-align: right;"/>€
+						<br/>
 						<?php $countries = WC()->countries->__get( 'countries' ) ?>
 							<?php _e("Origin:", 'my-flying-box') ?><select name="_parcel_new_country_of_origin" style="width: 120px;">
 							<option value='<?php echo $parcels[0]->country_of_origin ?>' selected><?php echo $countries[$parcels[0]->country_of_origin] ?></option>
@@ -115,11 +128,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</td>
 
 	<td>
-		<?php if ( $shipment->status == 'mfb-draft' ) { ?>
+		<?php if ( $shipment->status == 'mfb-draft' ) {
+		//
+		// OFFERS SELECTOR
+		//	
+		?>
 		<div class="mfb-available-offers">
 			<?php if ( $shipment->quote ) { ?>
 				<?php $offers = $shipment->quote->offers ?>
 					<select name="_mfb_selected_offer" class="offer-selector" style="width: 250px; font-size: 0.9em;">
+					<option value=''<?php if ( is_null($shipment->offer) ) echo " selected='selected'"; ?>></option>
 					<?php foreach ($offers as $offer) {
 						echo "<option data-offer_id='".$offer->id."' value='".$offer->product_code."'";
 						if ( $shipment->offer && $shipment->offer->product_code == $offer->product_code ) echo " selected='selected'";

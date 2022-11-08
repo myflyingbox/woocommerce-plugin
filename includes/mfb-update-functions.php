@@ -74,7 +74,6 @@ function mfb_update_05_api_v2_services() {
                   " );
     }
   }
-
   // We try to refresh the carriers from API. But we do not necessarily have a working access,
   // so we do not raise any exceptions in case this fails.
   try {
@@ -83,6 +82,42 @@ function mfb_update_05_api_v2_services() {
     // Do nothing...
   }
 
+  return true;
+}
 
+
+function mfb_update_014_set_parcels_insurable_value() {
+  global $wpdb;
+
+  // Now insurable value is stored separately from the content value.
+  // That means that all shipments until now had a single 'value' meta. We need to duplicate
+  // this value to the 'insurable_value' meta so that we are compatible with the new way and
+  // don't lose any historical information.
+
+  // First: we load all '_parcels_count' metadata, which will allow us to compute how many
+  // parcel insurable value meta rows we'll need to create.
+  $parcel_count_rows = $wpdb->get_results(
+    "SELECT meta_value, post_id FROM {$wpdb->postmeta} WHERE meta_key = '_parcels_count'"
+  );
+
+  foreach ( $parcel_count_rows as $parcel_count_row ) {
+
+    $parcels_count = (int)( $parcel_count_row->meta_value );
+    $shipment_post_id = (int)( $parcel_count_row->post_id );
+    $shipment_post = get_post( $shipment_post_id );
+
+    // If we could not find the shipment post, or the post is NOT an MFB Shipment, we do nothing.
+    if ($shipment_post == null || $shipment_post->post_type != 'mfb_shipment') continue;
+
+    // No parcel? Nothing to do.
+    if ($parcels_count == 0) continue;
+    
+    // For each parcel, get content value and create insurable value meta.
+    for ( $i=1; $i<=$parcels_count;$i++ ) {
+      $content_value = get_post_meta( $shipment_post_id, '_parcel_'.$i.'_value', true );
+      update_post_meta( $shipment_post_id, '_parcel_'.$i.'_insurable_value', $content_value);
+    }
+  }
+  
   return true;
 }

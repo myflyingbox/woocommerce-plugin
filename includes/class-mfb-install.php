@@ -9,6 +9,9 @@ class MFB_Install {
   private static $db_updates = array(
     '0.5' => array(
       'mfb_update_05_api_v2_services'
+    ),
+    '0.14' => array(
+      'mfb_update_014_set_parcels_insurable_value' // Insurable value and content value are now separate.
     )
   );
 
@@ -19,24 +22,17 @@ class MFB_Install {
 
     # Initializing version comparison data
     $current_mfb_version = MFB()->_version;
+    $current_db_version = get_option( 'myflyingbox_db_version', null );
 
-    # Version 0.5 was the first to introduce the persistence of DB version.
-    # So we force it at 0.4. This will force the execution of the update
-    # script even for new install of 0.5, but this is not a problem in this case.
+    // Already up to date? Stop right now.
+    if ( $current_db_version == $current_mfb_version ) return;
 
-    if ( $current_mfb_version == '0.5' ) {
-      $current_db_version = '0.4';
-    } else {
-      $current_db_version  = get_option( 'myflyingbox_db_version', null );
-    }
-
-    if ( !is_null( $current_db_version ) && version_compare( $current_db_version, max( array_keys( self::$db_updates ) ), '<' )) {
-      # We have an outdated version, and we have some available updates
-      foreach ( self::$db_updates as $version => $update_functions ) {
-        if ( version_compare( $current_db_version, $version, '<' ) ) {
-          foreach ( $update_functions as $update_function ) {
-            call_user_func( $update_function );
-          }
+    // We don't seem to be up to date. We check whether we need to execute some update
+    // functions as declared in the $db_updates array.
+    foreach ( self::$db_updates as $version => $update_functions ) {
+      if ( is_null( $current_db_version ) || version_compare( $current_db_version, $version, '<' ) ) {
+        foreach ( $update_functions as $update_function ) {
+          call_user_func( $update_function );
         }
       }
     }
@@ -46,8 +42,6 @@ class MFB_Install {
   }
 
   private static function _log_version_number () {
-    delete_option( 'myflyingbox_db_version' );
-    add_option( 'myflyingbox_db_version', MFB()->_version );
+    update_option( 'myflyingbox_db_version', MFB()->_version );
   }
-
 }

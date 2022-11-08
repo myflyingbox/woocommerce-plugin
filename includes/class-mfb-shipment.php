@@ -56,6 +56,7 @@ class MFB_Shipment {
 		'height',
 		'weight',
 		'description',
+		'insurable_value',
 		'value',
 		'country_of_origin',
 		'shipper_reference',
@@ -292,7 +293,8 @@ class MFB_Shipment {
 			$parcel->weight            = $p['weight'];
 			$parcel->description       = get_option( 'mfb_default_parcel_description' );
 			$parcel->country_of_origin = get_option( 'mfb_default_origin_country' );
-			$parcel->value             = $p['insured_value'];
+			$parcel->insurable_value     = $p['insurable_value'];
+			$parcel->value             = $p['value'];
 			$parcel->shipper_reference   = '';
 			$parcel->recipient_reference = '';
 			$parcel->customer_reference  = '';
@@ -377,7 +379,8 @@ class MFB_Shipment {
 			return $shipment;
 		}
 
-	public function autoselect_offer( $order = null ) {
+  // If preferred product code is specified, it will be used in priority.
+	public function autoselect_offer( $order = null, $preferred_product_code = null ) {
 		if ( $this->is_return ) {
 			// For return shipments, always use services defined in config.
 			if ( $this->domestic() ) {
@@ -390,7 +393,12 @@ class MFB_Shipment {
 				$this->offer = $this->quote->offers[$default_service];
 			}
 		} else {
-			if ( $this->quote && $this->wc_order_id ) {
+			if ( $preferred_product_code ) {
+				$this->offer = null;
+				if ( array_key_exists($preferred_product_code, $this->quote->offers) ) {
+					$this->offer = $this->quote->offers[$preferred_product_code];
+				}
+			} else if ( $this->quote && $this->wc_order_id ) {
 				if ( null === $order ) $order = wc_get_order( $this->wc_order_id );
 				$this->offer = null;
 
@@ -589,11 +597,19 @@ class MFB_Shipment {
 	}
 
 	public static function formatted_parcel_line( $parcel ) {
-		$line = $parcel->length.'x'.$parcel->width.'x'.$parcel->height.'cm, '.$parcel->weight.'kg | '.$parcel->value.' € | '.$parcel->description.' ('.$parcel->country_of_origin.')';
+		$line  = $parcel->length.'x'.$parcel->width.'x'.$parcel->height.'cm, '.$parcel->weight.'kg | ';
+		$line .= sprintf(__('value: %s', 'my-flying-box'), $parcel->value.' €');
+		if (strlen($parcel->insurable_value) > 0) {
+			$line .= ' ' . sprintf(__('(insurable: %s)', 'my-flying-box'), $parcel->insurable_value.' €');
+		}
+		$line .= ' | '.$parcel->description.' ('.$parcel->country_of_origin.')';
 		return $line;
 	}
 
 	public function parcel_tracking_link( $parcel ) {
+
+		if ($this->status == 'mfb-draft' || is_null($this->offer)) return;
+
 		$carrier = MFB_Carrier::get_by_code( $this->offer->product_code );
 
 		if ($parcel->tracking_number && strlen($parcel->tracking_number) > 0) {
@@ -620,14 +636,23 @@ class MFB_Shipment {
 			return $total_value;
 	}
 
+	public function total_insurable_value()
+	{
+			$total_value = 0.0;
+			foreach ($this->parcels as $parcel) {
+					$total_value = $total_value + $parcel->insurable_value;
+			}
+			return $total_value;
+	}
+
 	public function is_insurable()
 	{
-			return ($this->total_value() < 2000);
+			return ($this->total_insurable_value() < 2000);
 	}
 
 	public function insurable_value()
 	{
-			return $this->total_value();
+			return $this->total_insurable_value();
 	}
 
 	// Completely remove a shipment from the database
@@ -640,6 +665,14 @@ class MFB_Shipment {
 			// Not proceeding unless the shipment is in draft state
 			if ($this->status != 'mfb-draft' && $this->status != 'mfb-processing') return false;
 
+			// If we already have a selected offer, we will try to automatically select
+			// the same service.
+			if ( $this->offer ) {
+				$currently_selected_service = $this->offer->product_code;
+			} else {
+				$currently_selected_service = null;
+			}
+
 			$parcels = array();
 
 			foreach( $this->parcels as $parcel ) {
@@ -651,7 +684,7 @@ class MFB_Shipment {
 				);
 
 				if ($this->is_insurable()) {
-					$params['insured_value'] = $parcel->value;
+					$params['insured_value'] = $parcel->insurable_value;
 					$params['insured_currency'] = 'EUR';
 				}
 
@@ -709,7 +742,7 @@ class MFB_Shipment {
 			// Refreshing the quote, to get the offers loaded properly
 			$quote->populate();
 			$this->populate();
-			$this->autoselect_offer();
+			$this->autoselect_offer(null, $currently_selected_service);
 
 			return $quote;
 	}
@@ -889,7 +922,10 @@ class MFB_Shipment {
 							)
 					);
 					if ($with_value) {
-						$parcels[0]['insured_value'] = $total_value;
+						# We set both value and insured value based on the calculated value of the parcel.
+						$parcels[0]['value'] = $total_value;
+						$parcels[0]['currency'] = 'EUR';
+						$parcels[0]['insurable_value'] = $total_value;
 						$parcels[0]['insured_currency'] = 'EUR';
 					}
 			} else if ($ignore_dimensions) {
@@ -909,7 +945,9 @@ class MFB_Shipment {
 										// If article has a weight above the limit, it gets its own package.
 										$p = array('weight' => $article['weight']);
 										if ($with_value) {
-											$p['insured_value'] = $article['value'];
+											$p['value'] = $article['value'];
+											$p['currency'] = 'EUR';
+											$p['insurable_value'] = $article['value'];
 											$p['insured_currency'] = 'EUR';
 										}
 										$parcels[] = $p;
@@ -921,7 +959,8 @@ class MFB_Shipment {
 												if ($cumulated_weight <= $max_real_weight) {
 													$parcel['weight'] = $cumulated_weight;
 													if ($with_value) {
-														$parcel['insured_value'] += $article['value'];
+														$parcel['insurable_value'] += $article['value'];
+														$parcel['value'] += $article['value'];
 													}
 													unset($article); // Security, to avoid double treatment of the same article.
 													break;
@@ -934,7 +973,9 @@ class MFB_Shipment {
 										if (isset($article)) {
 												$p = array('weight' => $article['weight']);
 												if ($with_value) {
-													$p['insured_value'] = $article['value'];
+													$p['value'] = $article['value'];
+													$p['currency'] = 'EUR';
+													$p['insurable_value'] = $article['value'];
 													$p['insured_currency'] = 'EUR';
 												}
 												$parcels[] = $p;
@@ -974,8 +1015,10 @@ class MFB_Shipment {
 									),
 							);
 							if ($with_value) {
-								$parcels[0]['insured_value'] = $total_value;
+								$parcels[0]['insurable_value'] = $total_value;
 								$parcels[0]['insured_currency'] = 'EUR';
+								$parcels[0]['value'] = $total_value;
+								$parcels[0]['currency'] = 'EUR';
 							}
 
 					}
@@ -1004,8 +1047,10 @@ class MFB_Shipment {
 												'weight' => $article['weight']
 										);
 										if ($with_value) {
-											$p['insured_value'] = $article['value'];
+											$p['insurable_value'] = $article['value'];
 											$p['insured_currency'] = 'EUR';
+											$p['value'] = $article['value'];
+											$p['currency'] = 'EUR';
 										}
 										$parcels[] = $p;
 
@@ -1025,7 +1070,8 @@ class MFB_Shipment {
 													$parcel['width'] = $new_parcel_width;
 													$parcel['height'] = $new_parcel_height;
 													if ($with_value) {
-														$parcel['insured_value'] += $article['value'];
+														$parcel['insurable_value'] += $article['value'];
+														$parcel['value'] += $article['value'];
 													}
 													unset($article); // Security, to avoid double treatment of the same article.
 													break;
@@ -1043,8 +1089,10 @@ class MFB_Shipment {
 														'weight' => $article['weight']
 												);
 												if ($with_value) {
-													$p['insured_value'] = $article['value'];
+													$p['insurable_value'] = $article['value'];
 													$p['insured_currency'] = 'EUR';
+													$p['value'] = $article['value'];
+													$p['currency'] = 'EUR';
 												}
 												$parcels[] = $p;
 												continue;
@@ -1063,7 +1111,9 @@ class MFB_Shipment {
 									'weight' => $article['weight']
 							);
 							if ($with_value) {
-								$p['insured_value'] = $article['value'];
+								$p['value'] = $article['value'];
+								$p['currency'] = 'EUR';
+								$p['insurable_value'] = $article['value'];
 								$p['insured_currency'] = 'EUR';
 							}
 							$parcels[] = $p;

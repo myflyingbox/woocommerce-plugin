@@ -335,6 +335,9 @@ class MFB_AJAX {
 		if ( $offer && $shipment->quote->offers[$offer->product_code] ) {
 			$shipment->offer = $offer;
 			$shipment->save();
+		} else {
+			$shipment->offer = null;
+			$shipment->save();
 		}
 	}
 
