@@ -293,7 +293,7 @@ class MFB_Shipment {
 			$parcel->weight            = $p['weight'];
 			$parcel->description       = get_option( 'mfb_default_parcel_description' );
 			$parcel->country_of_origin = get_option( 'mfb_default_origin_country' );
-			$parcel->insurable_value     = $p['insurable_value'];
+			$parcel->insurable_value     = $p['insured_value'];
 			$parcel->value             = $p['value'];
 			$parcel->shipper_reference   = '';
 			$parcel->recipient_reference = '';
@@ -925,7 +925,7 @@ class MFB_Shipment {
 						# We set both value and insured value based on the calculated value of the parcel.
 						$parcels[0]['value'] = $total_value;
 						$parcels[0]['currency'] = 'EUR';
-						$parcels[0]['insurable_value'] = $total_value;
+						$parcels[0]['insured_value'] = $total_value;
 						$parcels[0]['insured_currency'] = 'EUR';
 					}
 			} else if ($ignore_dimensions) {
@@ -947,7 +947,7 @@ class MFB_Shipment {
 										if ($with_value) {
 											$p['value'] = $article['value'];
 											$p['currency'] = 'EUR';
-											$p['insurable_value'] = $article['value'];
+											$p['insured_value'] = $article['value'];
 											$p['insured_currency'] = 'EUR';
 										}
 										$parcels[] = $p;
@@ -959,7 +959,7 @@ class MFB_Shipment {
 												if ($cumulated_weight <= $max_real_weight) {
 													$parcel['weight'] = $cumulated_weight;
 													if ($with_value) {
-														$parcel['insurable_value'] += $article['value'];
+														$parcel['insured_value'] += $article['value'];
 														$parcel['value'] += $article['value'];
 													}
 													unset($article); // Security, to avoid double treatment of the same article.
@@ -975,7 +975,7 @@ class MFB_Shipment {
 												if ($with_value) {
 													$p['value'] = $article['value'];
 													$p['currency'] = 'EUR';
-													$p['insurable_value'] = $article['value'];
+													$p['insured_value'] = $article['value'];
 													$p['insured_currency'] = 'EUR';
 												}
 												$parcels[] = $p;
@@ -1015,7 +1015,7 @@ class MFB_Shipment {
 									),
 							);
 							if ($with_value) {
-								$parcels[0]['insurable_value'] = $total_value;
+								$parcels[0]['insured_value'] = $total_value;
 								$parcels[0]['insured_currency'] = 'EUR';
 								$parcels[0]['value'] = $total_value;
 								$parcels[0]['currency'] = 'EUR';
@@ -1047,7 +1047,7 @@ class MFB_Shipment {
 												'weight' => $article['weight']
 										);
 										if ($with_value) {
-											$p['insurable_value'] = $article['value'];
+											$p['insured_value'] = $article['value'];
 											$p['insured_currency'] = 'EUR';
 											$p['value'] = $article['value'];
 											$p['currency'] = 'EUR';
@@ -1070,7 +1070,7 @@ class MFB_Shipment {
 													$parcel['width'] = $new_parcel_width;
 													$parcel['height'] = $new_parcel_height;
 													if ($with_value) {
-														$parcel['insurable_value'] += $article['value'];
+														$parcel['insured_value'] += $article['value'];
 														$parcel['value'] += $article['value'];
 													}
 													unset($article); // Security, to avoid double treatment of the same article.
@@ -1089,7 +1089,7 @@ class MFB_Shipment {
 														'weight' => $article['weight']
 												);
 												if ($with_value) {
-													$p['insurable_value'] = $article['value'];
+													$p['insured_value'] = $article['value'];
 													$p['insured_currency'] = 'EUR';
 													$p['value'] = $article['value'];
 													$p['currency'] = 'EUR';
@@ -1113,7 +1113,7 @@ class MFB_Shipment {
 							if ($with_value) {
 								$p['value'] = $article['value'];
 								$p['currency'] = 'EUR';
-								$p['insurable_value'] = $article['value'];
+								$p['insured_value'] = $article['value'];
 								$p['insured_currency'] = 'EUR';
 							}
 							$parcels[] = $p;
