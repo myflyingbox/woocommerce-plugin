@@ -357,6 +357,8 @@ class MFB_Carrier extends WC_Shipping_Method {
 			$link = 'https://www.zeleris.com/seguimiento_envio.aspx?id_seguimiento=TRACKING_NUMBER';
 		} else if (preg_match('/^mondial_relay/', $this->code)) {
 			$link = 'https://www.mondialrelay.fr/suivi-de-colis/?numeroExpedition=TRACKING_NUMBER&codePostal=POSTAL_CODE';
+		} else if (preg_match('/^colis_prive/', $this->code)) {
+			$link = 'https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=TRACKING_NUMBER&lang=FR';
 		} else {
 			$link = null;
 		}
