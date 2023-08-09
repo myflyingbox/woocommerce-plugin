@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Flying Box 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-08 15:44+0200\n"
-"PO-Revision-Date: 2022-11-08 15:44+0200\n"
+"POT-Creation-Date: 2023-08-09 17:51+0300\n"
+"PO-Revision-Date: 2023-08-09 17:55+0300\n"
 "Last-Translator: thomas <thomas@lce.io>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -77,17 +77,17 @@ msgstr ""
 msgid "Bulk shipment #%s has been processed."
 msgstr "L'expédition en masse #%s a été traitée."
 
-#: includes/class-mfb-shipment.php:595
+#: includes/class-mfb-shipment.php:601
 #, php-format
 msgid "value: %s"
 msgstr "valeur : %s"
 
-#: includes/class-mfb-shipment.php:596
+#: includes/class-mfb-shipment.php:603
 #, php-format
 msgid "(insurable: %s)"
 msgstr "(assurable : %s)"
 
-#: includes/class-mfb-shipment.php:608 includes/class-mfb-shipment.php:611
+#: includes/class-mfb-shipment.php:619 includes/class-mfb-shipment.php:622
 #, php-format
 msgid "Tracking: %s"
 msgstr "Suivi : %s"
@@ -183,10 +183,45 @@ msgstr ""
 "sera pas proposé."
 
 #: includes/class-mfb-shipping-method.php:356
+msgid "Price modifier (in cents)"
+msgstr "Modificateur de prix (en centimes)"
+
+#: includes/class-mfb-shipping-method.php:358
+msgid ""
+"IN CENTS! If set, will increment the shipping price by the specified amount. "
+"Put a negative value to decrease the price."
+msgstr ""
+"EN CENTIMES! Si défini, incrémentera le prix du transport du montant "
+"spécifié. Renseignez une valeur négative pour réduire le prix."
+
+#: includes/class-mfb-shipping-method.php:363
+msgid "Price modifier (percentage)"
+msgstr "Modificateur de prix (pourcentage)"
+
+#: includes/class-mfb-shipping-method.php:365
+msgid ""
+"A value of 20 will increase the price by 20%, a value value of -30 will "
+"decrease the price by 30%, a value of 100 will double the price."
+msgstr ""
+"Une valeur de 20 augmentera le prix de 20%, une valeur de -30 réduira le "
+"prix de 30%, une valeur de 100 doublera le prix."
+
+#: includes/class-mfb-shipping-method.php:370
+msgid "Price rounding increment (in cents)"
+msgstr "Incrément d'arrondi (en centimes)"
+
+#: includes/class-mfb-shipping-method.php:372
+msgid ""
+"IN CENTS! e.g. 20 will round 13.23 to 13.40, 100 will round 15.13 to 16.00."
+msgstr ""
+"EN CENTIMES! Une valeur de 20 arrondira un prix de 13,23 en 13,40, 100 "
+"arrondira à l'entier supérieur."
+
+#: includes/class-mfb-shipping-method.php:377
 msgid "Included postcodes"
 msgstr "Codes postaux inclus"
 
-#: includes/class-mfb-shipping-method.php:358
+#: includes/class-mfb-shipping-method.php:379
 msgid ""
 "Limits the service only to these postcodes. One rule per line (or same line "
 "and separated by a comma), using the following format: XX-YYYYY (XX = alpha2 "
@@ -201,11 +236,11 @@ msgstr ""
 "ne spécifié que les codes pays sans codes postaux. Lasisez vide pour "
 "n'appliquer aucune limitation."
 
-#: includes/class-mfb-shipping-method.php:364
+#: includes/class-mfb-shipping-method.php:385
 msgid "Excluded postcodes"
 msgstr "Codes postaux exclus"
 
-#: includes/class-mfb-shipping-method.php:366
+#: includes/class-mfb-shipping-method.php:387
 msgid ""
 "Excludes postcodes matching this list. One rule per line, using the "
 "following format: XX-YYYYY (XX = alpha2 country code, YYYYY = full postcode "
@@ -219,11 +254,11 @@ msgstr ""
 "ne spécifié que les codes pays sans codes postaux. Lasisez vide pour "
 "n'appliquer aucune limitation."
 
-#: includes/class-mfb-shipping-method.php:372
+#: includes/class-mfb-shipping-method.php:393
 msgid "Flat-rate pricing"
 msgstr "Tarif fixe"
 
-#: includes/class-mfb-shipping-method.php:374
+#: includes/class-mfb-shipping-method.php:395
 msgid ""
 "Check to enable pricing based on flat-rate pricing table, as defined below. "
 "When enabled, the prices returned by the API will not be used."
@@ -232,11 +267,11 @@ msgstr ""
 "au poids. Lorsque cette option est activée, les tarifs retournés par l'API "
 "MyFlyingBox seront ignorés."
 
-#: includes/class-mfb-shipping-method.php:378
+#: includes/class-mfb-shipping-method.php:399
 msgid "Flat-rate prices"
 msgstr "Tarifs fixe"
 
-#: includes/class-mfb-shipping-method.php:380
+#: includes/class-mfb-shipping-method.php:401
 msgid ""
 "Prices are based on weight, so you can define as many rules as you want in "
 "the following format: Weight (up to, in kg, e.g. 6 or 7.5) | Price (float "
@@ -247,11 +282,11 @@ msgstr ""
 "par ex. 6 ou 7.5) | Prix (décimal avec un séparateur point, par ex. 3.54). "
 "Une règle par ligne."
 
-#: includes/class-mfb-shipping-method.php:386
+#: includes/class-mfb-shipping-method.php:407
 msgid "Reduce API calls"
 msgstr "Limiter les appels API"
 
-#: includes/class-mfb-shipping-method.php:388
+#: includes/class-mfb-shipping-method.php:409
 msgid ""
 "Check to limit the number of API calls, improving performance of checkout "
 "process. WARNING: use only in conjunction with flatrate pricing (internal or "
@@ -269,11 +304,11 @@ msgstr ""
 "si le service est disponible ou non pour la destination saisie par le "
 "client ; il vous faut donc impérativement utiliser un autre mécanisme!"
 
-#: includes/class-mfb-shipping-method.php:392
+#: includes/class-mfb-shipping-method.php:413
 msgid "Force dimensions table"
 msgstr "Forcer le tableau de dimensions"
 
-#: includes/class-mfb-shipping-method.php:394
+#: includes/class-mfb-shipping-method.php:415
 msgid ""
 "Check to force the use of the weight/dimensions table (defined in module "
 "settings) to determine the packlist, instead of using product dimensions "
@@ -813,32 +848,32 @@ msgstr ""
 "page dans quelques secondes."
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:79
-#: includes/meta-boxes/views/html-shipment-line.php:141
+#: includes/meta-boxes/views/html-shipment-line.php:154
 msgid "Select pickup date:"
 msgstr "Choisir date d'enlèvement :"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:98
-#: includes/meta-boxes/views/html-shipment-line.php:160
+#: includes/meta-boxes/views/html-shipment-line.php:173
 msgid "Select delivery location:"
 msgstr "Choisir point relais :"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:127
-#: includes/meta-boxes/views/html-shipment-line.php:211
+#: includes/meta-boxes/views/html-shipment-line.php:224
 msgid "Book this service"
 msgstr "Commander cette expédition"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:143
-#: includes/meta-boxes/views/html-shipment-line.php:239
+#: includes/meta-boxes/views/html-shipment-line.php:252
 msgid "Download labels"
 msgstr "Télécharger étiquettes"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:149
-#: includes/meta-boxes/views/html-shipment-line.php:245
+#: includes/meta-boxes/views/html-shipment-line.php:258
 msgid "Tracking:"
 msgstr "Suivi :"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:162
-#: includes/meta-boxes/views/html-shipment-line.php:258
+#: includes/meta-boxes/views/html-shipment-line.php:271
 msgid "Delivery location:"
 msgstr "Point de livraison :"
 
@@ -928,13 +963,13 @@ msgstr "Email"
 
 #: includes/meta-boxes/views/html-shipment-address-cell.php:49
 #: includes/meta-boxes/views/html-shipment-line.php:81
-#: includes/meta-boxes/views/html-shipment-line.php:115
+#: includes/meta-boxes/views/html-shipment-line.php:123
 msgid "Cancel"
 msgstr "Annuler"
 
 #: includes/meta-boxes/views/html-shipment-address-cell.php:50
 #: includes/meta-boxes/views/html-shipment-line.php:82
-#: includes/meta-boxes/views/html-shipment-line.php:116
+#: includes/meta-boxes/views/html-shipment-line.php:124
 msgid "Submit"
 msgstr "Enregister"
 
@@ -948,86 +983,86 @@ msgid "Edit shipper address"
 msgstr "Modifier l'adresse expéditeur"
 
 #: includes/meta-boxes/views/html-shipment-line.php:58
-#: includes/meta-boxes/views/html-shipment-line.php:97
+#: includes/meta-boxes/views/html-shipment-line.php:100
 msgid "l"
 msgstr "L"
 
 #: includes/meta-boxes/views/html-shipment-line.php:59
-#: includes/meta-boxes/views/html-shipment-line.php:98
+#: includes/meta-boxes/views/html-shipment-line.php:101
 msgid "w"
 msgstr "l"
 
 #: includes/meta-boxes/views/html-shipment-line.php:60
-#: includes/meta-boxes/views/html-shipment-line.php:99
+#: includes/meta-boxes/views/html-shipment-line.php:102
 msgid "h"
 msgstr "h"
 
 #: includes/meta-boxes/views/html-shipment-line.php:61
-#: includes/meta-boxes/views/html-shipment-line.php:100
+#: includes/meta-boxes/views/html-shipment-line.php:103
 msgid "weight"
 msgstr "poids"
 
 #: includes/meta-boxes/views/html-shipment-line.php:63
-#: includes/meta-boxes/views/html-shipment-line.php:102
+#: includes/meta-boxes/views/html-shipment-line.php:105
 msgid "goods description"
 msgstr "descrip. contenu"
 
 #: includes/meta-boxes/views/html-shipment-line.php:65
 #: includes/meta-boxes/views/html-shipment-line.php:66
+#: includes/meta-boxes/views/html-shipment-line.php:107
+#: includes/meta-boxes/views/html-shipment-line.php:108
 msgid "Insurable value"
 msgstr "Valeur assurable"
 
 #: includes/meta-boxes/views/html-shipment-line.php:68
 #: includes/meta-boxes/views/html-shipment-line.php:69
+#: includes/meta-boxes/views/html-shipment-line.php:110
+#: includes/meta-boxes/views/html-shipment-line.php:111
 msgid "Content value"
 msgstr "Valeur contenu"
 
 #: includes/meta-boxes/views/html-shipment-line.php:72
-#: includes/meta-boxes/views/html-shipment-line.php:106
+#: includes/meta-boxes/views/html-shipment-line.php:114
 msgid "Origin:"
 msgstr "Origine :"
 
-#: includes/meta-boxes/views/html-shipment-line.php:93
+#: includes/meta-boxes/views/html-shipment-line.php:96
 msgid "Add new parcel"
 msgstr "Ajouter un colis"
 
-#: includes/meta-boxes/views/html-shipment-line.php:104
-msgid "value"
-msgstr "valeur"
-
-#: includes/meta-boxes/views/html-shipment-line.php:196
+#: includes/meta-boxes/views/html-shipment-line.php:209
 msgid "Ad-valorem insurance"
 msgstr "Assurance ad-valorem"
 
-#: includes/meta-boxes/views/html-shipment-line.php:199
+#: includes/meta-boxes/views/html-shipment-line.php:212
 msgid "Insurable value: "
 msgstr "Valeur assurable : "
 
-#: includes/meta-boxes/views/html-shipment-line.php:202
+#: includes/meta-boxes/views/html-shipment-line.php:215
 msgid "Insurance cost: "
 msgstr "Coût de l'assurance : "
 
-#: includes/meta-boxes/views/html-shipment-line.php:207
+#: includes/meta-boxes/views/html-shipment-line.php:220
 msgid "Ad valorem insurance not available."
 msgstr "Assurance ad-valorem non disponible."
 
-#: includes/meta-boxes/views/html-shipment-line.php:216
+#: includes/meta-boxes/views/html-shipment-line.php:229
 msgid "No offer available. Is all the data correct?"
 msgstr "Aucune offre disponible. Est-ce que les données sont correctes ?"
 
-#: includes/meta-boxes/views/html-shipment-line.php:228
+#: includes/meta-boxes/views/html-shipment-line.php:241
 msgid "Insured value: "
 msgstr "Valeur assurée : "
 
-#: includes/meta-boxes/views/html-shipment-line.php:231
+#: includes/meta-boxes/views/html-shipment-line.php:244
 msgid "cost: "
 msgstr "coût : "
 
-#: includes/meta-boxes/views/html-shipment-line.php:235
+#: includes/meta-boxes/views/html-shipment-line.php:248
 msgid "No insurance."
 msgstr "Pas d'assurance."
 
-#: includes/meta-boxes/views/html-shipment-line.php:275
+#: includes/meta-boxes/views/html-shipment-line.php:288
 msgid "Add return shipment"
 msgstr "Ajouter expédition retour"
 
@@ -1386,6 +1421,9 @@ msgstr "Enregistrer"
 msgctxt "on date at time"
 msgid "%s @ %s"
 msgstr ""
+
+#~ msgid "value"
+#~ msgstr "valeur"
 
 #~ msgid "insurable value"
 #~ msgstr "valeur assurable"

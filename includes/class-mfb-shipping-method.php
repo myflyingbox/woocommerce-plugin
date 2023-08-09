@@ -352,6 +352,27 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
+			'shipping_price_modifier_static' => array(
+				'title'       => __( 'Price modifier (in cents)', 'my-flying-box' ),
+				'type'        => 'number',
+				'description' => __( 'IN CENTS! If set, will increment the shipping price by the specified amount. Put a negative value to decrease the price.', 'my-flying-box' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
+			'shipping_price_modifier_percent' => array(
+				'title'       => __( 'Price modifier (percentage)', 'my-flying-box' ),
+				'type'        => 'number',
+				'description' => __( 'A value of 20 will increase the price by 20%, a value value of -30 will decrease the price by 30%, a value of 100 will double the price.', 'my-flying-box' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
+			'shipping_price_rounding_increment' => array(
+				'title'       => __( 'Price rounding increment (in cents)', 'my-flying-box' ),
+				'type'        => 'number',
+				'description' => __( 'IN CENTS! e.g. 20 will round 13.23 to 13.40, 100 will round 15.13 to 16.00.', 'my-flying-box' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
 			'included_postcodes' => array(
 				'title'       => __( 'Included postcodes', 'my-flying-box' ),
 				'type'        => 'textarea',
@@ -496,6 +517,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			if ( $this->get_option('reduce_api_calls') == 'yes' && $this->get_option('flatrate_pricing') == 'yes' ) {
 
 				$price = $this->get_flatrate_price( $total_weight, $shipping_classes );
+				$price = $this->apply_price_modifiers( $price );
 				$rate = array(
 					'id'      => $this->get_rate_id(),
 					'label' 	=> $this->get_title(),
@@ -583,6 +605,7 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 				$price = $this->get_flatrate_price( $total_weight, $shipping_classes );
 			}
 
+			$price = $this->apply_price_modifiers( $price );
 			$price = apply_filters( 'mfb_shipping_rate_price', $price, $this->id );
 			$rate = array(
 				'id' 		=> $this->get_rate_id(),
@@ -646,6 +669,36 @@ class MFB_Shipping_Method extends WC_Shipping_Method {
 			return false;
 		}
 	}
+
+	// Modify the provided price value in accordance to the three price modifier settings
+	// defined in the module settings by the merchant.
+	private function apply_price_modifiers( $price ) {
+
+		if ( !is_numeric($price) ) return $price;
+
+		$modifier_amount = (int) $this->get_option('shipping_price_modifier_static');
+		$modifier_percent = (int) $this->get_option('shipping_price_modifier_percent');
+		$rounding_increment = (int) $this->get_option('shipping_price_rounding_increment');
+
+		// First, we apply the static surcharge
+		if ( is_int($modifier_amount) && $modifier_amount != 0  ) {
+			$price += ($modifier_amount / 100); // $modifier_amount is in cents
+		}
+
+		// Then we apply the percentage surcharge
+		if ( is_int($modifier_percent) && $modifier_percent != 0 ) {
+			$price *= (1 + ($modifier_percent / 100));
+		}
+
+		// Finally, we round the price to the nearest increment
+		if ( is_int($rounding_increment) && $rounding_increment > 0 ) {
+			$rounding_increment = 1 / ($rounding_increment / 100);
+			$price = ceil($price*$rounding_increment) / $rounding_increment;
+		}
+
+		return $price;
+	}
+
 
 	// Returns the matching rate for a given cart weight and all applicable shipping classes.
 	// Only one rate will be returned: the most expensive.
