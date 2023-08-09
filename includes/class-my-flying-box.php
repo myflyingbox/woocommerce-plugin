@@ -724,7 +724,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 	// Returns an array of tracking links and corresponding tracking number for a given order
 	public function get_tracking_links( $order ) {
-		$shipments = MFB_Shipment::get_all_for_order( $order->id );
+		$shipments = MFB_Shipment::get_all_for_order( $order->get_id() );
 		$links = array();
 		// We deal with each shipment
 		foreach( $shipments as $shipment ) {
@@ -748,7 +748,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 	// Returns an array of relay delivery addresses for a given order
 	public function get_relay_addresses( $order ) {
-		$shipments = MFB_Shipment::get_all_for_order( $order->id );
+		$shipments = MFB_Shipment::get_all_for_order( $order->get_id() );
 		$addresses = array();
 		// We deal with each shipment
 		foreach( $shipments as $shipment ) {

@@ -27,12 +27,12 @@ class MFB_Bulk_Order_Background_Process extends WP_Background_Process {
 
         $wc_order = wc_get_order( $wc_order_id );
 
-        $bulk_order_id = get_post_meta( $wc_order->id, '_mfb_bulk_order_id', true);
+        $bulk_order_id = get_post_meta( $wc_order->get_id(), '_mfb_bulk_order_id', true);
 
         $bulk = MFB_Bulk_Order::get( $bulk_order_id );
 
         // Checking that this order doesn't have another booked shipment
-        if ( MFB_Shipment::get_last_booked_for_order( $wc_order->id ) == null) {
+        if ( MFB_Shipment::get_last_booked_for_order( $wc_order->get_id() ) == null) {
           try {
             $shipment = MFB_Shipment::create_from_order( $wc_order, $bulk_order_id );
             if ( !$shipment->place_booking()) {
