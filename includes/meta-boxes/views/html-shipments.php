@@ -36,7 +36,7 @@
 
 	<div class="mfb-actions">
 		<p class="add-shipment">
-			<button type="button" class="button button-primary add-shipment"><?php _e( 'Create new shipment', 'my-flying-box' ); ?></button>
+			<button type="button" class="button button-primary add-shipment" data-order_id="<?php echo $theorder->get_id() ?>"><?php _e( 'Create new shipment', 'my-flying-box' ); ?></button>
 		</p>
 	</div>
 </div>
