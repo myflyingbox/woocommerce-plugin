@@ -2,6 +2,8 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+
 class My_Flying_Box  extends WC_Shipping_Method {
 
 	/**
@@ -126,7 +128,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 
 		// Adds MyFlyingBox meta box on order page
-		add_action( 'add_meta_boxes_shop_order', array( &$this, 'load_admin_order_metabox' ) );
+		add_action( 'add_meta_boxes', array( &$this, 'load_admin_order_metabox' ) );
 		add_action( 'add_meta_boxes_mfb_bulk_order', array( &$this, 'load_admin_bulk_order_metabox' ) );
 
 		add_filter( 'bulk_actions-edit-mfb_bulk_order', array( $this, 'bulk_order_bulk_actions' ) );
@@ -247,13 +249,12 @@ class My_Flying_Box  extends WC_Shipping_Method {
 	 * @return  void
 	 */
 	public function admin_enqueue_scripts ( $hook = '' ) {
-		global $wp_query, $post;
+		global $wp_query;
 
 		wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
 		wp_localize_script( $this->_token . '-admin', 'plugin_url', plugins_url());
 
 		$params = array(
-			'post_id'                             => isset( $post->ID ) ? $post->ID : '',
 			'ajax_url'                            => admin_url( 'admin-ajax.php' ),
 			'labels_url'                          => admin_url( 'admin-post.php?action=mfb_download_labels' )
 		);
@@ -695,8 +696,13 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 	public function load_admin_order_metabox() {
 		foreach ( wc_get_order_types( 'order-meta-boxes' ) as $type ) {
+
+			$screen = class_exists( '\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController' ) && wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
+			? wc_get_page_screen_id( 'shop-order' )
+			: $type;
+
 			//$order_type_object = get_post_type_object( $type );
-			add_meta_box( 'myflyingbox-order-shipping', __( 'Shipping - My Flying Box', 'my-flying-box' ), 'MFB_Meta_Box_Order_Shipping::output', $type, 'normal', 'high' );
+			add_meta_box( 'myflyingbox-order-shipping', __( 'Shipping - My Flying Box', 'my-flying-box' ), 'MFB_Meta_Box_Order_Shipping::output', $screen, 'normal', 'high' );
 		}
 	}
 

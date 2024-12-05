@@ -38,7 +38,7 @@ jQuery( function ( $ ) {
 		add_shipment: function() {
 			var data = {
 				action:   'mfb_create_shipment',
-				order_id: mfb_js_resources.post_id
+				order_id: $( this ).data('order_id')
 			};
 
 			$.ajax({

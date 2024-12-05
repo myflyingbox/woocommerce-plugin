@@ -7,12 +7,13 @@
 class MFB_Meta_Box_Order_Shipping {
 
 
-	public static function output( ) {
-		global $thepostid, $theorder;
+	public static function output($post) {
+		global $theorder;
 
 		if ( ! is_object( $theorder ) ) {
-			$theorder = wc_get_order( $thepostid );
+			$theorder = wc_get_order( $post->id );
 		}
+
 		$delivery_location_code = get_post_meta( $theorder->get_id(), '_mfb_delivery_location', true);
 		if ( $delivery_location_code && !empty( $delivery_location_code ) ) {
 			// We have a relay delivery. Extracting the details of the customer selection
