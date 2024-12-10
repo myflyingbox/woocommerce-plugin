@@ -1,0 +1,1 @@
+- [Installation et Configuration de l'extension My Flying Box pour WooCommerce (fr)](INSTALL.FR.md)

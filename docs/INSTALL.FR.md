@@ -1,4 +1,4 @@
-# Installation de l'extension My Flying Box pour WooCommerce
+# Installation et Configuration de l'extension My Flying Box pour WooCommerce
 
 ## Table des matières
 
