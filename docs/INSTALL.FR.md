@@ -25,11 +25,11 @@
 
 2. Cliquer sur la version la plus récente de l'extension.
 
-![github](images/github.png)
+ [![github](images/github.png)](images/github.png)
 
 3. Télécharger le fichier zip de l'extension sur votre ordinateur. Il s'agit du premier fichier dans la liste avec un nom du type woocommerce-myflyingbox-vX.YY.zip
 
-![download](images/download.png)
+[![download](images/download.png)](images/download.png)
 
 ## Installation
 
@@ -39,11 +39,11 @@
 
 3. Choisir le fichier zip de l'extension téléchargé précédemment puis cliquer sur "Installer maintenant".
 
-![upload](images/upload.png)
+[![upload](images/upload.png)](images/upload.png)
 
 4. Activer l'extension.
 
-![activate](images/activate.png)
+[![activate](images/activate.png)](images/activate.png)
 
 ## Configuration
 
@@ -51,13 +51,13 @@
 
 1. Récupérer vos identifiants et mots de passe d'API My Flying Box via le dashboard : [https://dashboard.myflyingbox.com/fr/dashboard/api#api-accounts](https://dashboard.myflyingbox.com/fr/dashboard/api#api-accounts)
 
-![api_account](images/api_account.png)
+[![api_account](images/api_account.png)](images/api_account.png)
 
 2. Choisir le serveur d'API. Afin de faire des tests ou si votre compte My Flying Box n'est pas encore validé, vous pouvez utiliser le serveur "Staging". **Attention**, les services et les prix sur le serveur de staging ne sont pas toujours équivalent à ceux sur le serveur de production.
 
 3. Copier les identifiants dans les paramètres du compte de l'extension My Flying Box
 
-![setup_api_account](images/setup_api_account.png)
+[![setup_api_account](images/setup_api_account.png)](images/setup_api_account.png)
 
 4. Enregistrer les changements
 
@@ -65,7 +65,7 @@
 
 1. Aller dans l'onglet Paramètres expéditeur
 
-![shipper](images/shipper.png)
+[![shipper](images/shipper.png)](images/shipper.png)
 
 2. Saisir l'adresse de l'expéditeur. C'est l'adresse par défaut qui sera utilisée pour créer les expéditions.
 
@@ -75,7 +75,7 @@
 
 1. Aller sur l'onglet Transporteurs.
 
-![services](images/services.png)
+[![services](images/services.png)](images/services.png)
 
 2. Cliquer sur Recharger les transporteurs depuis l'API. **Attention** Les étapes précédentes ( [Compte d'API My Flying Box](#compte-dapi-my-flying-box) et [Paramétrage de l'expéditeur par défaut](#paramétrage-de-lexpéditeur-par-défaut) ) sont nécessaires afin de pouvoir charger la liste de produits disponibles.
 
@@ -89,13 +89,13 @@
 
 2. Modifier les produits et d'assurer que tous les produits aient un poids dans l'onglet Expédition de la zone Donnée produit.
 
-![weight](images/weight.png)
+[![weight](images/weight.png)](images/weight.png)
 
 ### Configuration des zones d'expéditions
 
 1. Se rendre sur l'onglet Expédition dans la page Réglages de l'extension WooCommerce.
 
-![shipping_zone](images/shipping_zone.png)
+[![shipping_zone](images/shipping_zone.png)](images/shipping_zone.png)
 
 2. Créer les Zones d'expédition afin de créer les correspondance entre les pays de livraison et les services que vous souhaitez proposer à vos clients. Les [services sélectionnés précédement](#chargement-et-sélection-des-produits-transporteurs) seront disponibles dans les Modes d'expédition.
 
@@ -105,7 +105,7 @@
 
 5. A partir de ce point, vous pouvez tester le processus d'achat sur votre boutique. Les services configurés vont apparaître dans le tunnel d'achat des paniers.
 
-![cart](images/cart.png)
+[![cart](images/cart.png)](images/cart.png)
 
 ## Passage en production
 
