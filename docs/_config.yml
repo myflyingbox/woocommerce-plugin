@@ -1,3 +1,4 @@
 theme: minima
-title: My Flying Box's plugin for WooCommerce 
+title: My Flying Box's plugin for WooCommerce
 description: My Flying Box's plugin for WooCommerce
+markdown: kramdown
