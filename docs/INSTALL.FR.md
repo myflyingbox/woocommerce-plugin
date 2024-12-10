@@ -16,12 +16,12 @@
 ## Prérequis
 
 * Une installation fonctionnelle de Wordpress avec l'extension Woocommerce.
-* Un compte My Flying Box avec une ligne de crédit ou du crédit chargé par carte bancaire : https://dashboard.myflyingbox.com/fr/registrations/new
+* Un compte My Flying Box avec une ligne de crédit ou du crédit chargé par carte bancaire : [https://dashboard.myflyingbox.com/fr/registrations/new](https://dashboard.myflyingbox.com/fr/registrations/new)
 * **Attention** : A partir de la version 8.2 de WooCommerce, le High-Performance Order Storage est activé par défaut. Cette fonctionnalité n'est supportée qu'à partir de la version 0.17 de l'extension My Flying Box.
 
 ## Téléchargement
 
-1. Se rendre sur la page github de l'extension : https://github.com/myflyingbox/woocommerce-plugin
+1. Se rendre sur la page github de l'extension : [https://github.com/myflyingbox/woocommerce-plugin](https://github.com/myflyingbox/woocommerce-plugin)
 
 2. Cliquer sur la version la plus récente de l'extension.
 
@@ -33,7 +33,7 @@
 
 ## Installation
 
-1. Se rendre sur l'admin de votre WordPress. (par ex : https://www.maboutique.com/wp-admin ).
+1. Se rendre sur l'admin de votre WordPress. (par ex : [https://www.maboutique.com/wp-admin](https://www.maboutique.com/wp-admin) ).
 
 2. Cliquer sur "Ajouter une extension" dans "Extensions" puis "Téléverser une extension".
 
@@ -49,7 +49,7 @@
 
 ### Compte d'API My Flying Box
 
-1. Récupérer vos identifiants et mots de passe d'API My Flying Box via le dashboard : https://dashboard.myflyingbox.com/fr/dashboard/api#api-accounts
+1. Récupérer vos identifiants et mots de passe d'API My Flying Box via le dashboard : [https://dashboard.myflyingbox.com/fr/dashboard/api#api-accounts](https://dashboard.myflyingbox.com/fr/dashboard/api#api-accounts)
 
 ![api_account](images/api_account.png)
 
@@ -79,7 +79,7 @@
 
 2. Cliquer sur Recharger les transporteurs depuis l'API. **Attention** Les étapes précédentes ( [Compte d'API My Flying Box](#compte-dapi-my-flying-box) et [Paramétrage de l'expéditeur par défaut](#paramétrage-de-lexpéditeur-par-défaut) ) sont nécessaires afin de pouvoir charger la liste de produits disponibles.
 
-3. Cocher les services transporteurs que vous souhaitez utiliser. Ces services seront ensuite disponibles comme Modes d'expédition dans WooCommerce. N'hésitez pas à utiliser le dashboard My Flying Box pour faire des tests et voir les produits disponibles pour les routes de vos clients ( https://dashboard.myflyingbox.com/fr/dashboard/draft_shipments/new )
+3. Cocher les services transporteurs que vous souhaitez utiliser. Ces services seront ensuite disponibles comme Modes d'expédition dans WooCommerce. N'hésitez pas à utiliser le dashboard My Flying Box pour faire des tests et voir les produits disponibles pour les routes de vos clients ( [https://dashboard.myflyingbox.com/fr/dashboard/draft_shipments/new](https://dashboard.myflyingbox.com/fr/dashboard/draft_shipments/new) )
 
 4. Enregistrer les changements. **Attention** La liste de services peut être très longue et le bouton Enregistrer est tout en bas de la page.
 
