@@ -33,7 +33,7 @@
 
 ## Installation
 
-1. Se rendre sur l'admin de votre WordPress. (par ex : [https://www.maboutique.com/wp-admin](https://www.maboutique.com/wp-admin){:target="_blank"} ).
+1. Se rendre sur l'admin de votre WordPress. (par ex : https://www.nomdedomainedemaboutique.com/wp-admin ).
 
 2. Cliquer sur "Ajouter une extension" dans "Extensions" puis "Téléverser une extension".
 
