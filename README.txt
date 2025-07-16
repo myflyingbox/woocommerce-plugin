@@ -23,6 +23,8 @@ Go to the 'releases' page https://github.com/myflyingbox/woocommerce-plugin/rele
 
 Upload this package through the standard wordpress extension installation mechanisms.
 
+Starting guide (french) : https://myflyingbox.github.io/woocommerce-plugin/INSTALL.FR.html
+
 == Development ==
 
 Here are some useful commands for developing on this module.
