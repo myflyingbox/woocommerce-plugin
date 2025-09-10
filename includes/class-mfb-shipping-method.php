@@ -581,7 +581,13 @@ class MFB_Shipping_Method extends WC_Shipping_Method
 			// If we continue to run here, that means we must get a quote from the API.
 
 			// We prepare the parcels data based on products inside this shipment
-			$include_insured_value = My_Flying_Box_Settings::get_option('mfb_insure_by_default') == 'yes';
+
+			// OBSOLETE, see below
+			// $include_insured_value = My_Flying_Box_Settings::get_option('mfb_insure_by_default') == 'yes';
+			
+			// Always include insured value in quote request, as it may impact the price even if we don't want
+			// to insure by default, for instance when using extended cover.
+			$include_insured_value = true;
 			$parcels = MFB_Shipment::parcel_data_from_items($products, $include_insured_value);
 
 			// We need destination info to be able to send a quote
