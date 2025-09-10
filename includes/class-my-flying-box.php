@@ -118,13 +118,14 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 		// Add delivery location selector for shipment methods supporting it
 		add_filter( 'woocommerce_cart_shipping_method_full_label', array( &$this,'add_delivery_location_selector_to_shipping_method_label'), 10, 2 );
-		add_action( 'woocommerce_after_checkout_form',  array( &$this,'load_delivery_location_selector_tools')  );
+		add_action( 'init',  array( &$this,'load_delivery_location_selector_tools')  );
 
 
 		// Save selected delivery location during cart checkout
 		// add_action( 'woocommerce_checkout_update_order_meta', array( &$this, 'reset_selected_delivery_location' ) );
 		add_action( 'woocommerce_checkout_process', array( &$this,'hook_process_order_checkout'));
 		add_action( 'woocommerce_checkout_order_processed', array( &$this,'hook_new_order'));
+		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( &$this,'new_hook_new_order'));
 
 
 		// Adds MyFlyingBox meta box on order page
@@ -172,6 +173,9 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 		// Add shipping methods
 		add_filter('woocommerce_shipping_methods', array(&$this, 'myflyingbox_filter_shipping_methods'));
+		//order admin check status
+		// add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'myflyingbox_check_order_status'));
+		add_action('rest_api_init', array(&$this, 'myflyingbox_set_order_status'));
 
 	} // End __construct ()
 
@@ -227,8 +231,18 @@ class My_Flying_Box  extends WC_Shipping_Method {
 	 * @return  void
 	 */
 	public function enqueue_scripts () {
-		wp_register_script( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
+      	$version_js = filemtime(plugin_dir_path(__DIR__) . 'assets/js/frontend' . $this->script_suffix . '.js');
+		wp_register_script( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend' . $this->script_suffix . '.js', array( 'jquery' ), /*$version_js*/'0.0.1' );
 		wp_enqueue_script( $this->_token . '-frontend' );
+		$elements["ajax_url"] = admin_url('admin-ajax.php');
+		$elements["site_url"] = get_site_url();
+		$elements["extended_cover_checkbox_label"] = __( 'With Additional Guarantee', 'my-flying-box' );
+		$elements["extended_cover_checkbox_value"] = WC()->session->get('myflyingbox_extended_cover');
+		$locale = get_locale();
+    	$lang = substr($locale, 0, 2);
+		$lang = $lang ? $lang : "fr";
+		$elements["lang"] = $lang;
+		wp_localize_script($this->_token . '-frontend', 'mfb_var', $elements);
 	} // End enqueue_scripts ()
 
 	/**
@@ -251,15 +265,24 @@ class My_Flying_Box  extends WC_Shipping_Method {
 	public function admin_enqueue_scripts ( $hook = '' ) {
 		global $wp_query;
 
-		wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
+		$version_admin_js = filemtime(plugin_dir_path(__DIR__) . 'assets/js/admin' . $this->script_suffix . '.js');
+		wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin' . $this->script_suffix . '.js', array( 'jquery' ), '0.0.1'/*$version_admin_js*/ );
 		wp_localize_script( $this->_token . '-admin', 'plugin_url', plugins_url());
-
+		$locale = get_locale();
+    	$lang = substr($locale, 0, 2);
+		$lang = $lang ? $lang : "fr";
+		$extended_cover_cost_label = __('Total cost with extended cover :', 'my-flying-box' );
 		$params = array(
 			'ajax_url'                            => admin_url( 'admin-ajax.php' ),
-			'labels_url'                          => admin_url( 'admin-post.php?action=mfb_download_labels' )
+			'labels_url'                          => admin_url( 'admin-post.php?action=mfb_download_labels' ),
+			'lang'								  => $lang,
+			'eclc'								  => $extended_cover_cost_label
 		);
 		wp_localize_script( $this->_token . '-admin', 'mfb_js_resources', $params );
 		wp_enqueue_script( $this->_token . '-admin' );
+		if ( isset($_GET['page']) && $_GET['page'] === 'wc-settings' && isset($_GET['tab']) && $_GET['tab'] === 'shipping' ) {
+			wp_enqueue_media();
+		}
 	} // End admin_enqueue_scripts ()
 
 	/**
@@ -503,8 +526,67 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		}
 	}
 
-	public function hook_new_order($order_id) {
+	public function new_hook_new_order($order) {
+		$order_id = $order->get_id();
+		$json = file_get_contents('php://input');
+    	$params = json_decode( $json, true );
 
+		if(!isset($params['extra_data'])) {
+			wc_add_notice(__('An error occured','my-flying-box'),'error');
+		}
+
+		$data = $params['extra_data'];
+
+		if (isset($data['shipping_method']) && trim($data['shipping_method']))	{
+			$carrier = MFB_Carrier::get_by_code( $data['shipping_method'] );
+			if ($carrier && $carrier->shop_delivery) {
+				if(!isset($data['delivery_location']) || (isset($data['delivery_location']) && !$data['delivery_location'])) {
+					wc_add_notice(__('Please select a delivery location','my-flying-box'),'error');
+				}
+			}
+		}
+
+		// We save the latest quote associated to this cart
+		update_post_meta( $order_id, '_mfb_last_quote_id', WC()->session->get('myflyingbox_shipment_quote_id') );
+
+		if (isset($data['shipping_method']))	{
+				$carrier_code = $data['shipping_method'];
+				$carrier = MFB_Carrier::get_by_code( $carrier_code );
+				update_post_meta( $order_id, '_mfb_carrier_code', $carrier_code );
+
+				if ( $carrier && $carrier->shop_delivery ) {
+					if ( isset($data['delivery_location']) ) {
+						update_post_meta( $order_id, '_mfb_delivery_location', $data['delivery_location'] );
+
+						// Trying to get the details of the location
+						$quote = MFB_Quote::get( WC()->session->get('myflyingbox_shipment_quote_id') );
+
+						$street = $data['shipping_address_1'];
+						$street_line_2 = $data['shipping_address_2'];
+						if ( ! empty( $street_line_2 ) ) {
+							$street .= "\n".$street_line_2;
+						}
+
+						$params = array(
+							'street' => $street,
+							'city' => $quote->params['recipient']['city']
+						);
+
+						$locations = $quote->offers[$carrier_code]->get_delivery_locations($params);
+						foreach( $locations as $loc ) {
+							if ( $loc->code == $_POST['_delivery_location'] ) {
+								update_post_meta( $order_id, '_mfb_delivery_location_name', $loc->company );
+								update_post_meta( $order_id, '_mfb_delivery_location_street', $loc->street );
+								update_post_meta( $order_id, '_mfb_delivery_location_city', $loc->city );
+								update_post_meta( $order_id, '_mfb_delivery_location_postal_code', $loc->postal_code );
+							}
+						}
+					}
+				}
+		}
+	}
+
+	public function hook_new_order($order_id) {
 		// We save the latest quote associated to this cart
 		update_post_meta( $order_id, '_mfb_last_quote_id', WC()->session->get('myflyingbox_shipment_quote_id') );
 
@@ -592,97 +674,96 @@ class My_Flying_Box  extends WC_Shipping_Method {
 				$full_label .=  '<br/><span>'.__( 'Selected ', 'my-flying-box' ).' : <span id="mfb-location-client"></span></span>';
 				$full_label .=  '<span id="input_'.$method->id.'"></span>';
 			}
+			$full_label .=  '<span data-mfb-method-input-id="'.$method->id.'" ></span>';
 		}
 		return $full_label;
 	}
 
 
 	public function load_delivery_location_selector_tools( $checkout ) {
+			$translations = array(
+				'Unable to load parcel points' => __( 'Unable to load parcel points', 'my-flying-box' ),
+				'Select this location' => __( 'Select this location', 'my-flying-box' ),
+				'day_1' => __( 'Monday', 'my-flying-box' ),
+				'day_2' => __( 'Tuesday', 'my-flying-box' ),
+				'day_3' => __( 'Wednesday', 'my-flying-box' ),
+				'day_4' => __( 'Thursday', 'my-flying-box' ),
+				'day_5' => __( 'Friday', 'my-flying-box' ),
+				'day_6' => __( 'Saturday', 'my-flying-box' ),
+				'day_7' => __( 'Sunday', 'my-flying-box' )
+			);
 
-		$translations = array(
-			'Unable to load parcel points' => __( 'Unable to load parcel points', 'my-flying-box' ),
-			'Select this location' => __( 'Select this location', 'my-flying-box' ),
-			'day_1' => __( 'Monday', 'my-flying-box' ),
-			'day_2' => __( 'Tuesday', 'my-flying-box' ),
-			'day_3' => __( 'Wednesday', 'my-flying-box' ),
-			'day_4' => __( 'Thursday', 'my-flying-box' ),
-			'day_5' => __( 'Friday', 'my-flying-box' ),
-			'day_6' => __( 'Saturday', 'my-flying-box' ),
-			'day_7' => __( 'Sunday', 'my-flying-box' )
-		);
+			wp_enqueue_script( 'jquery' );
+			//wp_enqueue_script( 'gmap', '//maps.google.com/maps/api/js?sensor=false' );
 
-		wp_enqueue_script( 'jquery' );
-		//wp_enqueue_script( 'gmap', '//maps.google.com/maps/api/js?sensor=false' );
+			// Google APIs should not be loaded twice. We will make sure that it is only loaded once.
+			global $wp_scripts;
+			$google_apis = array();
 
-		// Google APIs should not be loaded twice. We will make sure that it is only loaded once.
-		global $wp_scripts;
-		$google_apis = array();
+			// First, we identify any registered script that corresponds to Google maps API
+			foreach((array)$wp_scripts->registered as $script) {
+				if(strpos($script->src, 'maps.googleapis.com/maps/api/js') !== false or strpos($script->src, 'maps.google.com/maps/api/js') !== false )
+					$google_apis[] = $script;
 
-		// First, we identify any registered script that corresponds to Google maps API
-		foreach((array)$wp_scripts->registered as $script) {
-			if(strpos($script->src, 'maps.googleapis.com/maps/api/js') !== false or strpos($script->src, 'maps.google.com/maps/api/js') !== false )
-				$google_apis[] = $script;
-
-		}
-
-		// We will store the libraries called, to make sure that nothing is forgotten
-		$libraries = array();
-		$unregistered = array();
-
-		foreach($google_apis as $g) {
-			wp_dequeue_script($g->handle); // Temporarily deregistering the script
-			$unregistered[] = $g->handle;
-
-			// Extracting any specifically mentioned library
-			$qs = parse_url($g->src);
-			if ( array_key_exists('query', $qs) ) {
-				$qs = $qs['query'];
-			} else {
-				$qs = '';
 			}
-			parse_str($qs, $params);
-			if ( isset($params['libraries']) ) {
-				$libraries = array_merge($libraries, explode(',', $params['libraries']) );
-			}
-		}
 
-		// Updating deprecated dependency information that was based on old script handlers
-		// We will use only one handler: google-api-grouped
-		foreach($wp_scripts->registered as $i=>$script) {
-			foreach($script->deps as $j => $dept) {
-				if(in_array($dept, $unregistered)) {
-					$script->deps[$j] = 'google-api-grouped';
+			// We will store the libraries called, to make sure that nothing is forgotten
+			$libraries = array();
+			$unregistered = array();
+
+			foreach($google_apis as $g) {
+				wp_dequeue_script($g->handle); // Temporarily deregistering the script
+				$unregistered[] = $g->handle;
+
+				// Extracting any specifically mentioned library
+				$qs = parse_url($g->src);
+				if ( array_key_exists('query', $qs) ) {
+					$qs = $qs['query'];
+				} else {
+					$qs = '';
+				}
+				parse_str($qs, $params);
+				if ( isset($params['libraries']) ) {
+					$libraries = array_merge($libraries, explode(',', $params['libraries']) );
 				}
 			}
-		}
 
-		$library = '';
-		if(count($libraries))
-			$library = 'libraries='.implode(',', $libraries).'&';
+			// Updating deprecated dependency information that was based on old script handlers
+			// We will use only one handler: google-api-grouped
+			foreach($wp_scripts->registered as $i=>$script) {
+				foreach($script->deps as $j => $dept) {
+					if(in_array($dept, $unregistered)) {
+						$script->deps[$j] = 'google-api-grouped';
+					}
+				}
+			}
 
-		$google_api_key = My_Flying_Box_Settings::get_option('mfb_google_api_key');
+			$library = '';
+			if(count($libraries))
+				$library = 'libraries='.implode(',', $libraries).'&';
 
-		// Finally, enqueuing the script again.
-		wp_enqueue_script( 'google-api-grouped', '//maps.googleapis.com/maps/api/js?'.$library.'sensor=false&key='.$google_api_key, array(), '', true);
+			$google_api_key = My_Flying_Box_Settings::get_option('mfb_google_api_key');
+
+			// Finally, enqueuing the script again.
+			wp_enqueue_script( 'google-api-grouped', '//maps.googleapis.com/maps/api/js?'.$library.'key='.$google_api_key, array(), '', true);
 
 
-		wp_enqueue_script( 'mfb_delivery_locations', plugins_url().'/my-flying-box/assets/js/delivery_locations.js', array( 'jquery', 'google-api-grouped' ) );
-		wp_localize_script( 'mfb_delivery_locations', 'plugin_url', plugins_url() );
-		wp_localize_script( 'mfb_delivery_locations', 'lang', $translations );
-		wp_localize_script( 'mfb_delivery_locations', 'map', My_Flying_Box::generate_google_map_html_container() );
+			wp_enqueue_script( 'mfb_delivery_locations', plugins_url().'/my-flying-box/assets/js/delivery_locations.js', array( 'jquery', 'google-api-grouped' ) );
+			wp_localize_script( 'mfb_delivery_locations', 'plugin_url', plugins_url() );
+			wp_localize_script( 'mfb_delivery_locations', 'lang', $translations );
+			wp_localize_script( 'mfb_delivery_locations', 'map', My_Flying_Box::generate_google_map_html_container() );
 
-		// Get the protocol of the current page
-		$protocol = isset( $_SERVER['HTTPS'] ) ? 'https://' : 'http://';
+			// Get the protocol of the current page
+			$protocol = isset( $_SERVER['HTTPS'] ) ? 'https://' : 'http://';
 
-		$params = array(
-				// Get the url to the admin-ajax.php file using admin_url()
-				// All Ajax requests in WP go to admin-ajax.php
-				'ajaxurl' => admin_url( 'admin-ajax.php', $protocol ),
-				'action'  => 'mfb_get_delivery_locations'
-		);
-		// Print the script to our page
-		wp_localize_script( 'mfb_delivery_locations', 'mfb_params', $params );
-
+			$params = array(
+					// Get the url to the admin-ajax.php file using admin_url()
+					// All Ajax requests in WP go to admin-ajax.php
+					'ajaxurl' => admin_url( 'admin-ajax.php', $protocol ),
+					'action'  => 'mfb_get_delivery_locations'
+			);
+			// Print the script to our page
+			wp_localize_script( 'mfb_delivery_locations', 'mfb_params', $params );
 	}
 
 	public static function generate_google_map_html_container() {
@@ -779,6 +860,22 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		}
 	}
 	public function add_tracking_link_to_order_page( $order ) {
+		$shipments = MFB_Shipment::get_all_for_order( $order->get_id() );
+		if(!empty($shipments) && isset($shipments[0]) && isset($shipments[0]->api_order_uuid)) {
+			if(isset($shipments[0]->tracking) && !empty($shipments[0]->tracking) && isset($shipments[0]->tracking[0])) {
+				$locale = get_locale();
+    			$lang = substr($locale, 0, 2);
+				if(!trim($lang)) {
+					$lang = "fr";
+				}
+				$tracking = $shipments[0]->tracking[0];
+				if (!empty($tracking->events)) {
+					$api_order_uuid = $shipments[0]->api_order_uuid;
+					$order_id = $order->get_id();
+					include( dirname ( dirname( __FILE__ ) ) . '/includes/views/order-page-tracking-status.php');
+				}
+			}
+		}
 		$links = MFB()->get_tracking_links( $order );
 		if ( count($links) > 0) {
 			include( dirname ( dirname( __FILE__ ) ) . '/includes/views/order-page-tracking.php');
@@ -898,6 +995,184 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 		// return $actions;
 		return array();
+	}
+
+	public function myflyingbox_check_order_status($order) {
+		$shipments = MFB_Shipment::get_all_for_order( $order->get_id() );
+		$last_event = "";
+		if(!empty($shipments) && isset($shipments[0]) && isset($shipments[0]->api_order_uuid)) {
+			if(isset($shipments[0]->tracking) && !empty($shipments[0]->tracking) && isset($shipments[0]->tracking[0])) {
+				$locale = get_locale();
+    			$lang = substr($locale, 0, 2);
+				if(!trim($lang)) {
+					$lang = "fr";
+				}
+				$tracking = $shipments[0]->tracking[0];
+				if (!empty($tracking->events)) {
+					$latest_event = null;
+
+					foreach ($tracking->events as $event) {
+						if (
+							is_null($latest_event) ||
+							strtotime($event->happened_at) > strtotime($latest_event->happened_at)
+						) {
+							$latest_event = $event;
+						}
+					}
+
+					if ($latest_event) {
+						$last_event .= '<strong>'.__('Last status :', 'my-flying-box').'</strong><br>';
+						$last_event .= '<label>'.__('Code :', 'my-flying-box') . '</label> ' . esc_html($latest_event->code) . '<br>';
+						$last_event .= '<label>'.__('Label :', 'my-flying-box') . '</label> ' . esc_html($latest_event->label->{$lang}) . '<br>';
+						$last_event .= '<label>'.__('Date :', 'my-flying-box') . '</label> ' . date('d/m/Y H:i', strtotime($latest_event->happened_at)) . '<br>';
+
+						if (!empty($latest_event->location)) {
+							$loc = $latest_event->location;
+							$last_event .= __('Place :', 'my-flying-box');
+							$last_event .= " ";
+							if (!empty($loc->name)) $last_event .= esc_html($loc->name) . ', ';
+							if (!empty($loc->street)) $last_event .= esc_html($loc->street) . ', ';
+							if (!empty($loc->postal_code)) $last_event .= esc_html($loc->postal_code) . ' ';
+							if (!empty($loc->city)) $last_event .= esc_html($loc->city) . ', ';
+							$last_event .= esc_html($loc->country ?? '');
+						}
+						$links = MFB()->get_tracking_links( $order );
+						if ( count($links) > 0) {
+							$last_event .= '<br><br><strong>'.__( "Track your shipment", 'my-flying-box' ).'</strong>';
+							if ( count($links) > 1 ) {
+								$last_event .= '<p>'.__( "Direct links to track your shipments:", 'my-flying-box' );
+							} else {
+								$last_event .= '<p>'.__( "Direct link to track your shipment:", 'my-flying-box' );
+							}
+							foreach ( $links as $link ) {
+								$last_event .= '<br/><a href="'.$link['link'].'">'.$link['code'].'</a>';
+							}
+							$last_event .= '</p>';
+						}
+						if("delivered" == $latest_event->code) {
+							if ( $order && $order instanceof WC_Order && $order->get_status() !== 'completed' ) {
+								$order->set_status('completed');
+								$order->save();
+								$order->add_order_note(__('Status automatically updated by MFB shipment status.', 'my-flying-box'));
+							}
+						}
+					}
+				}
+			}
+		?>
+		<div id="last-status" style="margin-top:25px;display:inline-block;"><?php echo $last_event; ?></div>
+		<div class="mfb-order-check-status-button" style="display: inline-block;margin-top: 25px;">
+			<button id="trackthis" type="button" class="button button-primary" data-order_id="<?php echo $order->get_id(); ?>" data-api_uuid="<?php echo $shipments[0]->api_order_uuid; ?>">
+				<?php _e( 'Check Status', 'my-flying-box' ); ?>
+			</button>
+		</div>
+    	<?php
+		}
+	}
+	
+	public function myflyingbox_set_order_status() {
+		register_rest_route('myflyingbox/v1', '/update-order-status', [
+			'methods' => 'POST',
+			'callback' => [$this, 'mfb_update_order_status'],
+            'permission_callback' => [$this, 'mfb_authorize_request'],
+			'args' => [
+				'event_type' => [
+					'required' => true,
+					'sanitize_callback' => 'sanitize_text_field',
+				],
+				'object_uuid' => [
+					'required' => true,
+					'sanitize_callback' => 'sanitize_text_field',
+				],
+			],
+		]);
+	}
+
+	public function mfb_update_order_status(WP_REST_Request $request) {
+		$status = $request->get_param('event_type');
+		$api_order_uuid = $request->get_param('object_uuid');
+
+		if(strtolower($status) == "order_delivered") {
+
+			$order = MFB_Shipment::get_wc_order_by_api_uuid( $api_order_uuid );
+
+			if (!$order) {
+				return new WP_REST_Response(['error' => 'Commande introuvable.'], 404);
+			}
+			
+			$shipment_id = (int) MFB_Shipment::get_shipment_by_api_uuid($api_order_uuid);
+			if($shipment_id) {
+				update_post_meta($shipment_id, '_delivered', 1);
+			}
+
+			try {
+				$all_shipments = get_children(array(
+					'post_type'			=> 'mfb_shipment',
+					'post_status'		=> array('private', 'mfb-draft', 'mfb-booked'),
+					'post_parent'		=> $order->id,
+					'field'					=> 'ids',
+					'orderby'				=> array('date' => 'DESC')
+				));
+
+				$all_delivered = true;
+				if (!empty($all_shipments)) {
+					foreach ($all_shipments as $shipment) {
+						$event_data = get_post_meta($shipment->ID, '_delivered', true);
+						if ($all_delivered && !$event_data) {
+							$all_delivered = false;
+							break;
+						}
+					}
+				} else {
+					$all_delivered = false;
+				}
+				if ($all_delivered) {
+					$order = wc_get_order($order->id);
+					if ( $order && $order instanceof WC_Order && $order->get_status() !== 'completed' ) {
+						$order->set_status("completed");
+						$order->save();
+						$order->add_order_note(__('Status automatically updated by MFB shipment status.', 'my-flying-box'));
+					}
+				} else {
+					return new WP_REST_Response([
+						'success' => false,
+						'message' => 'woocommerce order not yet in completed status.',
+						'event_type' => $status
+					], 202);
+				}
+				return new WP_REST_Response(['success' => true]);
+			} catch (Exception $e) {
+				return new WP_REST_Response(['error' => $e->getMessage()], 500);
+			}
+		} else {
+			return new WP_REST_Response([
+				'success' => false,
+				'message' => 'No action required for this type of event.',
+				'event_type' => $status
+			], 202);
+		}
+	}
+
+	public function mfb_authorize_request(WP_REST_Request $request) {
+		$stored_token = My_Flying_Box_Settings::get_option('mfb_token_auth');
+
+		if (!$stored_token) {
+			return false;
+		}
+
+		$auth_header = $request->get_header('authorization');
+
+		if ($auth_header && preg_match('/Token token="(.+)"/', $auth_header, $matches)) {
+			$sent_token = $matches[1];
+		} else {
+			$sent_token = $request->get_header('mfb_token_auth') ?: $request->get_param('mfb_token_auth');
+		}
+
+		if (!$sent_token) {
+			return false;
+		}
+
+		return hash_equals($stored_token, $sent_token);
 	}
 
 }

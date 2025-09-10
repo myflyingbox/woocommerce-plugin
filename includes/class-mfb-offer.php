@@ -26,6 +26,12 @@ class MFB_Offer {
 	public $collection_dates = array();
 
 	public $post = null;
+	//extended_cover
+	public $extended_cover_available = false;
+	public $price_with_extended_cover = 0;
+	public $price_vat_with_extended_cover = 0;
+	public $total_price_with_extended_cover = 0;
+	public $extended_cover_max_liability = 0;
 
 	public function __construct() {
 
@@ -78,6 +84,12 @@ class MFB_Offer {
 		$this->insurance_price_in_cents = get_post_meta( $this->id, '_insurance_price_in_cents', true );
 		$this->currency             = get_post_meta( $this->id, '_currency', true );
 		$this->collection_dates     = get_post_meta( $this->id, '_collection_dates', true );
+		//extended_cover
+		$this->extended_cover_available     = get_post_meta( $this->id, '_extended_cover_available', true );
+		$this->price_with_extended_cover     = get_post_meta( $this->id, '_price_with_extended_cover', true );
+		$this->price_vat_with_extended_cover     = get_post_meta( $this->id, '_price_vat_with_extended_cover', true );
+		$this->total_price_with_extended_cover     = get_post_meta( $this->id, '_total_price_with_extended_cover', true );
+		$this->extended_cover_max_liability     = get_post_meta( $this->id, '_extended_cover_max_liability', true );
 
 	}
 
@@ -126,12 +138,35 @@ class MFB_Offer {
 		return (true == $this->insurance_price_in_cents);
 	}
 
+	public function is_extended_cover() {
+		return (true == $this->extended_cover_available);
+	}
+
 	public function formatted_insurance_price() {
 		if ( $this->is_insurable() ) {
 			return (number_format($this->insurance_price_in_cents / 100, 2, ',', ' ')).' '.$this->currency;
 		} else {
 			return '';
 		}
+	}
+	//extended_cover
+	public function final_extended_cover_price() {
+		if (My_Flying_Box_Settings::get_option('mfb_use_total_price_with_vat') == 'yes') {
+			return $this->total_price_with_extended_cover;
+		} else {
+			return $this->price_with_extended_cover;
+		}
+	}
+	//extended_cover
+	public function formatted_extended_cover_price() {
+		return ($this->final_extended_cover_price() / 100).' '.$this->currency;
+	}
+	//extended_cover
+	public static function sort_offers_by_extended_cover_price ( $a, $b ) {
+		if ($a->price_with_extended_cover == $b->price_with_extended_cover) {
+			return 0;
+		}
+		return ($a->price_with_extended_cover < $b->price_with_extended_cover) ? -1 : 1;
 	}
 
 	public function carrier_name() {
@@ -178,6 +213,12 @@ class MFB_Offer {
 			update_post_meta( $this->id, '_currency',             $this->currency );
 			update_post_meta( $this->id, '_collection_dates',     $this->collection_dates );
 
+			
+			update_post_meta( $this->id, '_extended_cover_available',  $this->extended_cover_available );
+			update_post_meta( $this->id, '_price_with_extended_cover',  $this->price_with_extended_cover );
+			update_post_meta( $this->id, '_price_vat_with_extended_cover',  $this->price_vat_with_extended_cover );
+			update_post_meta( $this->id, '_total_price_with_extended_cover',  $this->total_price_with_extended_cover );
+			update_post_meta( $this->id, '_extended_cover_max_liability',  $this->extended_cover_max_liability );
 		}
 	}
 
