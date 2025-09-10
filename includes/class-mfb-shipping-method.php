@@ -631,10 +631,12 @@ class MFB_Shipping_Method extends WC_Shipping_Method
 					$offer->currency = $api_offer->total_price->currency;
 					//extended_cover
 					$offer->extended_cover_available = $api_offer->extended_cover_available;
-					$offer->price_with_extended_cover = $api_offer->price_with_extended_cover->amount_in_cents;
-					$offer->price_vat_with_extended_cover = $api_offer->price_vat_with_extended_cover->amount_in_cents;
-					$offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->amount_in_cents;
-					$offer->extended_cover_max_liability = $api_offer->extended_cover_max_liability->amount_in_cents;
+					if ($api_offer->extended_cover_available) {
+						$offer->price_with_extended_cover = $api_offer->price_with_extended_cover->amount_in_cents;
+						$offer->price_vat_with_extended_cover = $api_offer->price_vat_with_extended_cover->amount_in_cents;
+						$offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->amount_in_cents;
+						$offer->extended_cover_max_liability = $api_offer->extended_cover_max_liability->amount_in_cents;
+					}
 					$offer->save();
 				}
 			}
