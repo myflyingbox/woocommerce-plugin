@@ -234,7 +234,7 @@ global $extended_cover;
 						}
 						ob_start();
 					?>
-						<p><label><input type="checkbox" class="mfb-admin-extended-cover-checkbox" id="mfb-admin-extended-cover-checkbox" <?php echo $checked; ?>><span><?php echo __('With Additional Guarantee', 'my-flying-box'); ?></span></label></p>
+						<p><label><input type="checkbox" class="mfb-admin-extended-cover-checkbox" id="mfb-admin-extended-cover-checkbox" <?php echo $checked; ?>><span><?php echo __('With Extended cover', 'my-flying-box'); ?></span></label></p>
 						<p class="extended-cover-cost"><?php echo ($extended_cover == "yes") ? __('Total cost with extended cover :', 'my-flying-box') . " " . $shipment->offer->formatted_extended_cover_price() : ""; ?></p>
 					<?php
 						echo ob_get_clean();
@@ -265,7 +265,7 @@ global $extended_cover;
 						echo __('Total cost with extended cover :', 'my-flying-box') . " " . $shipment->offer->formatted_extended_cover_price();
 					} else {
 						echo '<br/>';
-						echo __('No Additional Guarantee', 'my-flying-box');
+						echo __('No Extended cover', 'my-flying-box');
 					}
 					echo '<br/>';
 					if ($shipment->insured && $shipment->offer && $shipment->offer->insurance_price_in_cents) {

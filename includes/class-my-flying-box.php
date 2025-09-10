@@ -236,7 +236,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		wp_enqueue_script( $this->_token . '-frontend' );
 		$elements["ajax_url"] = admin_url('admin-ajax.php');
 		$elements["site_url"] = get_site_url();
-		$elements["extended_cover_checkbox_label"] = __( 'With Additional Guarantee', 'my-flying-box' );
+		$elements["extended_cover_checkbox_label"] = __( 'With Extended cover', 'my-flying-box' );
 		$elements["extended_cover_checkbox_value"] = WC()->session->get('myflyingbox_extended_cover');
 		$locale = get_locale();
     	$lang = substr($locale, 0, 2);

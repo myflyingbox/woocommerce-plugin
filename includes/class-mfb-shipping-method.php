@@ -458,9 +458,9 @@ class MFB_Shipping_Method extends WC_Shipping_Method
 				'default' => 'no'
 			),
 			'extended_cover' => array(
-				'title' => __('Additional guarantee', 'my-flying-box'),
+				'title' => __('Extended cover', 'my-flying-box'),
 				'type' => 'checkbox',
-				'label' => __('Check whether the price presented should be for transport with or without the additional guarantee option', 'my-flying-box'),
+				'label' => __('When checked, the price presented for shipping service will include the Extended cover option, if available.', 'my-flying-box'),
 				'default' => 'no'
 			),
 		);
