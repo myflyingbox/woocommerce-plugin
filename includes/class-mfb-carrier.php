@@ -365,6 +365,51 @@ class MFB_Carrier extends WC_Shipping_Method {
 		return $link;
 	}
 
+	public function default_logo_filename() {
+		if (preg_match('/^dhl/', $this->code)) {
+			$filename = 'dhl.png';
+		} else if (preg_match('/^ups/', $this->code)) {
+			$filename = 'ups.png';
+		} else if (preg_match('/^chronopost/', $this->code)) {
+			$filename = 'chronopost.png';
+		} else if (preg_match('/^colissimo/', $this->code)) {
+			$filename = 'colissimo.png';
+		} else if (preg_match('/^correos_express/', $this->code)) {
+			$filename = 'correos_express.png';
+		} else if (preg_match('/^bpost/', $this->code)) {
+			$filename = 'bpost.png';
+		} else if (preg_match('/^dpd/', $this->code)) {
+			$filename = 'dpd.png';
+		} else if (preg_match('/^fedex/', $this->code)) {
+			$filename = 'fedex.png';
+		} else if (preg_match('/^purolator/', $this->code)) {
+			$filename = 'purolator.png';
+		} else if (preg_match('/^usps/', $this->code)) {
+			$filename = 'usps.png';
+		} else if (preg_match('/^zeleris/', $this->code)) {
+			$filename = 'zeleris.png';
+		} else if (preg_match('/^mondial_relay/', $this->code)) {
+			$filename = 'mondial_relay.png';
+		} else if (preg_match('/^colis_prive/', $this->code)) {
+			$filename = 'colis_prive.png';
+		} else if (preg_match('/^aramex/', $this->code)) {
+			$filename = 'aramex.png';
+		} else if (preg_match('/^canada_post/', $this->code)) {
+			$filename = 'canada_post.png';
+		} else if (preg_match('/^gls/', $this->code)) {
+			$filename = 'gls.png';
+		} else if (preg_match('/^parcelforce/', $this->code)) {
+			$filename = 'parcelforce.png';
+		} else if (preg_match('/^post_nl/', $this->code)) {
+			$filename = 'post_nl.png';
+		} else if (preg_match('/^tnt/', $this->code)) {
+			$filename = 'tnt.png';
+		} else {
+			$filename = null;
+		}
+		return $filename;
+	}
+
 	public function tracking_url_for( $tracking_number, $destination_postal_code ) {
 		// Getting the reference URL
 		$link = $this->tracking_url;

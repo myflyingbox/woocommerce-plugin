@@ -42,6 +42,11 @@ This will install all dependencies based on package-lock.json
 
 Finally, run grunt to compile JS and CSS, using npx, the tool provided by nvm to run module executables in the current nvm context: npx grunt
 
+In case of issues with JS compilation (using terser), you can run the following to get more detailed errors:
+
+npx grunt --verbose
+npx terser assets/js/yourfile.js
+
 === Installation from source
 
 Installation from source needs composer to load dependencies.

@@ -135,11 +135,56 @@ class My_Flying_Box_Post_Type {
 	public function bulk_updated_messages ( $bulk_messages = array(), $bulk_counts = array() ) {
 
 		$bulk_messages[ $this->post_type ] = array(
-	        'updated'   => sprintf( _n( '%1$s %2$s updated.', '%1$s %3$s updated.', $bulk_counts['updated'], 'my-flying-box' ), $bulk_counts['updated'], $this->single, $this->plural ),
-	        'locked'    => sprintf( _n( '%1$s %2$s not updated, somebody is editing it.', '%1$s %3$s not updated, somebody is editing them.', $bulk_counts['locked'], 'my-flying-box' ), $bulk_counts['locked'], $this->single, $this->plural ),
-	        'deleted'   => sprintf( _n( '%1$s %2$s permanently deleted.', '%1$s %3$s permanently deleted.', $bulk_counts['deleted'], 'my-flying-box' ), $bulk_counts['deleted'], $this->single, $this->plural ),
-	        'trashed'   => sprintf( _n( '%1$s %2$s moved to the Trash.', '%1$s %3$s moved to the Trash.', $bulk_counts['trashed'], 'my-flying-box' ), $bulk_counts['trashed'], $this->single, $this->plural ),
-	        'untrashed' => sprintf( _n( '%1$s %2$s restored from the Trash.', '%1$s %3$s restored from the Trash.', $bulk_counts['untrashed'], 'my-flying-box' ), $bulk_counts['untrashed'], $this->single, $this->plural ),
+				'updated'   => sprintf(
+						_n(
+								'%1$s %2$s updated.',
+								'%1$s %2$s updated.',
+								$bulk_counts['updated'],
+								'my-flying-box'
+						),
+						$bulk_counts['updated'],
+						$bulk_counts['updated'] == 1 ? $this->single : $this->plural
+				),
+				'locked'    => sprintf(
+						_n(
+								'%1$s %2$s not updated, somebody is editing it.',
+								'%1$s %2$s not updated, somebody is editing them.',
+								$bulk_counts['locked'],
+								'my-flying-box'
+						),
+						$bulk_counts['locked'],
+						$bulk_counts['locked'] == 1 ? $this->single : $this->plural
+				),
+				'deleted'   => sprintf(
+						_n(
+								'%1$s %2$s permanently deleted.',
+								'%1$s %2$s permanently deleted.',
+								$bulk_counts['deleted'],
+								'my-flying-box'
+						),
+						$bulk_counts['deleted'],
+						$bulk_counts['deleted'] == 1 ? $this->single : $this->plural
+				),
+				'trashed'   => sprintf(
+						_n(
+								'%1$s %2$s moved to the Trash.',
+								'%1$s %2$s moved to the Trash.',
+								$bulk_counts['trashed'],
+								'my-flying-box'
+						),
+						$bulk_counts['trashed'],
+						$bulk_counts['trashed'] == 1 ? $this->single : $this->plural
+				),
+				'untrashed' => sprintf(
+						_n(
+								'%1$s %2$s restored from the Trash.',
+								'%1$s %2$s restored from the Trash.',
+								$bulk_counts['untrashed'],
+								'my-flying-box'
+						),
+						$bulk_counts['untrashed'],
+						$bulk_counts['untrashed'] == 1 ? $this->single : $this->plural
+				),
 	    );
 
 	    return $bulk_messages;

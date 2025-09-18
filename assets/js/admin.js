@@ -26,13 +26,19 @@ jQuery( function ( $ ) {
 				.on( 'click',  'div.parcel div.parcel-form button.submit_parcel_form',				this.submit_parcel_form )
 				.on( 'change', 'div.mfb-available-offers select.offer-selector',							this.update_selected_offer )
 				.on( 'click',  'a.delete-shipment',						this.delete_shipment )
-				.on( 'click',  'button.add-return-shipment',	this.add_return_shipment );
+				.on( 'click',  'button.add-return-shipment',	this.add_return_shipment )
+				.on( 'click',  'div.mfb-booked-offer button.trackthis',									this.trackthisExpedition )
+				.on( 'change', 'div.mfb-available-offers #mfb-admin-extended-cover-checkbox', this.update_extended_cover_offer );//extended_cover
 
 
 			$( '#myflyingbox-bulk-shipments' )
 				.on( 'click',  'div.mfb-available-offers button.book-offer',                  this.book_offer )
 				.on( 'click',  'div.mfb-booked-offer button.download-labels',                 this.download_labels )
 				.on( 'change', 'div.mfb-available-offers select.offer-selector',              this.update_selected_offer );
+
+			if($(".woocommerce-order-data #trackthis").length) {
+				$( '.woocommerce-order-data' ).on( 'click',  '#trackthis',this.trackthis );
+			}
 		},
 
 		add_shipment: function() {
@@ -59,9 +65,11 @@ jQuery( function ( $ ) {
 			var date_selector = $( this ).closest('div.mfb-available-offers').find('select.pickup-date-selector');
 			var relay_selector = $( this ).closest('div.mfb-available-offers').find('select.delivery-location-selector');
 			var insurance_checkbox = $( this ).closest('div.mfb-available-offers').find('input#mfb_ad_valorem_insurance');
+			var extended_cover_checkbox = $( this ).closest('div.mfb-available-offers').find('input#mfb-admin-extended-cover-checkbox');
 			var pickup_date = '';
 			var relay_code = '';
 			var insurance = '0';
+			var extended_cover = '0';
 
 			$( this ).find( '.spinner' ).addClass( 'is-active' );
 			if ( date_selector ) {
@@ -73,6 +81,9 @@ jQuery( function ( $ ) {
 			if ( insurance_checkbox.is(':checked') ) {
 				insurance = '1';
 			}
+			if ( extended_cover_checkbox.is(':checked') ) {
+				extended_cover = '1';
+			}
 
 			var data = {
 				action:   'mfb_book_offer',
@@ -80,6 +91,7 @@ jQuery( function ( $ ) {
 				pickup_date: pickup_date,
 				relay_code: relay_code,
 				insurance: insurance,
+				extended_cover: extended_cover,
 				shipment_id: $( this ).closest('tr').data('shipment_id')
 			};
 
@@ -93,6 +105,38 @@ jQuery( function ( $ ) {
 						window.location.reload();
 					} else {
 						alert(response.data.message);
+					}
+				}
+			});
+			return false;
+		},
+		//extended_cover
+		update_extended_cover_offer: function() {
+			var _this = $( this );
+			var with_extended_cover = '0';
+			var offer_id = $( this ).closest('.mfb-available-offers').find('select.offer-selector').find('option:selected').data('offer_id');
+			if ( $( this ).is(':checked') ) {
+				with_extended_cover = '1';
+			}
+			var data = {
+				action:   'mfb_update_extended_cover_offer',
+				offer_id: offer_id,
+				with_extended_cover: with_extended_cover
+			};
+
+			$.ajax({
+				url:  mfb_js_resources.ajax_url,
+				data: data,
+				type: 'POST',
+				dataType: 'json',
+				success: function( response ) {
+					if ("true" == response.success) {
+						if(!!jQuery.trim(response.new_label)) {
+							_this.closest('.mfb-available-offers').find(".extended-cover-cost").text(mfb_js_resources.eclc+" "+response.new_label);
+						} else {
+							_this.closest('.mfb-available-offers').find(".extended-cover-cost").text("");
+						}
+						// _this.closest('.mfb-available-offers').find('select.offer-selector').find('option:selected').text(response.new_label);
 					}
 				}
 			});
@@ -262,6 +306,62 @@ jQuery( function ( $ ) {
 			window.open( mfb_js_resources.labels_url+'&shipment_id='+shipment_id );
 			return false;
 		},
+
+		trackthisExpedition: function() {
+			var wc_order_id = $("#post_ID").attr('value');
+			var offer_id = $(this).data('offer_id');
+			var _this = $(this);
+			var data = {
+				action:   'mfb_check_status',
+				offer_id: offer_id,
+				wc_order_id: wc_order_id
+			};
+
+			$.ajax({
+				url:  mfb_js_resources.ajax_url,
+				data: data,
+				type: 'POST',
+				success: function( response ) {
+					if ("true" == response.success) {
+						var status = response.status;
+						_this.closest(".shipment").find('.last-status').html(status);
+						if(!!response.all_delivered && response.all_delivered == true) {
+							window.location.reload();
+						}
+					} else {
+						_this.closest(".shipment").find('.last-status').text("");
+					}
+				}
+			});
+			return false;
+		},
+
+		trackthis: function() {
+			var wc_order_id = $(this).data('order_id');
+			var _this = $(this);
+			var apiuid = $(this).data('api_uuid');
+			var data = {
+				action:   'mfb_check_status',
+				apiuid: apiuid,
+				wc_order_id: wc_order_id,
+				lang: mfb_js_resources.lang
+			};
+
+			$.ajax({
+				url:  mfb_js_resources.ajax_url,
+				data: data,
+				type: 'POST',
+				success: function( response ) {
+					if ("true" == response.success) {
+						var status = response.status;
+						_this.closest(".woocommerce-order-data").find('#last-status').html(status);
+					} else {
+						_this.closest(".woocommerce-order-data").find('#last-status').text("");
+					}
+				}
+			});
+			return false;
+		}
 
 	};
 
