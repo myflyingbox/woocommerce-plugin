@@ -78,9 +78,10 @@ class MFB_Shipping_Method extends WC_Shipping_Method
 		add_action('woocommerce_update_options_shipping_' . $this->id, array($this, 'process_admin_options'));
 
 		if (empty($this->get_option('carrier_logo'))) {
-			$custom_logo_path = dirname(plugin_dir_path(__FILE__)) . "/assets/logos/{$this->id}.png";
-			$custom_logo_url = plugins_url("assets/logos/{$this->id}.png", dirname(__FILE__));
-			if (file_exists($custom_logo_path)) {
+			$filename = $this->carrier ? $this->carrier->default_logo_filename() : null;
+			$custom_logo_path = dirname(plugin_dir_path(__FILE__)) . "/assets/carrier_logos/{$filename}";
+			$custom_logo_url = plugins_url("assets/carrier_logos/{$filename}", dirname(__FILE__));
+			if ($filename && file_exists($custom_logo_path)) {
 				$this->instance_settings['carrier_logo'] = $custom_logo_url;
 				update_option($this->get_instance_option_key(), $this->instance_settings);
 			}
