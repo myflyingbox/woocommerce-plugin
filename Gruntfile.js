@@ -42,9 +42,10 @@ module.exports = function( grunt ){
 		},
 
 		// Minify .js files.
-		uglify: {
+		terser: {
 			options: {
-				preserveComments: 'some'
+				ecma: 2020, // or 2022 for the latest
+				keep_fnames: true
 			},
 			jsfiles: {
 				files: [{
@@ -74,7 +75,7 @@ module.exports = function( grunt ){
 					'<%= dirs.js %>/*js',
 					'!<%= dirs.js %>/*.min.js'
 				],
-				tasks: ['uglify']
+				tasks: ['terser']
 			}
 		},
 
@@ -83,14 +84,14 @@ module.exports = function( grunt ){
 	// Load NPM tasks to be used here
 	grunt.loadNpmTasks( 'grunt-contrib-less' );
 	grunt.loadNpmTasks( 'grunt-contrib-cssmin' );
-	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
+	grunt.loadNpmTasks( 'grunt-terser' );
 	grunt.loadNpmTasks( 'grunt-contrib-watch' );
 
 	// Register tasks
 	grunt.registerTask( 'default', [
 		'less',
 		'cssmin',
-		'uglify'
+		'terser'
 	]);
 
 };
