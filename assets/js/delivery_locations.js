@@ -1,5 +1,5 @@
 (function ($) {
-	var mfb_locations = null;
+	var mfb_locations = [];
 	var infowindow = null;
 	var service_code = '';
 	var gmap = null;
@@ -7,9 +7,88 @@
 	var markers = [];
 	var locations_data = [];
 
+
+	$(window).on("load", function () {
+		if ($('body').hasClass('woocommerce-checkout')) {
+			load_map();
+			setTimeout(
+				() => addDeliveryLocation(),
+				1000
+			);
+		}
+	});
+
+	$(document).ready(function () {
+		const originalFetch = window.fetch;
+		window.fetch = function (...args) {
+			const [url, options] = args;
+
+			const isBatchWithUpdateCustomer = typeof url === 'string' && url.includes('/wc/store/v1/batch');
+			const isCartRequest = typeof url === 'string' && url.includes('/wc/store/v1/cart') && url.includes('_locale=user');
+			const isCheckoutPost = typeof url === 'string' && url.includes('/wc/store/v1/checkout') && options?.method?.toUpperCase() === 'POST';
+			
+			if (isCheckoutPost && options?.body) {
+				try {
+					const bodyObj = JSON.parse(options.body);
+					bodyObj.extra_data = {
+						...(bodyObj.extra_data || {}),
+						shipping_address: getShippingAddressData(),
+						shipping_method: getSelectedShippingMethodId(),
+						delivery_location: getSelectedDeliveryLocation()
+					};
+					options.body = JSON.stringify(bodyObj);
+				} catch (e) {
+					console.warn('Erreur en injectant extra_data dans checkout body', e);
+				}
+				return originalFetch.apply(this, args);
+
+			} else if(isBatchWithUpdateCustomer || isCartRequest) {
+
+				if (isBatchWithUpdateCustomer) {
+					return originalFetch.apply(this, args).then(response => {
+						const clonedResponse = response.clone();
+						if (options?.body) {
+							try {
+								const parsedBody = JSON.parse(options.body);
+								const found = parsedBody?.requests?.some(req => req.path === '/wc/store/v1/cart/update-customer');
+								if (found) {
+									clonedResponse.json().then(() => {
+										setTimeout(
+											() => addDeliveryLocation(),
+											1000
+										);
+									});
+								}
+							} catch (e) {
+								console.warn('Erreur de parsing batch body', e);
+							}
+						}
+						return response;
+					});
+				}
+				if (isCartRequest) {
+					return originalFetch.apply(this, args).then(response => {
+						const clonedResponse = response.clone();
+						clonedResponse.json().then(() => {
+							setTimeout(
+								() => addDeliveryLocation(),
+								1000
+							);
+						});
+
+						return response;
+					});
+				}
+			} else {
+				return originalFetch.apply(this, args);
+			}
+		};
+	});
+
 	function addDeliveryLocation() {
-		if ($('.wc-block-components-radio-control__option').length) {
-			$('.wc-block-components-radio-control__option').each(function () {
+		// Only proceed if we are on the checkout page and there are shipping methods available
+		if ($('.wp-block-woocommerce-checkout-shipping-methods-block .wc-block-components-radio-control__option').length) {
+			$('.wp-block-woocommerce-checkout-shipping-methods-block .wc-block-components-radio-control__option').each(function () {
 				const $option = $(this);
 				const $input = $option.find('input[type="radio"]');
 				const wrap_label = $option.find("div.wc-block-components-radio-control__option-layout");
@@ -20,6 +99,7 @@
 
 				const methodId = $input.val();
 
+				// This is the call to load the HTML for the delivery location button and container
 				$.ajax({
 					url: mfb_var.ajax_url,
 					method: 'POST',
@@ -85,8 +165,12 @@
 	}
 
 	function load_map() {
-		$('body').append(map);
+		// Create the map container if it doesn't exist
+		if ($('#map-container').length === 0) {
+			$('body').append(map);
+		}
 
+		$('body').off('click', '[data-mfb-action="select-location"]');
 		$('body').delegate('[data-mfb-action="select-location"]', 'click', function () {
 			var key = $(this).data('mfb-offer-uuid')
 			var instance_id = $(this).data('mfb-instance-id');
@@ -140,46 +224,8 @@
 
 		$('#map-canvas').delegate('.mfb-select-location', 'click', select_location);
 
-		$('.mfb-close-map').click(close_gmap);
+		$('body').delegate('.mfb-close-map', 'click', close_gmap);
 	}
-
-
-	$(window).load(function () {
-		if ($('body').hasClass('woocommerce-checkout')) {
-			load_map();
-			setTimeout(() => addDeliveryLocation(), 1000);
-
-			if ($(".wc-block-checkout").length) {
-				const originalFetch = window.fetch;
-
-				window.fetch = function (...args) {
-					const [url, options] = args;
-
-					const isCheckoutPost = typeof url === 'string' &&
-						url.includes('/wc/store/v1/checkout') &&
-						options?.method?.toUpperCase() === 'POST';
-
-					if (isCheckoutPost && options?.body) {
-						try {
-							const bodyObj = JSON.parse(options.body);
-							bodyObj.extra_data = {
-								...(bodyObj.extra_data || {}),
-								shipping_address: getShippingAddressData(),
-								shipping_method: getSelectedShippingMethodId(),
-								delivery_location: getSelectedDeliveryLocation()
-							};
-
-							options.body = JSON.stringify(bodyObj);
-						} catch (e) {
-							console.warn('Erreur en injectant extra_data dans checkout body', e);
-						}
-					}
-
-					return originalFetch.apply(this, args);
-				};
-			}
-		}
-	});
 
 	/*
 	 * Initialize the google map for a new display
@@ -212,7 +258,8 @@
 
 	function update_zoom_gmap() {
 
-		if (mfb_locations.length == 0 || (mfb_locations.length != 0 && markers.length < mfb_locations.length)) {
+		// If mfb_locations is not loaded yet, or if we don't have all the markers yet
+		if (mfb_locations == null || mfb_locations.length == 0 || (mfb_locations.length != 0 && markers.length < mfb_locations.length)) {
 			return;
 		}
 		var bounds = new google.maps.LatLngBounds();
