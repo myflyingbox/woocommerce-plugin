@@ -339,7 +339,7 @@ class MFB_Shipment
 		$dimensions_available = true;
 		$products = [];
 		foreach ($line_items as $item_id => $item) {
-			$_product = $order->get_product_from_item($item);
+			$_product = $item->get_product();
 
 			if ($_product) {
 				$total_weight += wc_format_decimal($_product->get_weight() * $item['qty']);
