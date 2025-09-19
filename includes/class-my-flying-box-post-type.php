@@ -36,6 +36,8 @@ class My_Flying_Box_Post_Type {
 	 */
 	public $description;
 
+	public $in_menu;
+
 	public function __construct ( $post_type = '', $plural = '', $single = '', $description = '', $in_menu = false ) {
 
 		if ( ! $post_type || ! $plural || ! $single ) return;

@@ -108,7 +108,7 @@ class MFB_Offer {
 			$offers[] = self::get($offer->ID);
 		}
 
-		uasort($offers, array('self', 'sort_offers_by_price'));
+		uasort($offers, array(__CLASS__, 'sort_offers_by_price'));
 
 		return $offers;
 	}

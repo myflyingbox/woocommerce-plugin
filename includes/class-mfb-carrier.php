@@ -32,6 +32,12 @@ class MFB_Carrier extends WC_Shipping_Method {
 	 */
 	public $name = null;
 
+	/**
+	 * Carrier name (DHL, UPS, etc.)
+	 *
+	 * @var string
+	 */
+	public $carrier_name = null;
 
 	/**
 	 * Carrier code

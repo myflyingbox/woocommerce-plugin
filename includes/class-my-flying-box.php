@@ -78,6 +78,10 @@ class My_Flying_Box  extends WC_Shipping_Method {
 	 */
 	public $script_suffix;
 
+
+	public $api;
+
+
 	/**
 	 * Constructor function.
 	 * @access  public
