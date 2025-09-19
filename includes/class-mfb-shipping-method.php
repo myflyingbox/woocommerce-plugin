@@ -524,11 +524,15 @@ class MFB_Shipping_Method extends WC_Shipping_Method
 				// the quote is still valid for a given cart
 				$cart_content[$product->get_id()] = $values['quantity'];
 
-				$product_weight = $product->get_weight() ? wc_format_decimal(wc_get_weight($product->get_weight(), 'kg'), 2) : 0;
+				$product_weight = is_numeric($product->get_weight()) ? wc_format_decimal(wc_get_weight($product->get_weight(), 'kg'), 2) : 0;
 				$total_weight += ($product_weight * $values['quantity']);
-				$total_value += (wc_format_decimal($product->get_price() * $values['quantity']));
 
-				$products[] = ['id' => $product->get_id(), 'name' => $product->get_title(), 'price' => wc_format_decimal($product->get_price()), 'quantity' => $values['quantity'], 'weight' => $product->get_weight(), 'length' => $product->get_length(), 'width' => $product->get_width(), 'height' => $product->get_height()];
+				// When no price is set, we might have an empty string. In that case we consider the price to be 0.
+				$product_price = $product->get_price() && is_numeric($product->get_price()) ? wc_format_decimal($product->get_price()) : 0;
+
+				$total_value += ($product_price * $values['quantity']);
+
+				$products[] = ['id' => $product->get_id(), 'name' => $product->get_title(), 'price' => $product_price, 'quantity' => $values['quantity'], 'weight' => $product_weight, 'length' => $product->get_length(), 'width' => $product->get_width(), 'height' => $product->get_height()];
 			}
 		}
 
