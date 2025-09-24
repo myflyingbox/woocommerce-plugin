@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: My Flying Box
- * Version: 0.18
+ * Version: 0.18.1
  * Plugin URI: http://www.myflyingbox.com
  * Description: Integrated Shipping services through My Flying Box API.
  * Author: Thomas Belliard (My Flying Box)
@@ -276,7 +276,7 @@ function add_async_defer_to_google_maps($tag, $handle, $src) {
     require_once('includes/meta-boxes/class-mfb-meta-box-order-shipping.php');
     require_once('includes/meta-boxes/class-mfb-meta-box-bulk-order.php');
 
-    $instance = My_Flying_Box::instance(__FILE__, '0.18');
+    $instance = My_Flying_Box::instance(__FILE__, '0.18.1');
 
     return $instance;
   }
