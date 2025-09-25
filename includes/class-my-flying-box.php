@@ -565,8 +565,8 @@ class My_Flying_Box  extends WC_Shipping_Method {
 						// Trying to get the details of the location
 						$quote = MFB_Quote::get( WC()->session->get('myflyingbox_shipment_quote_id') );
 
-						$street = $data['shipping_address_1'];
-						$street_line_2 = $data['shipping_address_2'];
+						$street = $order->get_shipping_address_1();
+						$street_line_2 = $order->get_shipping_address_2();
 						if ( ! empty( $street_line_2 ) ) {
 							$street .= "\n".$street_line_2;
 						}
@@ -578,7 +578,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 						$locations = $quote->offers[$carrier_code]->get_delivery_locations($params);
 						foreach( $locations as $loc ) {
-							if ( $loc->code == $_POST['_delivery_location'] ) {
+							if ( $loc->code == $data['delivery_location'] ) {
 								update_post_meta( $order_id, '_mfb_delivery_location_name', $loc->company );
 								update_post_meta( $order_id, '_mfb_delivery_location_street', $loc->street );
 								update_post_meta( $order_id, '_mfb_delivery_location_city', $loc->city );
