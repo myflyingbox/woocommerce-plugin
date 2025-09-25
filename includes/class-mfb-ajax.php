@@ -67,8 +67,8 @@ class MFB_AJAX
 				if ($product->needs_shipping()) {
 					$product_weight = $product->get_weight() ? wc_format_decimal(wc_get_weight($product->get_weight(), 'kg'), 2) : 0;
 					$weight += ($product_weight * $values['quantity']);
-					if ($product->get_length() > 0 && $product->get_width() > 0 && $product->get_height() > 0) {
-						$products[] = ['name' => $product->get_title(), 'price' => wc_format_decimal($product->get_price()), 'quantity' => $values['quantity'], 'weight' => $product->get_weight(), 'length' => $product->get_length(), 'width' => $product->get_width(), 'height' => $product->get_height()];
+					if ($product->get_length() > 0 && $product->get_width() > 0 && $product->get_height() > 0 && $product_weight > 0) {
+						$products[] = ['name' => $product->get_title(), 'price' => wc_format_decimal($product->get_price()), 'quantity' => $values['quantity'], 'weight' => $product_weight, 'length' => $product->get_length(), 'width' => $product->get_width(), 'height' => $product->get_height()];
 					} else {
 						$dimensions_available = false;
 					}

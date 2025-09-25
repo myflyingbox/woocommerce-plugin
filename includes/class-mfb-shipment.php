@@ -33,7 +33,7 @@ class MFB_Shipment
 	public $status = null;
 
 	public $shipper = null;
-	public $receiver = null;
+	public $recipient = null;
 
 	public $parcels = array();
 
@@ -342,10 +342,11 @@ class MFB_Shipment
 			$_product = $item->get_product();
 
 			if ($_product) {
-				$total_weight += wc_format_decimal($_product->get_weight() * $item['qty']);
+				$product_weight = is_numeric($_product->get_weight()) ? wc_format_decimal(wc_get_weight($_product->get_weight(), 'kg'), 2) : 0;
+				$total_weight += wc_format_decimal($product_weight * $item['qty']);
 				$total_value  += wc_format_decimal(isset($item['line_total']) ? $item['line_total'] : 0);
 
-				$products[] = ['name' => $_product->get_title(), 'price' => wc_format_decimal($_product->get_price()), 'quantity' => $item['qty'], 'weight' => $_product->get_weight(), 'length' => $_product->get_length(), 'width' => $_product->get_width(), 'height' => $_product->get_height()];
+				$products[] = ['name' => $_product->get_title(), 'price' => wc_format_decimal($_product->get_price()), 'quantity' => $item['qty'], 'weight' => $product_weight, 'length' => $_product->get_length(), 'width' => $_product->get_width(), 'height' => $_product->get_height()];
 			}
 		}
 
@@ -713,7 +714,7 @@ class MFB_Shipment
 
 		if ($parcel->tracking_number && strlen($parcel->tracking_number) > 0) {
 			if ($carrier && $carrier->tracking_url) {
-				$line = "<br/><a href='" . $carrier->tracking_url_for($parcel->tracking_number, $this->receiver->postal_code) .
+				$line = "<br/><a href='" . $carrier->tracking_url_for($parcel->tracking_number, $this->recipient->postal_code) .
 					"' target='_blank'>" .
 					sprintf(__('Tracking: %s', 'my-flying-box'), $parcel->tracking_number) .
 					"</a>";
@@ -942,7 +943,7 @@ class MFB_Shipment
 			});
 			foreach ($tracking_numbers as $tracking_number) {
 				$links[] = array(
-					'link' => $carrier->tracking_url_for($tracking_number, $this->receiver->postal_code),
+					'link' => $carrier->tracking_url_for($tracking_number, $this->recipient->postal_code),
 					'code' => $tracking_number
 				);
 			}
