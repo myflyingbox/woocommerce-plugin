@@ -38,5 +38,13 @@
 		<p class="add-shipment">
 			<button type="button" class="button button-primary add-shipment" data-order_id="<?php echo $theorder->get_id() ?>"><?php _e( 'Create new shipment', 'my-flying-box' ); ?></button>
 		</p>
+		<?php
+		$sync_behavior = get_option( 'mfb_dashboard_sync_behavior', 'never' );
+		if ( in_array( $sync_behavior, array( 'on_demand', 'always' ), true ) ) : ?>
+		<p class="sync-to-dashboard">
+			<button type="button" class="button mfb-sync-to-dashboard" data-order_id="<?php echo $theorder->get_id() ?>"><?php _e( 'Sync to dashboard', 'my-flying-box' ); ?></button>
+			<span class="mfb-sync-status"></span>
+		</p>
+		<?php endif; ?>
 	</div>
 </div>

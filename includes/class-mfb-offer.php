@@ -200,26 +200,28 @@ class MFB_Offer {
 
 			$this->id = wp_insert_post( $offer, true );
 
-			update_post_meta( $this->id, '_api_uuid',             $this->api_offer_uuid );
-			update_post_meta( $this->id, '_base_price_in_cents',  $this->base_price_in_cents );
-			update_post_meta( $this->id, '_total_price_in_cents', $this->total_price_in_cents );
-			update_post_meta( $this->id, '_insurance_price_in_cents', $this->insurance_price_in_cents );
-			update_post_meta( $this->id, '_carrier_code',         $this->carrier_code );
-			update_post_meta( $this->id, '_product_code',         $this->product_code );
-			update_post_meta( $this->id, '_product_name',         $this->product_name );
-			update_post_meta( $this->id, '_pickup',               $this->pickup );
-			update_post_meta( $this->id, '_dropoff',              $this->dropoff );
-			update_post_meta( $this->id, '_relay',                $this->relay );
-			update_post_meta( $this->id, '_currency',             $this->currency );
-			update_post_meta( $this->id, '_collection_dates',     $this->collection_dates );
-
-			
-			update_post_meta( $this->id, '_extended_cover_available',  $this->extended_cover_available );
-			update_post_meta( $this->id, '_price_with_extended_cover',  $this->price_with_extended_cover );
-			update_post_meta( $this->id, '_price_vat_with_extended_cover',  $this->price_vat_with_extended_cover );
-			update_post_meta( $this->id, '_total_price_with_extended_cover',  $this->total_price_with_extended_cover );
-			update_post_meta( $this->id, '_extended_cover_max_liability',  $this->extended_cover_max_liability );
+			// api_offer_uuid is only set on creation (immutable identifier)
+			update_post_meta( $this->id, '_api_uuid', $this->api_offer_uuid );
 		}
+
+		// Update all meta fields (both for new and existing records)
+		update_post_meta( $this->id, '_base_price_in_cents',  $this->base_price_in_cents );
+		update_post_meta( $this->id, '_total_price_in_cents', $this->total_price_in_cents );
+		update_post_meta( $this->id, '_insurance_price_in_cents', $this->insurance_price_in_cents );
+		update_post_meta( $this->id, '_carrier_code',         $this->carrier_code );
+		update_post_meta( $this->id, '_product_code',         $this->product_code );
+		update_post_meta( $this->id, '_product_name',         $this->product_name );
+		update_post_meta( $this->id, '_pickup',               $this->pickup );
+		update_post_meta( $this->id, '_dropoff',              $this->dropoff );
+		update_post_meta( $this->id, '_relay',                $this->relay );
+		update_post_meta( $this->id, '_currency',             $this->currency );
+		update_post_meta( $this->id, '_collection_dates',     $this->collection_dates );
+
+		update_post_meta( $this->id, '_extended_cover_available',            $this->extended_cover_available );
+		update_post_meta( $this->id, '_price_with_extended_cover',           $this->price_with_extended_cover );
+		update_post_meta( $this->id, '_price_vat_with_extended_cover',       $this->price_vat_with_extended_cover );
+		update_post_meta( $this->id, '_total_price_with_extended_cover',     $this->total_price_with_extended_cover );
+		update_post_meta( $this->id, '_extended_cover_max_liability',        $this->extended_cover_max_liability );
 	}
 
 	/**

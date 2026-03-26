@@ -272,6 +272,12 @@ function add_async_defer_to_google_maps($tag, $handle, $src) {
     require_once('includes/class-mfb-bulk-order-return-background-process.php');
     require_once('includes/class-my-flying-box-multiple-shipment.php');
 
+    // Load REST API for dashboard synchronization
+    require_once('includes/class-mfb-rest-api.php');
+
+    // Load webhooks for dashboard push notifications
+    require_once('includes/class-mfb-webhooks.php');
+
     // Load view elements
     require_once('includes/meta-boxes/class-mfb-meta-box-order-shipping.php');
     require_once('includes/meta-boxes/class-mfb-meta-box-bulk-order.php');
