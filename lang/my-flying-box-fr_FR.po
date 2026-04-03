@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Flying Box\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/WordPress-Plugin-Template\n"
-"POT-Creation-Date: 2025-09-10 21:31+0300\n"
+"POT-Creation-Date: 2026-04-03 15:02+0300\n"
 "PO-Revision-Date: 2025-09-10 21:34+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -21,75 +21,74 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 
-#: ../assets/js/frontend.min.js:1
-msgid ".wc-block-components-radio-control__option"
-msgstr ""
-
-#: ../assets/js/frontend.min.js:1
-msgid "<img>"
-msgstr ""
-
-#: ../assets/js/frontend.min.js:1
-msgid "#trackthis"
-msgstr ""
-
-#: ../includes/class-mfb-admin-menus.php:24
+#: includes/class-mfb-admin-menus.php:24
 msgid "My Flying Box"
 msgstr "My Flying Box"
 
-#: ../includes/class-mfb-admin-menus.php:26
+#: includes/class-mfb-admin-menus.php:26
 msgid "My Flying Box Settings"
 msgstr "Paramètres My Flying Box"
 
-#: ../includes/class-mfb-admin-menus.php:26
+#: includes/class-mfb-admin-menus.php:26
 msgid "Settings"
 msgstr "Paramètres"
 
-#: ../includes/class-mfb-admin-menus.php:28
+#: includes/class-mfb-admin-menus.php:28
 msgid "My Flying Box Bulk Shipments"
 msgstr "Expéditions en masse My Flying Box"
 
-#: ../includes/class-mfb-admin-menus.php:28
+#: includes/class-mfb-admin-menus.php:28
 msgid "Bulk Shipments"
 msgstr "Expéditions en masse"
 
-#: ../includes/class-mfb-ajax.php:405 ../includes/class-my-flying-box.php:1024
-#: ../includes/meta-boxes/views/html-shipment-line.php:323
+#: includes/class-mfb-ajax.php:406 includes/class-my-flying-box.php:1052
+#: includes/meta-boxes/views/html-shipment-line.php:323
 msgid "Last status :"
 msgstr "Dernier statut :"
 
-#: ../includes/class-mfb-ajax.php:406 ../includes/class-my-flying-box.php:1025
-#: ../includes/meta-boxes/views/html-shipment-line.php:324
-#: ../includes/views/order-page-tracking-status.php:22
+#: includes/class-mfb-ajax.php:407 includes/class-my-flying-box.php:1053
+#: includes/meta-boxes/views/html-shipment-line.php:324
+#: includes/views/order-page-tracking-status.php:22
 msgid "Code :"
 msgstr "Code:"
 
-#: ../includes/class-mfb-ajax.php:407 ../includes/class-my-flying-box.php:1026
-#: ../includes/meta-boxes/views/html-shipment-line.php:325
-#: ../includes/views/order-page-tracking-status.php:23
+#: includes/class-mfb-ajax.php:408 includes/class-my-flying-box.php:1054
+#: includes/meta-boxes/views/html-shipment-line.php:325
+#: includes/views/order-page-tracking-status.php:23
 msgid "Label :"
 msgstr "Libellé :"
 
-#: ../includes/class-mfb-ajax.php:408 ../includes/class-my-flying-box.php:1027
-#: ../includes/meta-boxes/views/html-shipment-line.php:326
-#: ../includes/views/order-page-tracking-status.php:24
+#: includes/class-mfb-ajax.php:409 includes/class-my-flying-box.php:1055
+#: includes/meta-boxes/views/html-shipment-line.php:326
+#: includes/views/order-page-tracking-status.php:24
 msgid "Date :"
 msgstr "Date :"
 
-#: ../includes/class-mfb-ajax.php:412 ../includes/class-my-flying-box.php:1031
-#: ../includes/meta-boxes/views/html-shipment-line.php:330
-#: ../includes/views/order-page-tracking-status.php:28
+#: includes/class-mfb-ajax.php:413 includes/class-my-flying-box.php:1059
+#: includes/meta-boxes/views/html-shipment-line.php:330
+#: includes/views/order-page-tracking-status.php:28
 msgid "Place :"
 msgstr "Lieu :"
 
-#: ../includes/class-mfb-ajax.php:458 ../includes/class-mfb-shipment.php:193
-#: ../includes/class-my-flying-box.php:1056
-#: ../includes/class-my-flying-box.php:1134
+#: includes/class-mfb-ajax.php:459 includes/class-mfb-shipment.php:193
+#: includes/class-my-flying-box.php:1084 includes/class-my-flying-box.php:1162
 msgid "Status automatically updated by MFB shipment status."
 msgstr ""
 "Le statut est automatiquement mis à jour par le statut de l’expédition MFB."
 
-#: ../includes/class-mfb-bulk-order-background-process.php:39
+#: includes/class-mfb-ajax.php:733
+msgid "Order not found."
+msgstr "Commande introuvable."
+
+#: includes/class-mfb-ajax.php:739
+msgid "Sync notification sent to dashboard."
+msgstr "Notification de synchronisation envoyée au tableau de bord."
+
+#: includes/class-mfb-ajax.php:741
+msgid "Failed to send sync notification. Check plugin settings."
+msgstr "Échec de l'envoi de la notification de synchronisation. Vérifiez les paramètres de l'extension."
+
+#: includes/class-mfb-bulk-order-background-process.php:39
 msgid ""
 "The shipment could not be booked (probably no offer could be automatically "
 "selected)"
@@ -97,12 +96,12 @@ msgstr ""
 "Cette expédition n'a pas pu être confirmée (cause probable : aucune offre "
 "n'a pu être automatiquement sélectionnée)"
 
-#: ../includes/class-mfb-bulk-order-background-process.php:42
+#: includes/class-mfb-bulk-order-background-process.php:42
 #, php-format
 msgid "Error while booking shipment for Order %s: %s"
 msgstr "Erreur lors de la confirmation de l'expédition pour la commande %s: %s"
 
-#: ../includes/class-mfb-bulk-order-return-background-process.php:38
+#: includes/class-mfb-bulk-order-return-background-process.php:38
 msgid ""
 "The return shipment could not be booked (probably no offer could be "
 "automatically selected)"
@@ -110,75 +109,107 @@ msgstr ""
 "L'expédition retour n'a pas pu être enregistrée (aucune offre n'a pu être "
 "sélectionnée de manière automatique ?)"
 
-#: ../includes/class-mfb-bulk-order-return-background-process.php:41
+#: includes/class-mfb-bulk-order-return-background-process.php:41
 #, php-format
 msgid "Error while booking return shipment for Order %s: %s"
 msgstr ""
 "Erreur lors de l'enregistrement de l'expédition retour pour la commande %s: "
 "%s"
 
-#: ../includes/class-mfb-bulk-order.php:111
+#: includes/class-mfb-bulk-order.php:111
 #, php-format
 msgid "Bulk shipment #%s has been processed."
 msgstr "L'expédition en masse #%s a été traitée."
 
-#: ../includes/class-mfb-shipment.php:699
+#: includes/class-mfb-rest-api.php:143
+msgid "Dashboard sync API is disabled. Enable it in plugin settings."
+msgstr "L'API de synchronisation du tableau de bord est désactivée. Activez-la dans les paramètres de l'extension."
+
+#: includes/class-mfb-rest-api.php:148
+msgid "API authentication key (JWT) is not configured."
+msgstr "La clé d'authentification de l'API (JWT) n'est pas configurée."
+
+#: includes/class-mfb-rest-api.php:163
+msgid "Authorization header is required."
+msgstr "L'en-tête Authorization est requis."
+
+#: includes/class-mfb-rest-api.php:167
+msgid "Authorization header must use Bearer token format."
+msgstr "L'en-tête Authorization doit utiliser le format de jeton Bearer."
+
+#: includes/class-mfb-rest-api.php:174
+msgid "Invalid or expired JWT token."
+msgstr "Jeton JWT invalide ou expiré."
+
+#: includes/class-mfb-rest-api.php:180
+msgid "Token audience does not match shop identifier."
+msgstr "L'audience du jeton ne correspond pas à l'identifiant de la boutique."
+
+#: includes/class-mfb-rest-api.php:631
+#, php-format
+msgid "Shipment created from MyFlyingBox dashboard. Tracking: %s"
+msgstr "Expédition créée depuis le tableau de bord MyFlyingBox. Suivi : %s"
+
+#: includes/class-mfb-rest-api.php:634
+msgid "Shipment created from MyFlyingBox dashboard."
+msgstr "Expédition créée depuis le tableau de bord MyFlyingBox."
+
+#: includes/class-mfb-shipment.php:700
 #, php-format
 msgid "value: %s"
 msgstr "valeur : %s"
 
-#: ../includes/class-mfb-shipment.php:701
+#: includes/class-mfb-shipment.php:702
 #, php-format
 msgid "(insurable: %s)"
 msgstr "(assurable : %s)"
 
-#: ../includes/class-mfb-shipment.php:718
-#: ../includes/class-mfb-shipment.php:721
+#: includes/class-mfb-shipment.php:719 includes/class-mfb-shipment.php:722
 #, php-format
 msgid "Tracking: %s"
 msgstr "Suivi : %s"
 
-#: ../includes/class-mfb-shipping-method.php:318
+#: includes/class-mfb-shipping-method.php:319
 msgid "Enable"
 msgstr "Activer"
 
-#: ../includes/class-mfb-shipping-method.php:320
+#: includes/class-mfb-shipping-method.php:321
 msgid "Enable this service"
 msgstr "Activer ce service"
 
-#: ../includes/class-mfb-shipping-method.php:324
+#: includes/class-mfb-shipping-method.php:325
 msgid "Carrier logo"
 msgstr "Logo du transporteur"
 
-#: ../includes/class-mfb-shipping-method.php:326
+#: includes/class-mfb-shipping-method.php:327
 msgid "Upload or select a logo"
 msgstr "Télécharger ou sélectionner un logo"
 
-#: ../includes/class-mfb-shipping-method.php:330
+#: includes/class-mfb-shipping-method.php:331
 msgid "Title"
 msgstr "Titre"
 
-#: ../includes/class-mfb-shipping-method.php:332
+#: includes/class-mfb-shipping-method.php:333
 msgid "This controls the title which the user sees during checkout."
 msgstr "Défini le nom du service que le client verra à la commande."
 
-#: ../includes/class-mfb-shipping-method.php:337
-#: ../includes/views/html-admin-carriers-list.php:24
+#: includes/class-mfb-shipping-method.php:338
+#: includes/views/html-admin-carriers-list.php:24
 msgid "Description"
 msgstr "Description"
 
-#: ../includes/class-mfb-shipping-method.php:339
+#: includes/class-mfb-shipping-method.php:340
 msgid ""
 "This controls the description of this shipping method, which the user sees "
 "during checkout."
 msgstr ""
 "Définit la description du du service, visible par le client à la commande."
 
-#: ../includes/class-mfb-shipping-method.php:344
+#: includes/class-mfb-shipping-method.php:345
 msgid "Tracking URL"
 msgstr "URL de tracking"
 
-#: ../includes/class-mfb-shipping-method.php:346
+#: includes/class-mfb-shipping-method.php:347
 msgid ""
 "Put the variables TRACKING_NUMBER and POSTAL_CODE (optional) in the URL, "
 "they will be automatically replaced with the real tracking number and the "
@@ -188,11 +219,11 @@ msgstr ""
 "elles seront automatiquement remplacées par le numéro de suivi et le code "
 "postal du destinataire lors de la génération du lien."
 
-#: ../includes/class-mfb-shipping-method.php:351
+#: includes/class-mfb-shipping-method.php:352
 msgid "Minimum weight"
 msgstr "Poids minimum"
 
-#: ../includes/class-mfb-shipping-method.php:353
+#: includes/class-mfb-shipping-method.php:354
 msgid ""
 "If total weight of the cart is below this value, the service will not be "
 "proposed."
@@ -200,11 +231,11 @@ msgstr ""
 "Si le poids total du panier est inférieur à cette valeur, le service ne sera "
 "pas proposé."
 
-#: ../includes/class-mfb-shipping-method.php:358
+#: includes/class-mfb-shipping-method.php:359
 msgid "Maximum weight"
 msgstr "Poids maximum"
 
-#: ../includes/class-mfb-shipping-method.php:360
+#: includes/class-mfb-shipping-method.php:361
 msgid ""
 "If total weight of the cart is above this value, the service will not be "
 "proposed."
@@ -212,11 +243,11 @@ msgstr ""
 "Si le poids total du panier est supérieur à cette valeur, le service ne sera "
 "pas proposé."
 
-#: ../includes/class-mfb-shipping-method.php:365
+#: includes/class-mfb-shipping-method.php:366
 msgid "Minimum order price"
 msgstr "Montant total minimum"
 
-#: ../includes/class-mfb-shipping-method.php:367
+#: includes/class-mfb-shipping-method.php:368
 msgid ""
 "If total price of the cart is below this value, the service will not be "
 "proposed."
@@ -224,11 +255,11 @@ msgstr ""
 "Si le montant total du panier est inférieur à cette valeur, le service ne "
 "sera pas proposé."
 
-#: ../includes/class-mfb-shipping-method.php:372
+#: includes/class-mfb-shipping-method.php:373
 msgid "Maximum order price"
 msgstr "Montant total maximum"
 
-#: ../includes/class-mfb-shipping-method.php:374
+#: includes/class-mfb-shipping-method.php:375
 msgid ""
 "If total price of the cart is above this value, the service will not be "
 "proposed."
@@ -236,11 +267,11 @@ msgstr ""
 "Si le montant total du panier est supérieur à cette valeur, le service ne "
 "sera pas proposé."
 
-#: ../includes/class-mfb-shipping-method.php:379
+#: includes/class-mfb-shipping-method.php:380
 msgid "Price modifier (in cents)"
 msgstr "Modificateur de prix (en centimes)"
 
-#: ../includes/class-mfb-shipping-method.php:381
+#: includes/class-mfb-shipping-method.php:382
 msgid ""
 "IN CENTS! If set, will increment the shipping price by the specified amount. "
 "Put a negative value to decrease the price."
@@ -248,11 +279,11 @@ msgstr ""
 "EN CENTIMES! Si défini, incrémentera le prix du transport du montant "
 "spécifié. Renseignez une valeur négative pour réduire le prix."
 
-#: ../includes/class-mfb-shipping-method.php:386
+#: includes/class-mfb-shipping-method.php:387
 msgid "Price modifier (percentage)"
 msgstr "Modificateur de prix (pourcentage)"
 
-#: ../includes/class-mfb-shipping-method.php:388
+#: includes/class-mfb-shipping-method.php:389
 msgid ""
 "A value of 20 will increase the price by 20%, a value value of -30 will "
 "decrease the price by 30%, a value of 100 will double the price."
@@ -260,22 +291,22 @@ msgstr ""
 "Une valeur de 20 augmentera le prix de 20%, une valeur de -30 réduira le "
 "prix de 30%, une valeur de 100 doublera le prix."
 
-#: ../includes/class-mfb-shipping-method.php:393
+#: includes/class-mfb-shipping-method.php:394
 msgid "Price rounding increment (in cents)"
 msgstr "Incrément d'arrondi (en centimes)"
 
-#: ../includes/class-mfb-shipping-method.php:395
+#: includes/class-mfb-shipping-method.php:396
 msgid ""
 "IN CENTS! e.g. 20 will round 13.23 to 13.40, 100 will round 15.13 to 16.00."
 msgstr ""
 "EN CENTIMES! Une valeur de 20 arrondira un prix de 13,23 en 13,40, 100 "
 "arrondira à l'entier supérieur."
 
-#: ../includes/class-mfb-shipping-method.php:400
+#: includes/class-mfb-shipping-method.php:401
 msgid "Included postcodes"
 msgstr "Codes postaux inclus"
 
-#: ../includes/class-mfb-shipping-method.php:402
+#: includes/class-mfb-shipping-method.php:403
 msgid ""
 "Limits the service only to these postcodes. One rule per line (or same line "
 "and separated by a comma), using the following format: XX-YYYYY (XX = alpha2 "
@@ -290,11 +321,11 @@ msgstr ""
 "ne spécifié que les codes pays sans codes postaux. Lasisez vide pour "
 "n'appliquer aucune limitation."
 
-#: ../includes/class-mfb-shipping-method.php:408
+#: includes/class-mfb-shipping-method.php:409
 msgid "Excluded postcodes"
 msgstr "Codes postaux exclus"
 
-#: ../includes/class-mfb-shipping-method.php:410
+#: includes/class-mfb-shipping-method.php:411
 msgid ""
 "Excludes postcodes matching this list. One rule per line, using the "
 "following format: XX-YYYYY (XX = alpha2 country code, YYYYY = full postcode "
@@ -308,11 +339,11 @@ msgstr ""
 "ne spécifié que les codes pays sans codes postaux. Lasisez vide pour "
 "n'appliquer aucune limitation."
 
-#: ../includes/class-mfb-shipping-method.php:416
+#: includes/class-mfb-shipping-method.php:417
 msgid "Flat-rate prices"
 msgstr "Tarifs fixe"
 
-#: ../includes/class-mfb-shipping-method.php:418
+#: includes/class-mfb-shipping-method.php:419
 msgid ""
 "Check to enable pricing based on flat-rate pricing table, as defined below. "
 "When enabled, the prices returned by the API will not be used."
@@ -321,11 +352,11 @@ msgstr ""
 "au poids. Lorsque cette option est activée, les tarifs retournés par l'API "
 "MyFlyingBox seront ignorés."
 
-#: ../includes/class-mfb-shipping-method.php:430
+#: includes/class-mfb-shipping-method.php:431
 msgid "Flat-rate editor"
 msgstr "Tarifs fixe"
 
-#: ../includes/class-mfb-shipping-method.php:432
+#: includes/class-mfb-shipping-method.php:433
 msgid ""
 "Prices are based on weight, so you can define as many rules as you want in "
 "the following format: Weight (up to, in kg, e.g. 6 or 7.5) | Price (float "
@@ -336,11 +367,11 @@ msgstr ""
 "par ex. 6 ou 7.5) | Prix (décimal avec un séparateur point, par ex. 3.54). "
 "Une règle par ligne."
 
-#: ../includes/class-mfb-shipping-method.php:437
+#: includes/class-mfb-shipping-method.php:438
 msgid "Exclusion rule"
 msgstr "Règle d’exclusion"
 
-#: ../includes/class-mfb-shipping-method.php:439
+#: includes/class-mfb-shipping-method.php:440
 msgid ""
 "Multiple selection of shipping classes; if present in the order the delivery "
 "method will not be displayed"
@@ -348,11 +379,11 @@ msgstr ""
 "Sélection multiple de classes d’expédition ; S’il est présent dans la "
 "commande, le mode de livraison ne sera pas affiché"
 
-#: ../includes/class-mfb-shipping-method.php:443
+#: includes/class-mfb-shipping-method.php:444
 msgid "Inclusion rule"
 msgstr "Règle d’inclusion"
 
-#: ../includes/class-mfb-shipping-method.php:445
+#: includes/class-mfb-shipping-method.php:446
 msgid ""
 "Multiple selection of shipping classes; the delivery method will only be "
 "shown if all items match at least one of the selected shipping classes"
@@ -361,11 +392,11 @@ msgstr ""
 "affiché que si tous les articles correspondent à au moins une des classes "
 "d’expédition sélectionnées"
 
-#: ../includes/class-mfb-shipping-method.php:449
+#: includes/class-mfb-shipping-method.php:450
 msgid "Reduce API calls"
 msgstr "Limiter les appels API"
 
-#: ../includes/class-mfb-shipping-method.php:451
+#: includes/class-mfb-shipping-method.php:452
 msgid ""
 "Check to limit the number of API calls, improving performance of checkout "
 "process. WARNING: use only in conjunction with flatrate pricing (internal or "
@@ -383,11 +414,11 @@ msgstr ""
 "si le service est disponible ou non pour la destination saisie par le "
 "client ; il vous faut donc impérativement utiliser un autre mécanisme!"
 
-#: ../includes/class-mfb-shipping-method.php:455
+#: includes/class-mfb-shipping-method.php:456
 msgid "Force dimensions table"
 msgstr "Forcer le tableau de dimensions"
 
-#: ../includes/class-mfb-shipping-method.php:457
+#: includes/class-mfb-shipping-method.php:458
 msgid ""
 "Check to force the use of the weight/dimensions table (defined in module "
 "settings) to determine the packlist, instead of using product dimensions "
@@ -397,11 +428,11 @@ msgstr ""
 "dimensions (défini dans les paramètres du module) pour déterminer le "
 "colisage, au lieu d'utiliser les dimensions des produits lorsque disponibles."
 
-#: ../includes/class-mfb-shipping-method.php:461
+#: includes/class-mfb-shipping-method.php:462
 msgid "Extended cover"
 msgstr "Garantie complémentaire"
 
-#: ../includes/class-mfb-shipping-method.php:463
+#: includes/class-mfb-shipping-method.php:464
 msgid ""
 "When checked, the price presented for shipping service will include the "
 "Extended cover option, if available."
@@ -409,84 +440,84 @@ msgstr ""
 "Si coché, le prix présenté pour les frais d'expédition inclura le coût de la "
 "garantie complémentaire, lorsque disponible."
 
-#: ../includes/class-mfb-shipping-method.php:991
-#: ../includes/class-my-flying-box-settings.php:549
-#: ../includes/class-my-flying-box-settings.php:574
-#: ../includes/settings/class-mfb-settings-shipper.php:89
+#: includes/class-mfb-shipping-method.php:996
+#: includes/class-my-flying-box-settings.php:549
+#: includes/class-my-flying-box-settings.php:574
+#: includes/settings/class-mfb-settings-shipper.php:89
 msgid "Country"
 msgstr "Pays"
 
-#: ../includes/class-mfb-shipping-method.php:992
+#: includes/class-mfb-shipping-method.php:997
 msgid "Min weight"
 msgstr "Poids min"
 
-#: ../includes/class-mfb-shipping-method.php:993
+#: includes/class-mfb-shipping-method.php:998
 msgid "Max weight"
 msgstr "Poids max"
 
-#: ../includes/class-mfb-shipping-method.php:994
+#: includes/class-mfb-shipping-method.php:999
 msgid "Price"
 msgstr "Prix"
 
-#: ../includes/class-mfb-shipping-method.php:995
+#: includes/class-mfb-shipping-method.php:1000
 msgid "Shipping classes"
 msgstr "Classes d'expédition"
 
-#: ../includes/class-mfb-shipping-method.php:1077
+#: includes/class-mfb-shipping-method.php:1082
 msgid "Add new rate"
 msgstr "Ajouter un nouveau tarif"
 
-#: ../includes/class-mfb-shipping-method.php:1216
+#: includes/class-mfb-shipping-method.php:1221
 msgid "Select image"
 msgstr "Sélectionner une image"
 
-#: ../includes/class-mfb-shipping-method.php:1230
+#: includes/class-mfb-shipping-method.php:1235
 msgid "Select or upload a logo"
 msgstr "Sélectionnez ou téléchargez un logo"
 
-#: ../includes/class-mfb-shipping-method.php:1232
+#: includes/class-mfb-shipping-method.php:1237
 msgid "Use this image"
 msgstr "Utiliser cette image"
 
-#: ../includes/class-my-flying-box-admin-api.php:159
+#: includes/class-my-flying-box-admin-api.php:159
 msgid "Upload an image"
 msgstr "Charger une image"
 
-#: ../includes/class-my-flying-box-admin-api.php:159
+#: includes/class-my-flying-box-admin-api.php:159
 msgid "Use image"
 msgstr "Utiliser l'image"
 
-#: ../includes/class-my-flying-box-admin-api.php:159
+#: includes/class-my-flying-box-admin-api.php:159
 msgid "Upload new image"
 msgstr "Charger nouvelle image"
 
-#: ../includes/class-my-flying-box-admin-api.php:160
+#: includes/class-my-flying-box-admin-api.php:160
 msgid "Remove image"
 msgstr "Supprimer l'image"
 
-#: ../includes/class-my-flying-box-multiple-shipment.php:86
-#: ../includes/class-my-flying-box-multiple-shipment.php:147
+#: includes/class-my-flying-box-multiple-shipment.php:86
+#: includes/class-my-flying-box-multiple-shipment.php:147
 msgid "No bulk order was created!"
 msgstr "Aucune expédition en masse n'a été créée !"
 
-#: ../includes/class-my-flying-box-multiple-shipment.php:90
+#: includes/class-my-flying-box-multiple-shipment.php:90
 #, php-format
 msgid "The following orders have already been shipped with MyFlyingBox: %s"
 msgstr "Les commandes suivantes ont déjà été expédiées avec My Flying Box : %s"
 
-#: ../includes/class-my-flying-box-multiple-shipment.php:93
+#: includes/class-my-flying-box-multiple-shipment.php:93
 #, php-format
 msgid "The following orders have already been included in the bulk order: %s"
 msgstr ""
 "Les commandes suivantes ont déjà été inclues dans une expédition en masse : "
 "%s"
 
-#: ../includes/class-my-flying-box-multiple-shipment.php:96
+#: includes/class-my-flying-box-multiple-shipment.php:96
 #, php-format
 msgid "The following orders has been added to shipment booking queue: %s"
 msgstr "Les commandes suivantes ont déjà ajoutées à la file d'expédition : %s"
 
-#: ../includes/class-my-flying-box-multiple-shipment.php:151
+#: includes/class-my-flying-box-multiple-shipment.php:151
 #, php-format
 msgid ""
 "The following orders have no initial shipment booked with MyFlyingBox: %s"
@@ -494,7 +525,7 @@ msgstr ""
 "Les commandes suivantes n'ont pas d'expédition initiale enregistrée par le "
 "module MyFlyingBox : %s"
 
-#: ../includes/class-my-flying-box-multiple-shipment.php:154
+#: includes/class-my-flying-box-multiple-shipment.php:154
 #, php-format
 msgid ""
 "The following orders already have a return shipment booked with MyFlyingBox: "
@@ -503,7 +534,7 @@ msgstr ""
 "Les commandes suivantes ont déjà une expédition retour enregistrée avec "
 "MyFlyingBox : %s"
 
-#: ../includes/class-my-flying-box-multiple-shipment.php:157
+#: includes/class-my-flying-box-multiple-shipment.php:157
 #, php-format
 msgid ""
 "The following orders have already been included in the bulk order for "
@@ -512,7 +543,7 @@ msgstr ""
 "Les commandes suivantes sont déjà inclues dans l'action de masse de "
 "retours : %s"
 
-#: ../includes/class-my-flying-box-multiple-shipment.php:160
+#: includes/class-my-flying-box-multiple-shipment.php:160
 #, php-format
 msgid ""
 "The following orders has been added to return shipment booking queue: %s"
@@ -520,157 +551,157 @@ msgstr ""
 "Les commandes suivantes ont déjà été inclues dans la file d'attente de "
 "commande d'expéditions retour : %s"
 
-#: ../includes/class-my-flying-box-post-type.php:69
-#: ../includes/class-my-flying-box-taxonomy.php:70
+#: includes/class-my-flying-box-post-type.php:71
+#: includes/class-my-flying-box-taxonomy.php:70
 #, php-format
 msgid "Add New %s"
 msgstr "Ajouter nouveau %s"
 
-#: ../includes/class-my-flying-box-post-type.php:70
-#: ../includes/class-my-flying-box-taxonomy.php:67
+#: includes/class-my-flying-box-post-type.php:72
+#: includes/class-my-flying-box-taxonomy.php:67
 #, php-format
 msgid "Edit %s"
 msgstr "Modifier %s"
 
-#: ../includes/class-my-flying-box-post-type.php:71
+#: includes/class-my-flying-box-post-type.php:73
 #, php-format
 msgid "New %s"
 msgstr "Nouveau %s"
 
-#: ../includes/class-my-flying-box-post-type.php:72
-#: ../includes/class-my-flying-box-taxonomy.php:66
+#: includes/class-my-flying-box-post-type.php:74
+#: includes/class-my-flying-box-taxonomy.php:66
 #, php-format
 msgid "All %s"
 msgstr "Tous %s"
 
-#: ../includes/class-my-flying-box-post-type.php:73
-#: ../includes/class-my-flying-box-taxonomy.php:68
+#: includes/class-my-flying-box-post-type.php:75
+#: includes/class-my-flying-box-taxonomy.php:68
 #, php-format
 msgid "View %s"
 msgstr "Voir %s"
 
-#: ../includes/class-my-flying-box-post-type.php:74
-#: ../includes/class-my-flying-box-taxonomy.php:74
+#: includes/class-my-flying-box-post-type.php:76
+#: includes/class-my-flying-box-taxonomy.php:74
 #, php-format
 msgid "Search %s"
 msgstr "Chercher %s"
 
-#: ../includes/class-my-flying-box-post-type.php:75
+#: includes/class-my-flying-box-post-type.php:77
 #, php-format
 msgid "No %s Found"
 msgstr "Pas de %s trouvé"
 
-#: ../includes/class-my-flying-box-post-type.php:76
+#: includes/class-my-flying-box-post-type.php:78
 #, php-format
 msgid "No %s Found In Trash"
 msgstr "Pas de %s trouvé dans la corbeille"
 
-#: ../includes/class-my-flying-box-post-type.php:77
-#: ../includes/class-my-flying-box-taxonomy.php:72
+#: includes/class-my-flying-box-post-type.php:79
+#: includes/class-my-flying-box-taxonomy.php:72
 #, php-format
 msgid "Parent %s"
 msgstr "%s parent"
 
-#: ../includes/class-my-flying-box-post-type.php:114
+#: includes/class-my-flying-box-post-type.php:116
 #, php-format
 msgid "%1$s updated. %2$sView %3$s%4$s."
-msgstr ""
+msgstr "%1$s mis à jour. %2$sVoir %3$s%4$s."
 
-#: ../includes/class-my-flying-box-post-type.php:115
+#: includes/class-my-flying-box-post-type.php:117
 msgid "Custom field updated."
-msgstr ""
+msgstr "Champ personnalisé mis à jour."
 
-#: ../includes/class-my-flying-box-post-type.php:116
+#: includes/class-my-flying-box-post-type.php:118
 msgid "Custom field deleted."
-msgstr ""
+msgstr "Champ personnalisé supprimé."
 
-#: ../includes/class-my-flying-box-post-type.php:117
+#: includes/class-my-flying-box-post-type.php:119
 #, php-format
 msgid "%1$s updated."
-msgstr ""
+msgstr "%1$s mis à jour."
 
-#: ../includes/class-my-flying-box-post-type.php:118
+#: includes/class-my-flying-box-post-type.php:120
 #, php-format
 msgid "%1$s restored to revision from %2$s."
-msgstr ""
+msgstr "%1$s restauré à partir de la révision du %2$s."
 
-#: ../includes/class-my-flying-box-post-type.php:119
+#: includes/class-my-flying-box-post-type.php:121
 #, php-format
 msgid "%1$s published. %2$sView %3$s%4s."
-msgstr ""
+msgstr "%1$s publié. %2$sVoir %3$s%4s."
 
-#: ../includes/class-my-flying-box-post-type.php:120
+#: includes/class-my-flying-box-post-type.php:122
 #, php-format
 msgid "%1$s saved."
-msgstr ""
+msgstr "%1$s enregistré."
 
-#: ../includes/class-my-flying-box-post-type.php:121
+#: includes/class-my-flying-box-post-type.php:123
 #, php-format
 msgid "%1$s submitted. %2$sPreview post%3$s%4$s."
-msgstr ""
+msgstr "%1$s soumis. %2$sPrévisualiser la publication%3$s%4$s."
 
-#: ../includes/class-my-flying-box-post-type.php:122
+#: includes/class-my-flying-box-post-type.php:124
 #, php-format
 msgid "%1$s scheduled for: %2$s. %3$sPreview %4$s%5$s."
-msgstr ""
+msgstr "%1$s planifié pour : %2$s. %3$sPrévisualiser %4$s%5$s."
 
-#: ../includes/class-my-flying-box-post-type.php:122
+#: includes/class-my-flying-box-post-type.php:124
 msgid "M j, Y @ G:i"
-msgstr ""
+msgstr "j M Y \\à G:i"
 
-#: ../includes/class-my-flying-box-post-type.php:123
+#: includes/class-my-flying-box-post-type.php:125
 #, php-format
 msgid "%1$s draft updated. %2$sPreview %3$s%4$s."
-msgstr ""
+msgstr "%1$s brouillon mis à jour. %2$sPrévisualiser %3$s%4$s."
 
-#: ../includes/class-my-flying-box-post-type.php:140
+#: includes/class-my-flying-box-post-type.php:142
 #, php-format
 msgid "%1$s %2$s updated."
 msgid_plural "%1$s %2$s updated."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%1$s %2$s mis à jour."
+msgstr[1] "%1$s %2$s mis à jour."
 
-#: ../includes/class-my-flying-box-post-type.php:150
+#: includes/class-my-flying-box-post-type.php:152
 #, php-format
 msgid "%1$s %2$s not updated, somebody is editing it."
 msgid_plural "%1$s %2$s not updated, somebody is editing them."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%1$s %2$s non mis à jour, quelqu'un le modifie."
+msgstr[1] "%1$s %2$s non mis à jour, quelqu'un les modifie."
 
-#: ../includes/class-my-flying-box-post-type.php:160
+#: includes/class-my-flying-box-post-type.php:162
 #, php-format
 msgid "%1$s %2$s permanently deleted."
 msgid_plural "%1$s %2$s permanently deleted."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%1$s %2$s supprimé définitivement."
+msgstr[1] "%1$s %2$s supprimés définitivement."
 
-#: ../includes/class-my-flying-box-post-type.php:170
+#: includes/class-my-flying-box-post-type.php:172
 #, php-format
 msgid "%1$s %2$s moved to the Trash."
 msgid_plural "%1$s %2$s moved to the Trash."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%1$s %2$s déplacé dans la corbeille."
+msgstr[1] "%1$s %2$s déplacés dans la corbeille."
 
-#: ../includes/class-my-flying-box-post-type.php:180
+#: includes/class-my-flying-box-post-type.php:182
 #, php-format
 msgid "%1$s %2$s restored from the Trash."
 msgid_plural "%1$s %2$s restored from the Trash."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%1$s %2$s restauré depuis la corbeille."
+msgstr[1] "%1$s %2$s restaurés depuis la corbeille."
 
-#: ../includes/class-my-flying-box-settings.php:57
+#: includes/class-my-flying-box-settings.php:57
 msgid "Action failed. Please refresh the page and retry."
 msgstr "L'action a échoué. Rechargez la page et essayez à nouveau."
 
-#: ../includes/class-my-flying-box-settings.php:68
+#: includes/class-my-flying-box-settings.php:68
 msgid "Your settings have been saved."
 msgstr "Vos paramètres ont été enregistrés."
 
-#: ../includes/class-my-flying-box-settings.php:122
+#: includes/class-my-flying-box-settings.php:122
 msgid "The changes you made will be lost if you navigate away from this page."
 msgstr "Les changements effectués seront perdus si vous quittez cette page."
 
-#: ../includes/class-my-flying-box-settings.php:491
+#: includes/class-my-flying-box-settings.php:491
 msgid ""
 "The settings of this image size have been disabled because its values are "
 "being overwritten by a filter."
@@ -678,335 +709,328 @@ msgstr ""
 "Les paramètres pour cette taille d'image ont été désactivés car les valeurs "
 "seront écrasées par un filtre."
 
-#: ../includes/class-my-flying-box-settings.php:500
+#: includes/class-my-flying-box-settings.php:500
 msgid "Hard Crop?"
 msgstr "Recadrage?"
 
-#: ../includes/class-my-flying-box-settings.php:527
+#: includes/class-my-flying-box-settings.php:527
 msgid "Select a page&hellip;"
 msgstr "Sélectionnez une page&hellip;"
 
-#: ../includes/class-my-flying-box-settings.php:549
+#: includes/class-my-flying-box-settings.php:549
 msgid "Choose a country&hellip;"
 msgstr "Sélectionnez un pays&hellip;"
 
-#: ../includes/class-my-flying-box-settings.php:574
+#: includes/class-my-flying-box-settings.php:574
 msgid "Choose countries&hellip;"
 msgstr "Sélectionnez des pays&hellip;"
 
-#: ../includes/class-my-flying-box-settings.php:582
+#: includes/class-my-flying-box-settings.php:582
 msgid "Select all"
 msgstr "Sélectionner tout"
 
-#: ../includes/class-my-flying-box-settings.php:582
+#: includes/class-my-flying-box-settings.php:582
 msgid "Select none"
 msgstr "Sélectionner aucun"
 
-#: ../includes/class-my-flying-box-taxonomy.php:69
+#: includes/class-my-flying-box-taxonomy.php:69
 #, php-format
 msgid "Update %s"
 msgstr "Mettre à jour %s"
 
-#: ../includes/class-my-flying-box-taxonomy.php:71
+#: includes/class-my-flying-box-taxonomy.php:71
 #, php-format
 msgid "New %s Name"
-msgstr ""
+msgstr "Nom du nouveau %s"
 
-#: ../includes/class-my-flying-box-taxonomy.php:73
+#: includes/class-my-flying-box-taxonomy.php:73
 #, php-format
 msgid "Parent %s:"
-msgstr ""
+msgstr "%s parent :"
 
-#: ../includes/class-my-flying-box-taxonomy.php:75
+#: includes/class-my-flying-box-taxonomy.php:75
 #, php-format
 msgid "Popular %s"
-msgstr ""
+msgstr "%s populaires"
 
-#: ../includes/class-my-flying-box-taxonomy.php:76
+#: includes/class-my-flying-box-taxonomy.php:76
 #, php-format
 msgid "Separate %s with commas"
 msgstr "Séparer %s avec des virgules"
 
-#: ../includes/class-my-flying-box-taxonomy.php:77
+#: includes/class-my-flying-box-taxonomy.php:77
 #, php-format
 msgid "Add or remove %s"
 msgstr "Ajouter ou supprimer %s"
 
-#: ../includes/class-my-flying-box-taxonomy.php:78
+#: includes/class-my-flying-box-taxonomy.php:78
 #, php-format
 msgid "Choose from the most used %s"
-msgstr ""
+msgstr "Choisir parmi les %s les plus utilisés"
 
-#: ../includes/class-my-flying-box-taxonomy.php:79
+#: includes/class-my-flying-box-taxonomy.php:79
 #, php-format
 msgid "No %s found"
 msgstr "Aucun %s trouvé"
 
-#: ../includes/class-my-flying-box.php:239
-#: ../includes/meta-boxes/views/html-shipment-line.php:237
+#: includes/class-my-flying-box.php:253
+#: includes/meta-boxes/views/html-shipment-line.php:237
 msgid "With Extended cover"
 msgstr "Souscrire à la Garantie complémentaire"
 
-#: ../includes/class-my-flying-box.php:274
-#: ../includes/meta-boxes/views/html-shipment-line.php:238
-#: ../includes/meta-boxes/views/html-shipment-line.php:265
+#: includes/class-my-flying-box.php:288
+#: includes/meta-boxes/views/html-shipment-line.php:238
+#: includes/meta-boxes/views/html-shipment-line.php:265
 msgid "Total cost with extended cover :"
 msgstr "Coût total avec Garantie complémentaire :"
 
-#: ../includes/class-my-flying-box.php:315
+#: includes/class-my-flying-box.php:330
 msgid "Shipments"
 msgstr "Expéditions"
 
-#: ../includes/class-my-flying-box.php:315
+#: includes/class-my-flying-box.php:330
 msgid "Shipment"
 msgstr "Expédition"
 
-#: ../includes/class-my-flying-box.php:316
-#: ../includes/settings/class-mfb-settings-carriers.php:21
+#: includes/class-my-flying-box.php:331
+#: includes/settings/class-mfb-settings-carriers.php:21
 msgid "Carriers"
 msgstr "Transporteurs"
 
-#: ../includes/class-my-flying-box.php:316
-#: ../includes/class-my-flying-box.php:317
+#: includes/class-my-flying-box.php:331 includes/class-my-flying-box.php:332
 msgid "Carrier"
 msgstr "Transporteur"
 
-#: ../includes/class-my-flying-box.php:317
+#: includes/class-my-flying-box.php:332
 msgid "Dimensions"
 msgstr "Dimensions"
 
-#: ../includes/class-my-flying-box.php:318
-#: ../includes/views/html-admin-carriers-list.php:22
+#: includes/class-my-flying-box.php:333
+#: includes/views/html-admin-carriers-list.php:22
 msgid "Offers"
 msgstr "Offres"
 
-#: ../includes/class-my-flying-box.php:318
+#: includes/class-my-flying-box.php:333
 msgid "Offer"
 msgstr "Offre"
 
-#: ../includes/class-my-flying-box.php:322
-#: ../includes/class-my-flying-box.php:324
-#: ../includes/class-my-flying-box.php:328
+#: includes/class-my-flying-box.php:337 includes/class-my-flying-box.php:339
+#: includes/class-my-flying-box.php:343
 msgid "Bulk Orders"
 msgstr "Expéditions en masse"
 
-#: ../includes/class-my-flying-box.php:323
+#: includes/class-my-flying-box.php:338
 msgid "Bulk Order"
 msgstr "Expédition en masse"
 
-#: ../includes/class-my-flying-box.php:353
+#: includes/class-my-flying-box.php:368
 msgctxt "my-flying-box"
 msgid "Disabled"
-msgstr ""
+msgstr "Désactivé"
 
-#: ../includes/class-my-flying-box.php:358
+#: includes/class-my-flying-box.php:373
 #, php-format
 msgid "Disabled <span class=\"count\">(%s)</span>"
 msgid_plural "Disabled <span class=\"count\">(%s)</span>"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Désactivé <span class=\"count\">(%s)</span>"
+msgstr[1] "Désactivés <span class=\"count\">(%s)</span>"
 
-#: ../includes/class-my-flying-box.php:362
+#: includes/class-my-flying-box.php:377
 msgctxt "my-flying-box"
 msgid "Enabled"
-msgstr ""
+msgstr "Activé"
 
-#: ../includes/class-my-flying-box.php:367
+#: includes/class-my-flying-box.php:382
 #, php-format
 msgid "Enabled <span class=\"count\">(%s)</span>"
 msgid_plural "Enabled <span class=\"count\">(%s)</span>"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Activé <span class=\"count\">(%s)</span>"
+msgstr[1] "Activés <span class=\"count\">(%s)</span>"
 
-#: ../includes/class-my-flying-box.php:371
+#: includes/class-my-flying-box.php:386
 msgctxt "my-flying-box"
 msgid "Draft shipment"
 msgstr "Expédition brouillon"
 
-#: ../includes/class-my-flying-box.php:376
+#: includes/class-my-flying-box.php:391
 #, php-format
 msgid "Draft <span class=\"count\">(%s)</span>"
 msgid_plural "Draft <span class=\"count\">(%s)</span>"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Brouillon <span class=\"count\">(%s)</span>"
+msgstr[1] "Brouillons <span class=\"count\">(%s)</span>"
 
-#: ../includes/class-my-flying-box.php:380
+#: includes/class-my-flying-box.php:395
 msgctxt "my-flying-box"
 msgid "Booked shipment"
 msgstr "Expédition commandée"
 
-#: ../includes/class-my-flying-box.php:385
+#: includes/class-my-flying-box.php:400
 #, php-format
 msgid "Booked <span class=\"count\">(%s)</span>"
 msgid_plural "Booked <span class=\"count\">(%s)</span>"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Réservé <span class=\"count\">(%s)</span>"
+msgstr[1] "Réservés <span class=\"count\">(%s)</span>"
 
-#: ../includes/class-my-flying-box.php:389
+#: includes/class-my-flying-box.php:404
 msgctxt "my-flying-box"
 msgid "Processing"
-msgstr ""
+msgstr "En cours de traitement"
 
-#: ../includes/class-my-flying-box.php:394
+#: includes/class-my-flying-box.php:409
 #, php-format
 msgid "Processing <span class=\"count\">(%s)</span>"
 msgid_plural "Processing <span class=\"count\">(%s)</span>"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "En cours de traitement <span class=\"count\">(%s)</span>"
+msgstr[1] "En cours de traitement <span class=\"count\">(%s)</span>"
 
-#: ../includes/class-my-flying-box.php:398
+#: includes/class-my-flying-box.php:413
 msgctxt "my-flying-box"
 msgid "Processed"
-msgstr ""
+msgstr "Traité"
 
-#: ../includes/class-my-flying-box.php:403
+#: includes/class-my-flying-box.php:418
 #, php-format
 msgid "Processed <span class=\"count\">(%s)</span>"
 msgid_plural "Processed <span class=\"count\">(%s)</span>"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Traité <span class=\"count\">(%s)</span>"
+msgstr[1] "Traités <span class=\"count\">(%s)</span>"
 
-#: ../includes/class-my-flying-box.php:432
-#: ../includes/class-my-flying-box.php:441
+#: includes/class-my-flying-box.php:447 includes/class-my-flying-box.php:456
 msgid "Cheatin&#8217; huh?"
 msgstr "Vous essayez de triché?"
 
-#: ../includes/class-my-flying-box.php:521
-#: ../includes/class-my-flying-box.php:544
+#: includes/class-my-flying-box.php:536 includes/class-my-flying-box.php:568
 msgid "Please select a delivery location"
 msgstr "Choisissez un point relais"
 
-#: ../includes/class-my-flying-box.php:535
+#: includes/class-my-flying-box.php:558
 msgid "An error occured"
 msgstr "Une erreur est survenue"
 
-#: ../includes/class-my-flying-box.php:673 ../my-flying-box.php:223
+#: includes/class-my-flying-box.php:701 my-flying-box.php:223
 msgid "Choose a location"
 msgstr "Choisir un point relais"
 
-#: ../includes/class-my-flying-box.php:674 ../my-flying-box.php:224
+#: includes/class-my-flying-box.php:702 my-flying-box.php:224
 msgid "Selected "
 msgstr "Sélectionné "
 
-#: ../includes/class-my-flying-box.php:685
+#: includes/class-my-flying-box.php:713
 msgid "Unable to load parcel points"
 msgstr "Impossible de charger la liste des relais"
 
-#: ../includes/class-my-flying-box.php:686
+#: includes/class-my-flying-box.php:714
 msgid "Select this location"
 msgstr "Choisir ce point relais"
 
-#: ../includes/class-my-flying-box.php:687
+#: includes/class-my-flying-box.php:715
 msgid "Monday"
 msgstr "Lundi"
 
-#: ../includes/class-my-flying-box.php:688
+#: includes/class-my-flying-box.php:716
 msgid "Tuesday"
 msgstr "Mardi"
 
-#: ../includes/class-my-flying-box.php:689
+#: includes/class-my-flying-box.php:717
 msgid "Wednesday"
 msgstr "Mercredi"
 
-#: ../includes/class-my-flying-box.php:690
+#: includes/class-my-flying-box.php:718
 msgid "Thursday"
 msgstr "Jeudi"
 
-#: ../includes/class-my-flying-box.php:691
+#: includes/class-my-flying-box.php:719
 msgid "Friday"
 msgstr "Vendredi"
 
-#: ../includes/class-my-flying-box.php:692
+#: includes/class-my-flying-box.php:720
 msgid "Saturday"
 msgstr "Samedi"
 
-#: ../includes/class-my-flying-box.php:693
+#: includes/class-my-flying-box.php:721
 msgid "Sunday"
 msgstr "Dimanche"
 
-#: ../includes/class-my-flying-box.php:772
+#: includes/class-my-flying-box.php:800
 msgid "Hide map"
 msgstr "Fermer la carte"
 
-#: ../includes/class-my-flying-box.php:786
+#: includes/class-my-flying-box.php:814
 msgid "Shipping - My Flying Box"
 msgstr "Expédition - My Flying Box"
 
-#: ../includes/class-my-flying-box.php:791
+#: includes/class-my-flying-box.php:819
 msgid "List of shipments"
 msgstr "Liste des expéditions"
 
-#: ../includes/class-my-flying-box.php:892
+#: includes/class-my-flying-box.php:920
 msgid "Reference"
 msgstr "Référence"
 
-#: ../includes/class-my-flying-box.php:893
+#: includes/class-my-flying-box.php:921
 msgid "Date"
 msgstr "Date"
 
-#: ../includes/class-my-flying-box.php:894
-#: ../includes/meta-boxes/views/html-bulk-order-main.php:6
-#: ../includes/meta-boxes/views/html-shipments.php:19
-#: ../includes/views/html-admin-bulk-orders-index.php:18
-#: ../includes/views/html-admin-carriers-list.php:26
+#: includes/class-my-flying-box.php:922
+#: includes/meta-boxes/views/html-bulk-order-main.php:6
+#: includes/meta-boxes/views/html-shipments.php:19
+#: includes/views/html-admin-bulk-orders-index.php:18
+#: includes/views/html-admin-carriers-list.php:26
 msgid "Status"
 msgstr "Etat"
 
-#: ../includes/class-my-flying-box.php:895
+#: includes/class-my-flying-box.php:923
 msgid "Orders"
 msgstr "Commandes"
 
-#: ../includes/class-my-flying-box.php:896
-#: ../includes/views/html-admin-bulk-orders-index.php:20
+#: includes/class-my-flying-box.php:924
+#: includes/views/html-admin-bulk-orders-index.php:20
 msgid "Actions"
 msgstr "Actions"
 
-#: ../includes/class-my-flying-box.php:924
+#: includes/class-my-flying-box.php:952
 msgid "Y/m/d g:i:s A"
-msgstr ""
+msgstr "d/m/Y H:i:s"
 
-#: ../includes/class-my-flying-box.php:925
+#: includes/class-my-flying-box.php:953
 msgid "Y/m/d"
-msgstr ""
+msgstr "d/m/Y"
 
-#: ../includes/class-my-flying-box.php:946
+#: includes/class-my-flying-box.php:974
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../includes/class-my-flying-box.php:953
+#: includes/class-my-flying-box.php:981
 msgid "View"
 msgstr "Voir"
 
-#: ../includes/class-my-flying-box.php:1041
-#: ../includes/views/email-tracking.php:7
-#: ../includes/views/order-page-tracking.php:6
+#: includes/class-my-flying-box.php:1069 includes/views/email-tracking.php:7
+#: includes/views/order-page-tracking.php:6
 msgid "Track your shipment"
 msgstr "Suivre votre colis"
 
-#: ../includes/class-my-flying-box.php:1043
-#: ../includes/views/email-tracking.php:9
-#: ../includes/views/order-page-tracking.php:8
+#: includes/class-my-flying-box.php:1071 includes/views/email-tracking.php:9
+#: includes/views/order-page-tracking.php:8
 msgid "Direct links to track your shipments:"
 msgstr "Liens directs pour suivre vos colis :"
 
-#: ../includes/class-my-flying-box.php:1045
-#: ../includes/views/email-tracking.php:11
-#: ../includes/views/order-page-tracking.php:10
+#: includes/class-my-flying-box.php:1073 includes/views/email-tracking.php:11
+#: includes/views/order-page-tracking.php:10
 msgid "Direct link to track your shipment:"
 msgstr "Lien direct pour suivre votre colis :"
 
-#: ../includes/class-my-flying-box.php:1066
-#: ../includes/meta-boxes/views/html-shipment-line.php:352
-#: ../includes/views/order-page-tracking-status.php:42
+#: includes/class-my-flying-box.php:1094
+#: includes/meta-boxes/views/html-shipment-line.php:352
+#: includes/views/order-page-tracking-status.php:42
 msgid "Check Status"
 msgstr "Vérifier l'état"
 
-#: ../includes/lib/wp-background-process.php:418
+#: includes/lib/wp-background-process.php:418
 #, php-format
 msgid "Every %d Minutes"
-msgstr ""
+msgstr "Toutes les %d minutes"
 
-#: ../includes/meta-boxes/views/html-bulk-order-line.php:60
+#: includes/meta-boxes/views/html-bulk-order-line.php:60
 msgid ""
 "This shipment is being processed. Please wait and reload the page in a few "
 "seconds."
@@ -1014,37 +1038,37 @@ msgstr ""
 "L'expédition est en cours de traitement. Merci d'attendre et de recharger la "
 "page dans quelques secondes."
 
-#: ../includes/meta-boxes/views/html-bulk-order-line.php:79
-#: ../includes/meta-boxes/views/html-shipment-line.php:160
+#: includes/meta-boxes/views/html-bulk-order-line.php:79
+#: includes/meta-boxes/views/html-shipment-line.php:160
 msgid "Select pickup date:"
 msgstr "Choisir date d'enlèvement :"
 
-#: ../includes/meta-boxes/views/html-bulk-order-line.php:98
-#: ../includes/meta-boxes/views/html-shipment-line.php:179
+#: includes/meta-boxes/views/html-bulk-order-line.php:98
+#: includes/meta-boxes/views/html-shipment-line.php:179
 msgid "Select delivery location:"
 msgstr "Choisir point relais :"
 
-#: ../includes/meta-boxes/views/html-bulk-order-line.php:127
-#: ../includes/meta-boxes/views/html-shipment-line.php:243
+#: includes/meta-boxes/views/html-bulk-order-line.php:127
+#: includes/meta-boxes/views/html-shipment-line.php:243
 msgid "Book this service"
 msgstr "Commander cette expédition"
 
-#: ../includes/meta-boxes/views/html-bulk-order-line.php:143
-#: ../includes/meta-boxes/views/html-shipment-line.php:283
+#: includes/meta-boxes/views/html-bulk-order-line.php:143
+#: includes/meta-boxes/views/html-shipment-line.php:283
 msgid "Download labels"
 msgstr "Télécharger étiquettes"
 
-#: ../includes/meta-boxes/views/html-bulk-order-line.php:149
-#: ../includes/meta-boxes/views/html-shipment-line.php:289
+#: includes/meta-boxes/views/html-bulk-order-line.php:149
+#: includes/meta-boxes/views/html-shipment-line.php:289
 msgid "Tracking:"
 msgstr "Suivi :"
 
-#: ../includes/meta-boxes/views/html-bulk-order-line.php:162
-#: ../includes/meta-boxes/views/html-shipment-line.php:356
+#: includes/meta-boxes/views/html-bulk-order-line.php:162
+#: includes/meta-boxes/views/html-shipment-line.php:356
 msgid "Delivery location:"
 msgstr "Point de livraison :"
 
-#: ../includes/meta-boxes/views/html-bulk-order-line.php:200
+#: includes/meta-boxes/views/html-bulk-order-line.php:200
 msgid ""
 "This order already has a booked return shipment. You cannot create a new "
 "return shipment through bulk processing."
@@ -1052,11 +1076,11 @@ msgstr ""
 "Cette commande a déjà une expédition retour. Vous ne pouvez pas ajouter "
 "d'expédition retour à travers le traitement en masse."
 
-#: ../includes/meta-boxes/views/html-bulk-order-line.php:202
+#: includes/meta-boxes/views/html-bulk-order-line.php:202
 msgid "No return shipment has been booked yet for this order."
 msgstr "Aucune expédition retour n'a encore été générée pour cette commande."
 
-#: ../includes/meta-boxes/views/html-bulk-order-line.php:206
+#: includes/meta-boxes/views/html-bulk-order-line.php:206
 msgid ""
 "This order already has a booked shipment. You cannot create a new shipment "
 "through bulk processing."
@@ -1064,230 +1088,244 @@ msgstr ""
 "Cette commande a déjà une expédition confirmée. Vous ne pouvez pas ajouter "
 "d'expédition à travers le traitement en masse."
 
-#: ../includes/meta-boxes/views/html-bulk-order-line.php:208
+#: includes/meta-boxes/views/html-bulk-order-line.php:208
 msgid "No shipment has been generated yet for this order."
 msgstr "Aucune expédition n'a encore été générée pour cette commande."
 
-#: ../includes/meta-boxes/views/html-bulk-order-main.php:5
+#: includes/meta-boxes/views/html-bulk-order-main.php:5
 msgid "Order"
 msgstr "Commande"
 
-#: ../includes/meta-boxes/views/html-bulk-order-main.php:7
-#: ../includes/meta-boxes/views/html-shipments.php:20
+#: includes/meta-boxes/views/html-bulk-order-main.php:7
+#: includes/meta-boxes/views/html-shipments.php:20
 msgid "From"
 msgstr "De"
 
-#: ../includes/meta-boxes/views/html-bulk-order-main.php:8
-#: ../includes/meta-boxes/views/html-shipments.php:21
+#: includes/meta-boxes/views/html-bulk-order-main.php:8
+#: includes/meta-boxes/views/html-shipments.php:21
 msgid "To"
 msgstr "A"
 
-#: ../includes/meta-boxes/views/html-bulk-order-main.php:9
-#: ../includes/meta-boxes/views/html-shipments.php:22
+#: includes/meta-boxes/views/html-bulk-order-main.php:9
+#: includes/meta-boxes/views/html-shipments.php:22
 msgid "Parcels"
 msgstr "Colis"
 
-#: ../includes/meta-boxes/views/html-bulk-order-main.php:10
-#: ../includes/meta-boxes/views/html-shipments.php:23
+#: includes/meta-boxes/views/html-bulk-order-main.php:10
+#: includes/meta-boxes/views/html-shipments.php:23
 msgid "Selected service"
 msgstr "Service sélectionné"
 
-#: ../includes/meta-boxes/views/html-shipment-address-cell.php:14
+#: includes/meta-boxes/views/html-shipment-address-cell.php:14
 msgid "Company"
 msgstr "Société"
 
-#: ../includes/meta-boxes/views/html-shipment-address-cell.php:17
+#: includes/meta-boxes/views/html-shipment-address-cell.php:17
 msgid "Name"
 msgstr "Nom"
 
-#: ../includes/meta-boxes/views/html-shipment-address-cell.php:20
+#: includes/meta-boxes/views/html-shipment-address-cell.php:20
 msgid "Address"
 msgstr "Adresse"
 
-#: ../includes/meta-boxes/views/html-shipment-address-cell.php:23
-#: ../includes/settings/class-mfb-settings-shipper.php:81
+#: includes/meta-boxes/views/html-shipment-address-cell.php:23
+#: includes/settings/class-mfb-settings-shipper.php:81
 msgid "Postal code"
 msgstr "Code postal"
 
-#: ../includes/meta-boxes/views/html-shipment-address-cell.php:26
-#: ../includes/settings/class-mfb-settings-shipper.php:66
+#: includes/meta-boxes/views/html-shipment-address-cell.php:26
+#: includes/settings/class-mfb-settings-shipper.php:66
 msgid "City"
 msgstr "Ville"
 
-#: ../includes/meta-boxes/views/html-shipment-address-cell.php:29
+#: includes/meta-boxes/views/html-shipment-address-cell.php:29
 msgid "State/Region"
 msgstr "Etat/Région"
 
-#: ../includes/meta-boxes/views/html-shipment-address-cell.php:43
-#: ../includes/settings/class-mfb-settings-shipper.php:98
+#: includes/meta-boxes/views/html-shipment-address-cell.php:43
+#: includes/settings/class-mfb-settings-shipper.php:98
 msgid "Phone number"
 msgstr "Numéro de téléphone"
 
-#: ../includes/meta-boxes/views/html-shipment-address-cell.php:46
-#: ../includes/settings/class-mfb-settings-shipper.php:106
+#: includes/meta-boxes/views/html-shipment-address-cell.php:46
+#: includes/settings/class-mfb-settings-shipper.php:106
 msgid "Email"
 msgstr "Email"
 
-#: ../includes/meta-boxes/views/html-shipment-address-cell.php:49
-#: ../includes/meta-boxes/views/html-shipment-line.php:83
-#: ../includes/meta-boxes/views/html-shipment-line.php:125
+#: includes/meta-boxes/views/html-shipment-address-cell.php:49
+#: includes/meta-boxes/views/html-shipment-line.php:83
+#: includes/meta-boxes/views/html-shipment-line.php:125
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../includes/meta-boxes/views/html-shipment-address-cell.php:50
-#: ../includes/meta-boxes/views/html-shipment-line.php:84
-#: ../includes/meta-boxes/views/html-shipment-line.php:126
+#: includes/meta-boxes/views/html-shipment-address-cell.php:50
+#: includes/meta-boxes/views/html-shipment-line.php:84
+#: includes/meta-boxes/views/html-shipment-line.php:126
 msgid "Submit"
 msgstr "Enregister"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:20
+#: includes/meta-boxes/views/html-shipment-line.php:20
 #, php-format
 msgid "Bulk %s"
-msgstr ""
+msgstr "Lot %s"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:51
+#: includes/meta-boxes/views/html-shipment-line.php:51
 msgid "Edit shipper address"
 msgstr "Modifier l'adresse expéditeur"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:60
-#: ../includes/meta-boxes/views/html-shipment-line.php:102
+#: includes/meta-boxes/views/html-shipment-line.php:60
+#: includes/meta-boxes/views/html-shipment-line.php:102
 msgid "l"
 msgstr "L"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:61
-#: ../includes/meta-boxes/views/html-shipment-line.php:103
+#: includes/meta-boxes/views/html-shipment-line.php:61
+#: includes/meta-boxes/views/html-shipment-line.php:103
 msgid "w"
 msgstr "l"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:62
-#: ../includes/meta-boxes/views/html-shipment-line.php:104
+#: includes/meta-boxes/views/html-shipment-line.php:62
+#: includes/meta-boxes/views/html-shipment-line.php:104
 msgid "h"
 msgstr "h"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:63
-#: ../includes/meta-boxes/views/html-shipment-line.php:105
+#: includes/meta-boxes/views/html-shipment-line.php:63
+#: includes/meta-boxes/views/html-shipment-line.php:105
 msgid "weight"
 msgstr "poids"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:65
-#: ../includes/meta-boxes/views/html-shipment-line.php:107
+#: includes/meta-boxes/views/html-shipment-line.php:65
+#: includes/meta-boxes/views/html-shipment-line.php:107
 msgid "goods description"
 msgstr "descrip. contenu"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:67
-#: ../includes/meta-boxes/views/html-shipment-line.php:68
-#: ../includes/meta-boxes/views/html-shipment-line.php:109
-#: ../includes/meta-boxes/views/html-shipment-line.php:110
+#: includes/meta-boxes/views/html-shipment-line.php:67
+#: includes/meta-boxes/views/html-shipment-line.php:68
+#: includes/meta-boxes/views/html-shipment-line.php:109
+#: includes/meta-boxes/views/html-shipment-line.php:110
 msgid "Insurable value"
 msgstr "Valeur assurable"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:70
-#: ../includes/meta-boxes/views/html-shipment-line.php:71
-#: ../includes/meta-boxes/views/html-shipment-line.php:112
-#: ../includes/meta-boxes/views/html-shipment-line.php:113
+#: includes/meta-boxes/views/html-shipment-line.php:70
+#: includes/meta-boxes/views/html-shipment-line.php:71
+#: includes/meta-boxes/views/html-shipment-line.php:112
+#: includes/meta-boxes/views/html-shipment-line.php:113
 msgid "Content value"
 msgstr "Valeur contenu"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:74
-#: ../includes/meta-boxes/views/html-shipment-line.php:116
+#: includes/meta-boxes/views/html-shipment-line.php:74
+#: includes/meta-boxes/views/html-shipment-line.php:116
 msgid "Origin:"
 msgstr "Origine :"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:98
+#: includes/meta-boxes/views/html-shipment-line.php:98
 msgid "Add new parcel"
 msgstr "Ajouter un colis"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:215
+#: includes/meta-boxes/views/html-shipment-line.php:215
 msgid "Ad-valorem insurance"
 msgstr "Assurance ad-valorem"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:218
+#: includes/meta-boxes/views/html-shipment-line.php:218
 msgid "Insurable value: "
 msgstr "Valeur assurable : "
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:221
+#: includes/meta-boxes/views/html-shipment-line.php:221
 msgid "Insurance cost: "
 msgstr "Coût de l'assurance : "
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:226
+#: includes/meta-boxes/views/html-shipment-line.php:226
 msgid "Ad valorem insurance not available."
 msgstr "Assurance ad-valorem non disponible."
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:248
+#: includes/meta-boxes/views/html-shipment-line.php:248
 msgid "No offer available. Is all the data correct?"
 msgstr "Aucune offre disponible. Est-ce que les données sont correctes ?"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:268
+#: includes/meta-boxes/views/html-shipment-line.php:268
 msgid "No Extended cover"
 msgstr "Sans Garantie complémentaire"
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:272
+#: includes/meta-boxes/views/html-shipment-line.php:272
 msgid "Insured value: "
 msgstr "Valeur assurée : "
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:275
+#: includes/meta-boxes/views/html-shipment-line.php:275
 msgid "cost: "
 msgstr "coût : "
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:279
+#: includes/meta-boxes/views/html-shipment-line.php:279
 msgid "No insurance."
 msgstr "Pas d'assurance."
 
-#: ../includes/meta-boxes/views/html-shipment-line.php:373
+#: includes/meta-boxes/views/html-shipment-line.php:373
 msgid "Add return shipment"
 msgstr "Ajouter expédition retour"
 
-#: ../includes/meta-boxes/views/html-shipments.php:5
+#: includes/meta-boxes/views/html-shipments.php:5
 msgid "Relay selected by the customer:"
 msgstr "Point relais sélectionné par le client :"
 
-#: ../includes/meta-boxes/views/html-shipments.php:39
+#: includes/meta-boxes/views/html-shipments.php:39
 msgid "Create new shipment"
 msgstr "Créer nouvelle expédition"
 
-#: ../includes/settings/class-mfb-settings-account.php:21
+#: includes/meta-boxes/views/html-shipments.php:45
+msgid "Sync to dashboard"
+msgstr "Synchroniser avec le tableau de bord"
+
+#: includes/settings/class-mfb-settings-account.php:21
 msgid "Account settings"
 msgstr "Paramètres du compte"
 
-#: ../includes/settings/class-mfb-settings-account.php:37
+#: includes/settings/class-mfb-settings-account.php:67
+msgid ""
+"Are you sure you want to regenerate the authentication key? You will need to "
+"update the key in the MyFlyingBox dashboard as well. Remember to submit the "
+"form to persist the changes."
+msgstr ""
+"Êtes-vous sûr de vouloir régénérer la clé d'authentification ? Vous devrez "
+"également mettre à jour la clé dans le tableau de bord MyFlyingBox. N'oubliez "
+"pas d'enregistrer le formulaire pour conserver les changements."
+
+#: includes/settings/class-mfb-settings-account.php:90
 msgid "API account"
 msgstr "Compte API"
 
-#: ../includes/settings/class-mfb-settings-account.php:41
+#: includes/settings/class-mfb-settings-account.php:94
 msgid "Login"
 msgstr "Identifiant"
 
-#: ../includes/settings/class-mfb-settings-account.php:42
+#: includes/settings/class-mfb-settings-account.php:95
 msgid "Your API login."
 msgstr "Votre identifiant d'API."
 
-#: ../includes/settings/class-mfb-settings-account.php:45
+#: includes/settings/class-mfb-settings-account.php:98
 msgid "API login"
 msgstr "Identifiant API"
 
-#: ../includes/settings/class-mfb-settings-account.php:50
-#: ../includes/settings/class-mfb-settings-account.php:54
+#: includes/settings/class-mfb-settings-account.php:103
+#: includes/settings/class-mfb-settings-account.php:107
 msgid "API password"
 msgstr "Mot de passe API"
 
-#: ../includes/settings/class-mfb-settings-account.php:51
+#: includes/settings/class-mfb-settings-account.php:104
 msgid "Put your API password, corresponding to selected environment."
 msgstr ""
 "Renseignez votre mot de passe d'API pour l'environnement correspondant."
 
-#: ../includes/settings/class-mfb-settings-account.php:59
+#: includes/settings/class-mfb-settings-account.php:112
 msgid "API Environment"
 msgstr "Environnement API"
 
-#: ../includes/settings/class-mfb-settings-account.php:60
+#: includes/settings/class-mfb-settings-account.php:113
 msgid "Orders in test mode are not taken into account."
 msgstr "Les commandes en mode test seront ignorées."
 
-#: ../includes/settings/class-mfb-settings-account.php:68
+#: includes/settings/class-mfb-settings-account.php:121
 msgid "Google API key"
 msgstr "Clé API Google"
 
-#: ../includes/settings/class-mfb-settings-account.php:69
+#: includes/settings/class-mfb-settings-account.php:122
 msgid ""
 "You need a valid google API key with Maps Javascript API and Maps Geocoding "
 "API access to be able to display a map with available shop delivery "
@@ -1297,72 +1335,72 @@ msgstr ""
 "l'API Maps Geocoding pour pouvoir afficher la carte de sélection des points "
 "relais pendant le tunnel de commande (certains services seulement)."
 
-#: ../includes/settings/class-mfb-settings-account.php:72
+#: includes/settings/class-mfb-settings-account.php:125
 msgid "Google API Key"
 msgstr "Clé d'API Google"
 
-#: ../includes/settings/class-mfb-settings-account.php:77
+#: includes/settings/class-mfb-settings-account.php:130
 msgid "MFB Token"
 msgstr "Token MFB (HTTP Push)"
 
-#: ../includes/settings/class-mfb-settings-account.php:84
+#: includes/settings/class-mfb-settings-account.php:137
 msgid "Default parcel content"
 msgstr "Contenu des colis par défaut"
 
-#: ../includes/settings/class-mfb-settings-account.php:91
+#: includes/settings/class-mfb-settings-account.php:144
 msgid "Default country of origin"
 msgstr "Pays d'origine par défaut"
 
-#: ../includes/settings/class-mfb-settings-account.php:99
+#: includes/settings/class-mfb-settings-account.php:152
 msgid "Default service for domestic shipments"
 msgstr "Service par défaut pour les expéditions domestiques"
 
-#: ../includes/settings/class-mfb-settings-account.php:100
-#: ../includes/settings/class-mfb-settings-account.php:109
+#: includes/settings/class-mfb-settings-account.php:153
+#: includes/settings/class-mfb-settings-account.php:162
 msgid ""
 "Only used in back-office for orders with no MFB service selected by customer."
 msgstr ""
 "Utilisé seulement dans le back-office pour les commandes non associées à un "
 "service MFB."
 
-#: ../includes/settings/class-mfb-settings-account.php:102
-#: ../includes/settings/class-mfb-settings-account.php:111
-#: ../includes/settings/class-mfb-settings-account.php:120
-#: ../includes/settings/class-mfb-settings-account.php:129
+#: includes/settings/class-mfb-settings-account.php:155
+#: includes/settings/class-mfb-settings-account.php:164
+#: includes/settings/class-mfb-settings-account.php:173
+#: includes/settings/class-mfb-settings-account.php:182
 msgid "Select a service..."
 msgstr "Choisissez un service..."
 
-#: ../includes/settings/class-mfb-settings-account.php:108
+#: includes/settings/class-mfb-settings-account.php:161
 msgid "Default service for international shipments"
 msgstr "Service par défaut pour les expéditions internationales"
 
-#: ../includes/settings/class-mfb-settings-account.php:117
+#: includes/settings/class-mfb-settings-account.php:170
 msgid "Default service for return shipments (domestic)"
 msgstr "Service par défaut pour les retours (domestiques)"
 
-#: ../includes/settings/class-mfb-settings-account.php:118
-#: ../includes/settings/class-mfb-settings-account.php:127
+#: includes/settings/class-mfb-settings-account.php:171
+#: includes/settings/class-mfb-settings-account.php:180
 msgid "Only used in back-office when generating return shipments."
 msgstr "Utilisé seulement en back-office pour les commandes retours."
 
-#: ../includes/settings/class-mfb-settings-account.php:126
+#: includes/settings/class-mfb-settings-account.php:179
 msgid "Default service for return shipments (international)"
 msgstr "Service par défaut pour les retours (internationaux)"
 
-#: ../includes/settings/class-mfb-settings-account.php:135
+#: includes/settings/class-mfb-settings-account.php:188
 msgid "Thermal printing"
 msgstr "Impression thermale"
 
-#: ../includes/settings/class-mfb-settings-account.php:136
+#: includes/settings/class-mfb-settings-account.php:189
 msgid "Get shipment labels in a thermal-printer friendly format"
 msgstr ""
 "Obtenir les étiquettes dans un format adapté à une impression thermique"
 
-#: ../includes/settings/class-mfb-settings-account.php:143
+#: includes/settings/class-mfb-settings-account.php:196
 msgid "Insurance"
 msgstr "Assurance"
 
-#: ../includes/settings/class-mfb-settings-account.php:144
+#: includes/settings/class-mfb-settings-account.php:197
 msgid ""
 "Insure shipments by default (taken into account when calculating shipping "
 "cost during checkout and for bulk orders)"
@@ -1370,11 +1408,11 @@ msgstr ""
 "Assurer les expéditions par défaut (pris en compte pour le calcul des frais "
 "d'expédition présentés au client ainsi que dans les actions en masse)"
 
-#: ../includes/settings/class-mfb-settings-account.php:151
+#: includes/settings/class-mfb-settings-account.php:204
 msgid "Use price with VAT"
 msgstr "Utiliser le prix TTC"
 
-#: ../includes/settings/class-mfb-settings-account.php:152
+#: includes/settings/class-mfb-settings-account.php:205
 msgid ""
 "If checked, the shipping cost returned by the module during checkout and in "
 "back-office will include VAT (when applicable). Only use this option if you "
@@ -1385,11 +1423,11 @@ msgstr ""
 "option que si vous n'êtes pas asujetti à la TVA et que vous n'utilisez pas "
 "les mécanismes de TVA de WooCommerce."
 
-#: ../includes/settings/class-mfb-settings-account.php:159
+#: includes/settings/class-mfb-settings-account.php:212
 msgid "Force use of dimensions table"
 msgstr "Forcer l'utilisation du tableau poids/dimensions"
 
-#: ../includes/settings/class-mfb-settings-account.php:160
+#: includes/settings/class-mfb-settings-account.php:213
 msgid ""
 "If checked, the pack-list calculation mechanisms will always use the package "
 "dimensions per weight defined in the module settings even when item "
@@ -1401,11 +1439,11 @@ msgstr ""
 "même si les dimensions des articles ont été définies et permettraient un "
 "calcul dynamique des mesures du colis."
 
-#: ../includes/settings/class-mfb-settings-account.php:167
+#: includes/settings/class-mfb-settings-account.php:220
 msgid "Max real weight per package"
 msgstr "Poids réel maximum par colis"
 
-#: ../includes/settings/class-mfb-settings-account.php:168
+#: includes/settings/class-mfb-settings-account.php:221
 msgid ""
 "In KG. Used to determine how to spread articles in a cart into several "
 "simulated parcels, based on real weight."
@@ -1413,11 +1451,11 @@ msgstr ""
 "En KG. Utilisé pour déterminer comment répartir les articles d'un panier "
 "dans plusieurs colis simulés, en se basant sur le poids réel."
 
-#: ../includes/settings/class-mfb-settings-account.php:175
+#: includes/settings/class-mfb-settings-account.php:228
 msgid "Max volumetric weight per package"
 msgstr "Poinds volumétrique maximum par colis"
 
-#: ../includes/settings/class-mfb-settings-account.php:176
+#: includes/settings/class-mfb-settings-account.php:229
 msgid ""
 "In KG. Used to determine how to spread articles in a cart into several "
 "simulated parcels, based on volumetric weight."
@@ -1425,58 +1463,173 @@ msgstr ""
 "En KG. Utilisé pour déterminer comment répartir les articles d'un panier "
 "dans plusieurs colis simulés, en se basant sur le poids volumétrique."
 
-#: ../includes/settings/class-mfb-settings-carriers.php:37
+#: includes/settings/class-mfb-settings-account.php:239
+msgid "Dashboard synchronization"
+msgstr "Synchronisation du tableau de bord"
+
+#: includes/settings/class-mfb-settings-account.php:240
+msgid ""
+"Configure synchronization between this WooCommerce shop and the MyFlyingBox "
+"dashboard. This allows the dashboard to retrieve orders and push shipment "
+"data back to WooCommerce."
+msgstr ""
+"Configurez la synchronisation entre cette boutique WooCommerce et le tableau "
+"de bord MyFlyingBox. Cela permet au tableau de bord de récupérer les "
+"commandes et de renvoyer les données d'expédition vers WooCommerce."
+
+#: includes/settings/class-mfb-settings-account.php:245
+msgid "Shop identifier (UUID)"
+msgstr "Identifiant de la boutique (UUID)"
+
+#: includes/settings/class-mfb-settings-account.php:246
+msgid ""
+"Unique identifier for this shop (auto-generated). Copy this value into the "
+"dashboard connection form."
+msgstr ""
+"Identifiant unique de cette boutique (généré automatiquement). Copiez cette "
+"valeur dans le formulaire de connexion du tableau de bord."
+
+#: includes/settings/class-mfb-settings-account.php:255
+msgid "Authentication key (JWT shared secret)"
+msgstr "Clé d'authentification (secret partagé JWT)"
+
+#: includes/settings/class-mfb-settings-account.php:256
+msgid ""
+"Shared secret used for JWT authentication between the dashboard and this "
+"plugin. Copy this value into the dashboard connection form."
+msgstr ""
+"Secret partagé utilisé pour l'authentification JWT entre le tableau de bord "
+"et cette extension. Copiez cette valeur dans le formulaire de connexion du "
+"tableau de bord."
+
+#: includes/settings/class-mfb-settings-account.php:258
+msgid "Generate new key"
+msgstr "Générer une nouvelle clé"
+
+#: includes/settings/class-mfb-settings-account.php:267
+msgid "Webhooks signature key"
+msgstr "Clé de signature des webhooks"
+
+#: includes/settings/class-mfb-settings-account.php:268
+msgid ""
+"Secret key used to sign webhook notifications sent to the dashboard. Auto-"
+"generated. Copy this value into the dashboard connection form."
+msgstr ""
+"Clé secrète utilisée pour signer les notifications webhook envoyées au "
+"tableau de bord. Générée automatiquement. Copiez cette valeur dans le "
+"formulaire de connexion du tableau de bord."
+
+#: includes/settings/class-mfb-settings-account.php:277
+msgid "Synchronization with dashboard"
+msgstr "Synchronisation avec le tableau de bord"
+
+#: includes/settings/class-mfb-settings-account.php:278
+msgid ""
+"Controls whether the dashboard can access this shop's order data via API."
+msgstr ""
+"Détermine si le tableau de bord peut accéder aux données de commande de "
+"cette boutique via l'API."
+
+#: includes/settings/class-mfb-settings-account.php:281
+msgid "Never (API disabled)"
+msgstr "Jamais (API désactivée)"
+
+#: includes/settings/class-mfb-settings-account.php:282
+msgid "On demand"
+msgstr "À la demande"
+
+#: includes/settings/class-mfb-settings-account.php:283
+msgid "Always"
+msgstr "Toujours"
+
+#: includes/settings/class-mfb-settings-account.php:290
+msgid "Max history (days)"
+msgstr "Historique maximal (jours)"
+
+#: includes/settings/class-mfb-settings-account.php:291
+msgid ""
+"Maximum number of days in the past from which orders can be retrieved via "
+"the API."
+msgstr ""
+"Nombre maximal de jours dans le passé à partir desquels les commandes "
+"peuvent être récupérées via l'API."
+
+#: includes/settings/class-mfb-settings-account.php:299
+msgid "Max order age (days)"
+msgstr "Ancienneté maximale des commandes (jours)"
+
+#: includes/settings/class-mfb-settings-account.php:300
+msgid ""
+"Orders older than this number of days cannot be retrieved individually via "
+"the API."
+msgstr ""
+"Les commandes plus anciennes que ce nombre de jours ne peuvent pas être "
+"récupérées individuellement via l'API."
+
+#: includes/settings/class-mfb-settings-account.php:308
+msgid "Update order status on shipment"
+msgstr "Mettre à jour le statut de la commande lors de l'expédition"
+
+#: includes/settings/class-mfb-settings-account.php:309
+msgid ""
+"Automatically set orders to \"Completed\" when a shipment is created from "
+"the MyFlyingBox dashboard."
+msgstr ""
+"Définit automatiquement les commandes sur \"Terminée\" lorsqu'une "
+"expédition est créée depuis le tableau de bord MyFlyingBox."
+
+#: includes/settings/class-mfb-settings-carriers.php:37
 msgid "List of carriers"
 msgstr "Liste des transporteurs"
 
-#: ../includes/settings/class-mfb-settings-carriers.php:38
+#: includes/settings/class-mfb-settings-carriers.php:38
 msgid "Weight Options"
 msgstr "Options de poids"
 
-#: ../includes/settings/class-mfb-settings-carriers.php:148
+#: includes/settings/class-mfb-settings-carriers.php:148
 msgid "The list of services has been successfully updated."
 msgstr "La liste des services a été mise à jour."
 
-#: ../includes/settings/class-mfb-settings-shipper.php:21
+#: includes/settings/class-mfb-settings-shipper.php:21
 msgid "Shipper settings"
 msgstr "Paramètres expéditeur"
 
-#: ../includes/settings/class-mfb-settings-shipper.php:37
+#: includes/settings/class-mfb-settings-shipper.php:37
 msgid "Shipper information"
 msgstr "Informations expéditeur"
 
-#: ../includes/settings/class-mfb-settings-shipper.php:41
+#: includes/settings/class-mfb-settings-shipper.php:41
 msgid "Shipper name"
 msgstr "Nom de l'expéditeur"
 
-#: ../includes/settings/class-mfb-settings-shipper.php:49
+#: includes/settings/class-mfb-settings-shipper.php:49
 msgid "Shipper company"
 msgstr "Entreprise"
 
-#: ../includes/settings/class-mfb-settings-shipper.php:57
+#: includes/settings/class-mfb-settings-shipper.php:57
 msgid "Street"
 msgstr "Adresse"
 
-#: ../includes/settings/class-mfb-settings-shipper.php:58
+#: includes/settings/class-mfb-settings-shipper.php:58
 msgid "Two lines maximum!"
 msgstr "Deux lignes maximum !"
 
-#: ../includes/settings/class-mfb-settings-shipper.php:74
+#: includes/settings/class-mfb-settings-shipper.php:74
 msgid "State"
 msgstr "Etat"
 
-#: ../includes/views/email-relay-address.php:7
-#: ../includes/views/order-page-relay-address.php:7
+#: includes/views/email-relay-address.php:7
+#: includes/views/order-page-relay-address.php:7
 msgid "Relay delivery address"
 msgstr "Livraison en point relais"
 
-#: ../includes/views/email-relay-address.php:9
-#: ../includes/views/order-page-relay-address.php:9
+#: includes/views/email-relay-address.php:9
+#: includes/views/order-page-relay-address.php:9
 msgid "Your shipment will be delivered at the following address:"
 msgstr "Votre commande sera livrée à l'adresse suivante :"
 
-#: ../includes/views/email-relay-address.php:11
-#: ../includes/views/order-page-relay-address.php:11
+#: includes/views/email-relay-address.php:11
+#: includes/views/order-page-relay-address.php:11
 msgid ""
 "Your order has been split and shipped to several addresses, listed below. "
 "Please check tracking information."
@@ -1484,33 +1637,33 @@ msgstr ""
 "Votre commande a été expédiée en plusieurs fois, à des adresses différentes "
 "listées ci-dessous. Pensez à consulter les informations de suivi."
 
-#: ../includes/views/html-admin-bulk-orders-index.php:11
+#: includes/views/html-admin-bulk-orders-index.php:11
 msgid "MY FLYING BOX Bulk Orders"
 msgstr "Expéditions en masse MY FLYING BOX"
 
-#: ../includes/views/html-admin-bulk-orders-index.php:17
+#: includes/views/html-admin-bulk-orders-index.php:17
 msgid "Created at"
 msgstr "Créée le"
 
-#: ../includes/views/html-admin-bulk-orders-index.php:19
+#: includes/views/html-admin-bulk-orders-index.php:19
 msgid "Included orders"
 msgstr "Commandes inclues"
 
-#: ../includes/views/html-admin-carriers-list.php:11
+#: includes/views/html-admin-carriers-list.php:11
 msgid "Reload carriers from API"
 msgstr "Recharger les transporteurs depuis l'API"
 
-#: ../includes/views/html-admin-carriers-list.php:12
+#: includes/views/html-admin-carriers-list.php:12
 msgid "By clicking on this link, you ensure the carrier list is up to date."
 msgstr ""
 "En cliquant sur ce lien, vous vous assurez que la liste des transporteurs "
 "est à jour."
 
-#: ../includes/views/html-admin-carriers-list.php:14
+#: includes/views/html-admin-carriers-list.php:14
 msgid "Carrier services"
 msgstr "Services transporteurs"
 
-#: ../includes/views/html-admin-carriers-list.php:15
+#: includes/views/html-admin-carriers-list.php:15
 msgid ""
 "Some of these services require the use of dimensional weight. You can define "
 "a table to associate a set of dimensions based on the total weight of a cart "
@@ -1526,19 +1679,19 @@ msgstr ""
 "réalité, vous risquez de facturer à vos clients un coût de transport "
 "inférieur que celui qui vous sera facturé par My Flying Box."
 
-#: ../includes/views/html-admin-carriers-list.php:28
+#: includes/views/html-admin-carriers-list.php:28
 msgid "Edition"
 msgstr "Edition"
 
-#: ../includes/views/html-admin-carriers-list.php:54
+#: includes/views/html-admin-carriers-list.php:54
 msgid "Edit"
 msgstr "Editer"
 
-#: ../includes/views/html-admin-carriers-weight-table.php:11
+#: includes/views/html-admin-carriers-weight-table.php:11
 msgid "Weight/dimensions"
 msgstr "Poids/dimensions"
 
-#: ../includes/views/html-admin-carriers-weight-table.php:12
+#: includes/views/html-admin-carriers-weight-table.php:12
 msgid ""
 "When requesting a quote for a shipment, most carriers need parcel "
 "dimensions. There are two ways to determine the dimensions used for "
@@ -1558,71 +1711,35 @@ msgstr ""
 "les dimensions sur la base du tableau ci-dessous, qui lie le poids total du "
 "panier à des dimensions de référence."
 
-#: ../includes/views/html-admin-carriers-weight-table.php:20
+#: includes/views/html-admin-carriers-weight-table.php:20
 msgid "Weight (up to)"
 msgstr "Poids (jusqu'à)"
 
-#: ../includes/views/html-admin-carriers-weight-table.php:22
+#: includes/views/html-admin-carriers-weight-table.php:22
 msgid "length"
 msgstr "longueur"
 
-#: ../includes/views/html-admin-carriers-weight-table.php:24
+#: includes/views/html-admin-carriers-weight-table.php:24
 msgid "width"
 msgstr "largeur"
 
-#: ../includes/views/html-admin-carriers-weight-table.php:26
+#: includes/views/html-admin-carriers-weight-table.php:26
 msgid "height"
 msgstr "hauteur"
 
-#: ../includes/views/html-admin-settings.php:31
+#: includes/views/html-admin-settings.php:31
 msgid "Save changes"
 msgstr "Enregistrer"
 
-#: ../includes/views/html-bulk-order-index-line.php:15
+#: includes/views/html-bulk-order-index-line.php:15
 #, php-format
 msgctxt "on date at time"
 msgid "%s @ %s"
-msgstr ""
+msgstr "%s à %s"
 
-#: ../includes/views/order-page-tracking-status.php:7
+#: includes/views/order-page-tracking-status.php:7
 msgid "Shipment Status"
 msgstr "Etat de l'expédition"
-
-#: ../node_modules/less/dist/less.min.js:10
-msgid "missing opening `(`"
-msgstr ""
-
-#: ../node_modules/less/dist/less.min.js:10
-msgid "missing opening `{`"
-msgstr ""
-
-#: ../node_modules/less/dist/less.min.js:10
-msgid "unescaped `\\`"
-msgstr ""
-
-#: ../node_modules/less/dist/less.min.js:10
-msgid "unmatched `"
-msgstr ""
-
-#: ../node_modules/less/dist/less.min.js:10
-msgid "missing closing `*/`"
-msgstr ""
-
-#: ../node_modules/less/dist/less.min.js:10
-msgid "unmatched `/*`"
-msgstr ""
-
-#: ../node_modules/less/dist/less.min.js:10
-msgid "missing closing `}` or `*/`"
-msgstr ""
-
-#: ../node_modules/less/dist/less.min.js:10
-msgid "missing closing `)`"
-msgstr ""
-
-#: ../node_modules/lodash/lodash.min.js:61
-msgid "e"
-msgstr ""
 
 #~ msgid "Additional guarantee"
 #~ msgstr "Garantie complémentaire"
