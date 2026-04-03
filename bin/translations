@@ -1,0 +1,165 @@
+#!/bin/bash
+
+# Translation Management Wrapper
+# Easy command interface for translation tools
+
+set -e
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PLUGIN_DIR="$(dirname "$SCRIPT_DIR")"
+LOCALE="${LOCALE:-fr_FR}"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+usage() {
+    cat << EOF
+${BLUE}Translation Management Tool${NC}
+
+Usage: ./bin/translations [COMMAND] [OPTIONS]
+
+${BLUE}Commands:${NC}
+    extract             Extract strings from PHP → regenerate POT → merge PO → compile MO
+    report              Show translation statistics and missing strings
+    template            Create HTML template for translators
+    csv                 Export missing translations as CSV
+    mo                  Generate MO file from PO file
+    compare             Compare POT and PO files
+    show-missing        Show detailed list of missing translations
+    json                Export missing translations as JSON
+    all                 Extract + report + template + csv + mo
+
+${BLUE}Options:${NC}
+    --locale LOCALE     Override locale (default: fr_FR)
+    --help              Show this help message
+
+${BLUE}Examples:${NC}
+    ./bin/translations report
+    ./bin/translations template
+    ./bin/translations all --locale de_DE
+    ./bin/translations compare --show-removals
+
+${BLUE}Files:${NC}
+    See: TRANSLATION_README.md for documentation
+
+EOF
+}
+
+check_requirements() {
+    if ! command -v python3 &> /dev/null; then
+        echo -e "${RED}Error: Python 3 is required but not installed.${NC}"
+        exit 1
+    fi
+}
+
+run_command() {
+    local cmd=$1
+    shift
+    
+    case $cmd in
+        extract)
+            echo -e "${BLUE}🔄 Extracting strings from PHP source...${NC}\n"
+            python3 "$SCRIPT_DIR/manage-translations.py" --locale "$LOCALE" --extract
+            ;;
+        
+        report)
+            echo -e "${BLUE}📊 Generating translation report...${NC}\n"
+            python3 "$SCRIPT_DIR/manage-translations.py" --locale "$LOCALE" --report
+            ;;
+        
+        template)
+            echo -e "${BLUE}📝 Creating HTML template...${NC}\n"
+            python3 "$SCRIPT_DIR/fill-translations.py" --locale "$LOCALE" --create-template
+            echo -e "\n${GREEN}✓ Open this file in a browser:${NC}"
+            echo "  $PLUGIN_DIR/lang/translation-template-$LOCALE.html"
+            ;;
+        
+        csv)
+            echo -e "${BLUE}📊 Exporting to CSV...${NC}\n"
+            python3 "$SCRIPT_DIR/fill-translations.py" --locale "$LOCALE" --export-csv
+            echo -e "\n${GREEN}✓ Open this file in Excel/Sheets:${NC}"
+            echo "  $PLUGIN_DIR/lang/missing-translations-$LOCALE.csv"
+            ;;
+        
+        mo)
+            echo -e "${BLUE}⚙️  Generating MO file...${NC}\n"
+            python3 "$SCRIPT_DIR/manage-translations.py" --locale "$LOCALE" --generate-mo
+            ;;
+        
+        compare)
+            echo -e "${BLUE}🔍 Comparing POT and PO files...${NC}\n"
+            python3 "$SCRIPT_DIR/compare-translations.py" --locale "$LOCALE" "$@"
+            ;;
+        
+        show-missing)
+            echo -e "${BLUE}🔍 Missing translations (detailed)...${NC}\n"
+            python3 "$SCRIPT_DIR/fill-translations.py" --locale "$LOCALE" --show-all
+            ;;
+        
+        json)
+            echo -e "${BLUE}📋 Exporting to JSON...${NC}\n"
+            python3 "$SCRIPT_DIR/manage-translations.py" --locale "$LOCALE" --export-missing-json
+            echo -e "\n${GREEN}✓ Missing translations exported to:${NC}"
+            echo "  $PLUGIN_DIR/lang/missing-translations.json"
+            ;;
+        
+        all)
+            echo -e "${GREEN}Running all translation tasks...${NC}\n"
+            run_command extract
+            echo -e "\n${BLUE}---${NC}\n"
+            run_command report
+            echo -e "\n${BLUE}---${NC}\n"
+            run_command template
+            echo -e "\n${BLUE}---${NC}\n"
+            run_command csv
+            echo -e "\n${BLUE}---${NC}\n"
+            run_command mo
+            echo -e "\n${GREEN}✓ All tasks completed!${NC}\n"
+            ;;
+        
+        help|--help|-h)
+            usage
+            ;;
+        
+        *)
+            echo -e "${RED}Unknown command: $cmd${NC}\n"
+            usage
+            exit 1
+            ;;
+    esac
+}
+
+# Main
+main() {
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --locale)
+                LOCALE="$2"
+                shift 2
+                ;;
+            --help|-h)
+                usage
+                exit 0
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+    
+    check_requirements
+    
+    if [[ $# -eq 0 ]]; then
+        usage
+        exit 1
+    fi
+    
+    run_command "$@"
+}
+
+main "$@"

@@ -129,7 +129,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		// add_action( 'woocommerce_checkout_update_order_meta', array( &$this, 'reset_selected_delivery_location' ) );
 		add_action( 'woocommerce_checkout_process', array( &$this,'hook_process_order_checkout'));
 		add_action( 'woocommerce_checkout_order_processed', array( &$this,'hook_new_order'));
-		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( &$this,'new_hook_new_order'));
+		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( &$this,'new_hook_new_order'), 10, 2);
 
 
 		// Adds MyFlyingBox meta box on order page
@@ -165,7 +165,11 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		$api_password = My_Flying_Box_Settings::get_option('mfb_api_password');
 
 		if ($api_env != 'staging' && $api_env != 'production') $api_env = 'staging';
-		$this->api = Lce\Lce::configure($api_login, $api_password, $api_env, '2');
+
+		$custom_api_server_url = get_option('mfb_custom_api_server_url', '');
+		$custom_api_server_url = !empty($custom_api_server_url) ? $custom_api_server_url : null;
+
+		$this->api = Lce\Lce::configure($api_login, $api_password, $api_env, '2', $custom_api_server_url);
 		$this->api->application = "woocommerce-mfb";
 		$this->api->application_version = $this->_version . " (WOO: " . WC()->version . ")";
 
@@ -179,7 +183,13 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		add_filter('woocommerce_shipping_methods', array(&$this, 'myflyingbox_filter_shipping_methods'));
 		//order admin check status
 		// add_action('woocommerce_admin_order_data_after_order_details', array(&$this, 'myflyingbox_check_order_status'));
-		add_action('rest_api_init', array(&$this, 'myflyingbox_set_order_status'));
+		// add_action('rest_api_init', array(&$this, 'myflyingbox_set_order_status'));
+
+		// Register dashboard sync REST API routes
+		add_action('rest_api_init', array( 'MFB_Rest_Api', 'register_routes' ));
+
+		// Register webhook hooks for dashboard push notifications
+		MFB_Webhooks::init();
 
 	} // End __construct ()
 
@@ -241,7 +251,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		$elements["ajax_url"] = admin_url('admin-ajax.php');
 		$elements["site_url"] = get_site_url();
 		$elements["extended_cover_checkbox_label"] = __( 'With Extended cover', 'my-flying-box' );
-		$elements["extended_cover_checkbox_value"] = WC()->session->get('myflyingbox_extended_cover');
+		$elements["extended_cover_checkbox_value"] = ( WC()->session ) ? WC()->session->get('myflyingbox_extended_cover') : '';
 		$locale = get_locale();
     	$lang = substr($locale, 0, 2);
 		$lang = $lang ? $lang : "fr";
@@ -271,7 +281,7 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 		$version_admin_js = filemtime(plugin_dir_path(__DIR__) . 'assets/js/admin' . $this->script_suffix . '.js');
 		wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin' . $this->script_suffix . '.js', array( 'jquery' ), '0.0.1'/*$version_admin_js*/ );
-		wp_localize_script( $this->_token . '-admin', 'plugin_url', plugins_url());
+		wp_add_inline_script( $this->_token . '-admin', 'var plugin_url = ' . wp_json_encode( plugins_url() ) . ';', 'before' );
 		$locale = get_locale();
     	$lang = substr($locale, 0, 2);
 		$lang = $lang ? $lang : "fr";
@@ -280,7 +290,8 @@ class My_Flying_Box  extends WC_Shipping_Method {
 			'ajax_url'                            => admin_url( 'admin-ajax.php' ),
 			'labels_url'                          => admin_url( 'admin-post.php?action=mfb_download_labels' ),
 			'lang'								  => $lang,
-			'eclc'								  => $extended_cover_cost_label
+			'eclc'								  => $extended_cover_cost_label,
+			'sync_nonce'                          => wp_create_nonce( 'mfb-sync-to-dashboard' ),
 		);
 		wp_localize_script( $this->_token . '-admin', 'mfb_js_resources', $params );
 		wp_enqueue_script( $this->_token . '-admin' );
@@ -530,13 +541,22 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		}
 	}
 
-	public function new_hook_new_order($order) {
+	public function new_hook_new_order($order, $request = null) {
 		$order_id = $order->get_id();
-		$json = file_get_contents('php://input');
-    	$params = json_decode( $json, true );
+
+		// Try to get extra_data from the request object (preferred), fall back to php://input
+		$params = null;
+		if ( $request instanceof WP_REST_Request ) {
+			$params = $request->get_json_params();
+		}
+		if ( empty( $params ) ) {
+			$json = file_get_contents('php://input');
+			$params = json_decode( $json, true );
+		}
 
 		if(!isset($params['extra_data'])) {
 			wc_add_notice(__('An error occured','my-flying-box'),'error');
+			return;
 		}
 
 		$data = $params['extra_data'];
@@ -597,6 +617,9 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		if (isset($_POST['shipping_method']))	{
 			foreach($_POST['shipping_method'] as $shipping_method) {
 				$carrier_code = explode(':',$shipping_method)[0];
+				// If the shipping method ends with '_no_cover', remove the suffix to get the carrier code
+				$carrier_code = str_replace('_no_cover', '', $carrier_code);
+
 				$carrier = MFB_Carrier::get_by_code( $carrier_code );
 				update_post_meta( $order_id, '_mfb_carrier_code', $carrier_code );
 
@@ -646,7 +669,8 @@ class My_Flying_Box  extends WC_Shipping_Method {
 		$service_id = $shipping_rate->id;
 		$carrier = MFB_Carrier::get_by_code( $method_code );
 
-		$instance_id = explode(':', $service_id)[1];
+		$service_id_parts = explode(':', $service_id);
+		$instance_id = count($service_id_parts) > 1 ? $service_id_parts[1] : null;
 
 		// If this is not a MFB service, we do not do anything.
 		if ( ! $carrier )
@@ -753,9 +777,9 @@ class My_Flying_Box  extends WC_Shipping_Method {
 
 
 			wp_enqueue_script( 'mfb_delivery_locations', plugins_url().'/my-flying-box/assets/js/delivery_locations.js', array( 'jquery', 'google-api-grouped' ) );
-			wp_localize_script( 'mfb_delivery_locations', 'plugin_url', plugins_url() );
+			wp_add_inline_script( 'mfb_delivery_locations', 'var plugin_url = ' . wp_json_encode( plugins_url() ) . ';', 'before' );
 			wp_localize_script( 'mfb_delivery_locations', 'lang', $translations );
-			wp_localize_script( 'mfb_delivery_locations', 'map', My_Flying_Box::generate_google_map_html_container() );
+			wp_add_inline_script( 'mfb_delivery_locations', 'var map = ' . wp_json_encode( My_Flying_Box::generate_google_map_html_container() ) . ';', 'before' );
 
 			// Get the protocol of the current page
 			$protocol = isset( $_SERVER['HTTPS'] ) ? 'https://' : 'http://';

@@ -1,15 +1,18 @@
 {
-  "name": "wordpress-plugin-template",
-  "title": "WordPress Plugin Template",
+  "name": "my-flying-box-woocommerce",
+  "title": "My Flying Box WooCommerce Plugin",
   "version": "1.0.0",
-  "homepage": "https://github.com/hlashbrooke/WordPress-Plugin-Template",
+  "homepage": "https://github.com/myflyingbox/woocommerce-plugin",
   "main": "Gruntfile.js",
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "grunt": "^1.6.1",
-    "grunt-contrib-cssmin": "~3.0.0",
-    "grunt-contrib-less": "~2.0.0",
+    "grunt-contrib-cssmin": "^5.0.0",
+    "grunt-contrib-less": "^3.0.0",
     "grunt-contrib-watch": "~1.1.0",
     "grunt-terser": "^2.0.0",
-    "terser": "^5.30.3"
+    "terser": "^5.46.1"
   }
 }
