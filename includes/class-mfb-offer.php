@@ -33,6 +33,10 @@ class MFB_Offer {
 	public $total_price_with_extended_cover = 0;
 	public $extended_cover_max_liability = 0;
 
+	// electronic customs
+	public $support_electronic_customs = false;
+	public $mandatory_electronic_customs = false;
+
 	public function __construct() {
 
 	}
@@ -90,6 +94,10 @@ class MFB_Offer {
 		$this->price_vat_with_extended_cover     = get_post_meta( $this->id, '_price_vat_with_extended_cover', true );
 		$this->total_price_with_extended_cover     = get_post_meta( $this->id, '_total_price_with_extended_cover', true );
 		$this->extended_cover_max_liability     = get_post_meta( $this->id, '_extended_cover_max_liability', true );
+
+		// electronic customs
+		$this->support_electronic_customs       = (bool) get_post_meta( $this->id, '_support_electronic_customs', true );
+		$this->mandatory_electronic_customs     = (bool) get_post_meta( $this->id, '_mandatory_electronic_customs', true );
 
 	}
 
@@ -222,6 +230,10 @@ class MFB_Offer {
 		update_post_meta( $this->id, '_price_vat_with_extended_cover',       $this->price_vat_with_extended_cover );
 		update_post_meta( $this->id, '_total_price_with_extended_cover',     $this->total_price_with_extended_cover );
 		update_post_meta( $this->id, '_extended_cover_max_liability',        $this->extended_cover_max_liability );
+
+		// electronic customs
+		update_post_meta( $this->id, '_support_electronic_customs',         $this->support_electronic_customs ? 1 : 0 );
+		update_post_meta( $this->id, '_mandatory_electronic_customs',       $this->mandatory_electronic_customs ? 1 : 0 );
 	}
 
 	/**

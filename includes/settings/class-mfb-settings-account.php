@@ -125,13 +125,13 @@ class MFB_Settings_Account extends MFB_Settings_Page {
 					'placeholder' => __( 'Google API Key', 'my-flying-box' ),
 					'required' => true
 				),
-				array(
-					'id'      => 'mfb_token_auth',
-					'title'     => __( 'MFB Token' , 'my-flying-box' ),
-					'type'      => 'text',
-					'default'   => '',
-					'required' => true
-				),
+				// array(
+				// 	'id'      => 'mfb_token_auth',
+				// 	'title'     => __( 'MFB Token' , 'my-flying-box' ),
+				// 	'type'      => 'text',
+				// 	'default'   => '',
+				// 	'required' => true
+				// ),
 				array(
 					'id' 			=> 'mfb_default_parcel_description',
 					'title'			=> __( 'Default parcel content' , 'my-flying-box' ),

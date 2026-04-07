@@ -842,6 +842,14 @@ class MFB_Shipment
 				$offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover ? $api_offer->total_price_with_extended_cover->amount_in_cents : null;
 				$offer->extended_cover_max_liability = $api_offer->extended_cover_max_liability ? $api_offer->extended_cover_max_liability->amount_in_cents : null;
 
+				// electronic customs
+				if (isset($api_offer->support_electronic_customs)) {
+					$offer->support_electronic_customs = (bool) $api_offer->support_electronic_customs;
+				}
+				if (isset($api_offer->mandatory_electronic_customs)) {
+					$offer->mandatory_electronic_customs = (bool) $api_offer->mandatory_electronic_customs;
+				}
+
 				$offer->save();
 			}
 			$this->quote = $quote;

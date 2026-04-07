@@ -614,6 +614,14 @@ class MFB_Rest_Api {
 				$offer->extended_cover_max_liability = (int) $offer_data['extended_cover_max_liability'];
 			}
 
+			// electronic customs
+			if ( isset( $offer_data['support_electronic_customs'] ) ) {
+				$offer->support_electronic_customs = ! empty( $offer_data['support_electronic_customs'] );
+			}
+			if ( isset( $offer_data['mandatory_electronic_customs'] ) ) {
+				$offer->mandatory_electronic_customs = ! empty( $offer_data['mandatory_electronic_customs'] );
+			}
+
 			$offer->save();
 			$shipment->offer = $offer;
 		}

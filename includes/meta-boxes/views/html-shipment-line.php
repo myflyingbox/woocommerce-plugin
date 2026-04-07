@@ -240,7 +240,48 @@ global $extended_cover;
 						echo ob_get_clean();
 					}
 					?>
+
+					<?php
+					// Electronic customs warnings
+					if ( $shipment->offer && ! $shipment->api_order_uuid ) :
+						$sync_configured = get_option( 'mfb_shop_uuid', '' )
+							&& get_option( 'mfb_api_jwt_shared_secret', '' )
+							&& get_option( 'mfb_dashboard_sync_behavior', 'never' ) !== 'never';
+						$dashboard_url = get_option( 'mfb_custom_dashboard_server_url', '' );
+						if ( empty( $dashboard_url ) ) {
+							$dashboard_url = 'https://dashboard.myflyingbox.com';
+						}
+						$config_url = admin_url( 'admin.php?page=my-flying-box-settings&tab=account' );
+
+						if ( $shipment->offer->mandatory_electronic_customs ) : ?>
+							<div class="mfb-electronic-customs-alert" style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 8px 12px; margin: 8px 0; border-radius: 4px; font-size: 0.9em;">
+								<?php _e( 'Electronic customs are mandatory for this service. Please order the label from your MFB dashboard; ordering from the module is blocked to prevent errors and/or surcharges.', 'my-flying-box' ); ?>
+								<?php if ( ! $sync_configured ) : ?>
+									<div style="margin-top: 5px;">
+										<?php _e( 'Synchronization is not configured.', 'my-flying-box' ); ?>
+										<a href="<?php echo esc_url( $config_url ); ?>" target="_blank"><?php _e( 'Configure the module', 'my-flying-box' ); ?></a> |
+										<a href="<?php echo esc_url( $dashboard_url ); ?>" target="_blank"><?php _e( 'Open MFB dashboard', 'my-flying-box' ); ?></a>
+									</div>
+								<?php endif; ?>
+							</div>
+						<?php elseif ( $shipment->offer->support_electronic_customs ) : ?>
+							<div class="mfb-electronic-customs-warning" style="background: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 8px 12px; margin: 8px 0; border-radius: 4px; font-size: 0.9em;">
+								<?php _e( 'Electronic customs are supported for this service but not handled directly by this module. We recommend ordering the label via your MFB dashboard to avoid potential surcharges due to manual customs handling.', 'my-flying-box' ); ?>
+								<?php if ( ! $sync_configured ) : ?>
+									<div style="margin-top: 5px;">
+										<?php _e( 'Synchronization is not configured.', 'my-flying-box' ); ?>
+										<a href="<?php echo esc_url( $config_url ); ?>" target="_blank"><?php _e( 'Configure the module', 'my-flying-box' ); ?></a> |
+										<a href="<?php echo esc_url( $dashboard_url ); ?>" target="_blank"><?php _e( 'Open MFB dashboard', 'my-flying-box' ); ?></a>
+									</div>
+								<?php endif; ?>
+							</div>
+						<?php endif;
+					endif;
+					?>
+
+					<?php if ( $shipment->offer && ! $shipment->offer->mandatory_electronic_customs ) : ?>
 					<button type="button" class="button button-primary book-offer"><span class="spinner"></span><?php _e('Book this service', 'my-flying-box'); ?></button>
+					<?php endif; ?>
 			</div>
 		<?php
 				} else {

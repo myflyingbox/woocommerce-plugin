@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Flying Box\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/WordPress-Plugin-Template\n"
-"POT-Creation-Date: 2026-04-03 15:02+0300\n"
+"POT-Creation-Date: 2026-04-07 14:17+0300\n"
 "PO-Revision-Date: 2025-09-10 21:34+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -42,30 +42,30 @@ msgid "Bulk Shipments"
 msgstr "Expéditions en masse"
 
 #: includes/class-mfb-ajax.php:406 includes/class-my-flying-box.php:1052
-#: includes/meta-boxes/views/html-shipment-line.php:323
+#: includes/meta-boxes/views/html-shipment-line.php:364
 msgid "Last status :"
 msgstr "Dernier statut :"
 
 #: includes/class-mfb-ajax.php:407 includes/class-my-flying-box.php:1053
-#: includes/meta-boxes/views/html-shipment-line.php:324
+#: includes/meta-boxes/views/html-shipment-line.php:365
 #: includes/views/order-page-tracking-status.php:22
 msgid "Code :"
 msgstr "Code:"
 
 #: includes/class-mfb-ajax.php:408 includes/class-my-flying-box.php:1054
-#: includes/meta-boxes/views/html-shipment-line.php:325
+#: includes/meta-boxes/views/html-shipment-line.php:366
 #: includes/views/order-page-tracking-status.php:23
 msgid "Label :"
 msgstr "Libellé :"
 
 #: includes/class-mfb-ajax.php:409 includes/class-my-flying-box.php:1055
-#: includes/meta-boxes/views/html-shipment-line.php:326
+#: includes/meta-boxes/views/html-shipment-line.php:367
 #: includes/views/order-page-tracking-status.php:24
 msgid "Date :"
 msgstr "Date :"
 
 #: includes/class-mfb-ajax.php:413 includes/class-my-flying-box.php:1059
-#: includes/meta-boxes/views/html-shipment-line.php:330
+#: includes/meta-boxes/views/html-shipment-line.php:371
 #: includes/views/order-page-tracking-status.php:28
 msgid "Place :"
 msgstr "Lieu :"
@@ -86,7 +86,9 @@ msgstr "Notification de synchronisation envoyée au tableau de bord."
 
 #: includes/class-mfb-ajax.php:741
 msgid "Failed to send sync notification. Check plugin settings."
-msgstr "Échec de l'envoi de la notification de synchronisation. Vérifiez les paramètres de l'extension."
+msgstr ""
+"Échec de l'envoi de la notification de synchronisation. Vérifiez les "
+"paramètres de l'extension."
 
 #: includes/class-mfb-bulk-order-background-process.php:39
 msgid ""
@@ -123,7 +125,9 @@ msgstr "L'expédition en masse #%s a été traitée."
 
 #: includes/class-mfb-rest-api.php:143
 msgid "Dashboard sync API is disabled. Enable it in plugin settings."
-msgstr "L'API de synchronisation du tableau de bord est désactivée. Activez-la dans les paramètres de l'extension."
+msgstr ""
+"L'API de synchronisation du tableau de bord est désactivée. Activez-la dans "
+"les paramètres de l'extension."
 
 #: includes/class-mfb-rest-api.php:148
 msgid "API authentication key (JWT) is not configured."
@@ -145,12 +149,12 @@ msgstr "Jeton JWT invalide ou expiré."
 msgid "Token audience does not match shop identifier."
 msgstr "L'audience du jeton ne correspond pas à l'identifiant de la boutique."
 
-#: includes/class-mfb-rest-api.php:631
+#: includes/class-mfb-rest-api.php:639
 #, php-format
 msgid "Shipment created from MyFlyingBox dashboard. Tracking: %s"
 msgstr "Expédition créée depuis le tableau de bord MyFlyingBox. Suivi : %s"
 
-#: includes/class-mfb-rest-api.php:634
+#: includes/class-mfb-rest-api.php:642
 msgid "Shipment created from MyFlyingBox dashboard."
 msgstr "Expédition créée depuis le tableau de bord MyFlyingBox."
 
@@ -780,7 +784,7 @@ msgstr "Souscrire à la Garantie complémentaire"
 
 #: includes/class-my-flying-box.php:288
 #: includes/meta-boxes/views/html-shipment-line.php:238
-#: includes/meta-boxes/views/html-shipment-line.php:265
+#: includes/meta-boxes/views/html-shipment-line.php:306
 msgid "Total cost with extended cover :"
 msgstr "Coût total avec Garantie complémentaire :"
 
@@ -907,11 +911,11 @@ msgstr "Choisissez un point relais"
 msgid "An error occured"
 msgstr "Une erreur est survenue"
 
-#: includes/class-my-flying-box.php:701 my-flying-box.php:223
+#: includes/class-my-flying-box.php:701 my-flying-box.php:226
 msgid "Choose a location"
 msgstr "Choisir un point relais"
 
-#: includes/class-my-flying-box.php:702 my-flying-box.php:224
+#: includes/class-my-flying-box.php:702 my-flying-box.php:227
 msgid "Selected "
 msgstr "Sélectionné "
 
@@ -1020,7 +1024,7 @@ msgid "Direct link to track your shipment:"
 msgstr "Lien direct pour suivre votre colis :"
 
 #: includes/class-my-flying-box.php:1094
-#: includes/meta-boxes/views/html-shipment-line.php:352
+#: includes/meta-boxes/views/html-shipment-line.php:393
 #: includes/views/order-page-tracking-status.php:42
 msgid "Check Status"
 msgstr "Vérifier l'état"
@@ -1049,22 +1053,22 @@ msgid "Select delivery location:"
 msgstr "Choisir point relais :"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:127
-#: includes/meta-boxes/views/html-shipment-line.php:243
+#: includes/meta-boxes/views/html-shipment-line.php:283
 msgid "Book this service"
 msgstr "Commander cette expédition"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:143
-#: includes/meta-boxes/views/html-shipment-line.php:283
+#: includes/meta-boxes/views/html-shipment-line.php:324
 msgid "Download labels"
 msgstr "Télécharger étiquettes"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:149
-#: includes/meta-boxes/views/html-shipment-line.php:289
+#: includes/meta-boxes/views/html-shipment-line.php:330
 msgid "Tracking:"
 msgstr "Suivi :"
 
 #: includes/meta-boxes/views/html-bulk-order-line.php:162
-#: includes/meta-boxes/views/html-shipment-line.php:356
+#: includes/meta-boxes/views/html-shipment-line.php:397
 msgid "Delivery location:"
 msgstr "Point de livraison :"
 
@@ -1237,27 +1241,63 @@ msgstr "Coût de l'assurance : "
 msgid "Ad valorem insurance not available."
 msgstr "Assurance ad-valorem non disponible."
 
-#: includes/meta-boxes/views/html-shipment-line.php:248
+#: includes/meta-boxes/views/html-shipment-line.php:258
+msgid ""
+"Electronic customs are mandatory for this service. Please order the label "
+"from your MFB dashboard; ordering from the module is blocked to prevent "
+"errors and/or surcharges."
+msgstr ""
+"La douane électronique est obligatoire pour ce service. Veuillez "
+"commander l'étiquette depuis votre tableau de bord MFB ; la commande depuis "
+"le module est bloquée pour éviter des erreurs et/ou des surcoûts."
+
+#: includes/meta-boxes/views/html-shipment-line.php:261
+#: includes/meta-boxes/views/html-shipment-line.php:272
+msgid "Synchronization is not configured."
+msgstr "La synchronisation n'est pas configurée."
+
+#: includes/meta-boxes/views/html-shipment-line.php:262
+#: includes/meta-boxes/views/html-shipment-line.php:273
+msgid "Configure the module"
+msgstr "Configurer le module"
+
+#: includes/meta-boxes/views/html-shipment-line.php:263
+#: includes/meta-boxes/views/html-shipment-line.php:274
+msgid "Open MFB dashboard"
+msgstr "Ouvrir le tableau de bord MFB"
+
+#: includes/meta-boxes/views/html-shipment-line.php:269
+msgid ""
+"Electronic customs are supported for this service but not handled directly "
+"by this module. We recommend ordering the label via your MFB dashboard to "
+"avoid potential surcharges due to manual customs handling."
+msgstr ""
+"La douane électronique est supportée pour ce service mais n'est "
+"pas gérée directement par ce module. Nous recommandons de commander "
+"l'étiquette via votre tableau de bord MFB pour éviter d'éventuels surcoûts "
+"liés à la gestion manuelle des douanes."
+
+#: includes/meta-boxes/views/html-shipment-line.php:289
 msgid "No offer available. Is all the data correct?"
 msgstr "Aucune offre disponible. Est-ce que les données sont correctes ?"
 
-#: includes/meta-boxes/views/html-shipment-line.php:268
+#: includes/meta-boxes/views/html-shipment-line.php:309
 msgid "No Extended cover"
 msgstr "Sans Garantie complémentaire"
 
-#: includes/meta-boxes/views/html-shipment-line.php:272
+#: includes/meta-boxes/views/html-shipment-line.php:313
 msgid "Insured value: "
 msgstr "Valeur assurée : "
 
-#: includes/meta-boxes/views/html-shipment-line.php:275
+#: includes/meta-boxes/views/html-shipment-line.php:316
 msgid "cost: "
 msgstr "coût : "
 
-#: includes/meta-boxes/views/html-shipment-line.php:279
+#: includes/meta-boxes/views/html-shipment-line.php:320
 msgid "No insurance."
 msgstr "Pas d'assurance."
 
-#: includes/meta-boxes/views/html-shipment-line.php:373
+#: includes/meta-boxes/views/html-shipment-line.php:414
 msgid "Add return shipment"
 msgstr "Ajouter expédition retour"
 
@@ -1284,8 +1324,8 @@ msgid ""
 "form to persist the changes."
 msgstr ""
 "Êtes-vous sûr de vouloir régénérer la clé d'authentification ? Vous devrez "
-"également mettre à jour la clé dans le tableau de bord MyFlyingBox. N'oubliez "
-"pas d'enregistrer le formulaire pour conserver les changements."
+"également mettre à jour la clé dans le tableau de bord MyFlyingBox. "
+"N'oubliez pas d'enregistrer le formulaire pour conserver les changements."
 
 #: includes/settings/class-mfb-settings-account.php:90
 msgid "API account"
@@ -1338,10 +1378,6 @@ msgstr ""
 #: includes/settings/class-mfb-settings-account.php:125
 msgid "Google API Key"
 msgstr "Clé d'API Google"
-
-#: includes/settings/class-mfb-settings-account.php:130
-msgid "MFB Token"
-msgstr "Token MFB (HTTP Push)"
 
 #: includes/settings/class-mfb-settings-account.php:137
 msgid "Default parcel content"
@@ -1575,8 +1611,8 @@ msgid ""
 "Automatically set orders to \"Completed\" when a shipment is created from "
 "the MyFlyingBox dashboard."
 msgstr ""
-"Définit automatiquement les commandes sur \"Terminée\" lorsqu'une "
-"expédition est créée depuis le tableau de bord MyFlyingBox."
+"Définit automatiquement les commandes sur \"Terminée\" lorsqu'une expédition "
+"est créée depuis le tableau de bord MyFlyingBox."
 
 #: includes/settings/class-mfb-settings-carriers.php:37
 msgid "List of carriers"
@@ -1740,6 +1776,9 @@ msgstr "%s à %s"
 #: includes/views/order-page-tracking-status.php:7
 msgid "Shipment Status"
 msgstr "Etat de l'expédition"
+
+#~ msgid "MFB Token"
+#~ msgstr "Token MFB (HTTP Push)"
 
 #~ msgid "Additional guarantee"
 #~ msgstr "Garantie complémentaire"
