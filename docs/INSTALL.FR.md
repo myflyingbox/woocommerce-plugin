@@ -7,6 +7,7 @@
 - [Installation](#installation)
 - [Configuration](#configuration)
   - [Compte d'API My Flying Box](#compte-dapi-my-flying-box)
+  - [Synchronisation avec le tableau de bord My Flying Box](#synchronisation-avec-le-tableau-de-bord-my-flying-box)
   - [Paramétrage de l'expéditeur par défaut](#paramétrage-de-lexpéditeur-par-défaut)
   - [Chargement des produits transporteurs](#chargement-et-sélection-des-produits-transporteurs)
   - [Configuration des produits](#configuration-des-produits)
@@ -106,6 +107,60 @@
 5. A partir de ce point, vous pouvez tester le processus d'achat sur votre boutique. Les services configurés vont apparaître dans le tunnel d'achat des paniers.
 
 [![cart](images/cart.png)](images/cart.png){:target="_blank"}
+
+
+### Synchronisation avec le tableau de bord My Flying Box
+
+*Cette option n'est disponible qu'à partir de la version 1.0.0 du module.*
+
+Ces options permettent d'activer et de contrôler la synchronisation des commandes de votre boutique WooCommerce vers le tableau de bord My Flying Box, afin de générer les bordereaux depuis le tableau de bord et non depuis le back-office WooCommerce, en bénéficiant ainsi de l'ensemble des fonctionnalités proposées par nos outils. Par exemple, certaines fonctionnalités avancées comme la douane électronique ne sont disponibles que via notre tunnel de commande dans le tableau de bord.
+
+1. Dans l'administration WordPress, ouvrez la page de configuration de l'extension My Flying Box.
+
+2. Ouvrez l'onglet de configuration du compte puis descendez jusqu'à la section "Dashboard synchronization".
+
+3. Vérifiez que l'identifiant de boutique est bien renseigné dans le champ "Shop identifier (UUID)". Cette valeur est générée automatiquement par le module.
+
+4. Cliquez sur le bouton "Generate new key" au niveau de l'option "Authentication key (JWT shared secret)" pour générer la clé d'authentification API si elle n'est pas encore définie.
+
+5. Choisissez ensuite un mode de synchronisation dans l'option de synchronisation avec le tableau de bord My Flying Box :
+
+- Jamais : la synchronisation est totalement désactivée.
+- A la demande : vous déclenchez manuellement la synchronisation d'une commande depuis la page de commande WooCommerce, via le bloc My Flying Box. Recommandé si vous n'avez que des besoins ponctuels.
+- Toujours : chaque nouvelle commande est synchronisée automatiquement avec votre tableau de bord My Flying Box. Recommandé si vous gérez systématiquement vos expéditions depuis le tableau de bord.
+
+6. Configurez si nécessaire les options de contrôle de la synchronisation, notamment la période maximale d'accès à l'historique des commandes via l'API et la durée maximale pendant laquelle une commande reste accessible. Ces mécanismes permettent de limiter l'exposition des données de commande.
+
+7. Si vous souhaitez que WooCommerce passe automatiquement la commande au statut terminé lorsqu'une expédition est créée depuis le tableau de bord, activez l'option correspondante.
+
+8. Enregistrez les changements.
+
+9. Dans un nouvel onglet, ouvrez votre tableau de bord My Flying Box : [https://dashboard.myflyingbox.com](https://dashboard.myflyingbox.com){:target="_blank"}
+
+10. Rendez-vous dans la section "Boutiques connectées".
+
+11. Cliquez sur le bouton "Connecter une nouvelle boutique" puis sélectionnez WooCommerce.
+
+12. Dans le formulaire de connexion, copiez/collez les valeurs suivantes depuis la page de configuration du module WooCommerce :
+
+- URL de la boutique
+- Identifiant de la boutique
+- Clé d'authentification API (JWT)
+- Clé de signature des webhooks
+
+13. Enregistrez la connexion WooCommerce depuis le tableau de bord.
+
+14. Une fois la boutique connectée, vous pouvez cliquer sur le bouton "Synchroniser" à droite de la boutique, sur la page "Boutiques connectées", afin de déclencher l'import des commandes existantes dans la limite de la période autorisée par la configuration du module.
+
+15. Vous retrouverez vos commandes synchronisées dans la page "Commandes E-commerce" du tableau de bord.
+
+16. En mode "A la demande", la synchronisation manuelle d'une commande se déclenche depuis la fiche de commande WooCommerce, dans le bloc My Flying Box, via le bouton de synchronisation vers le tableau de bord. En mode "Toujours", cette synchronisation est envoyée automatiquement à la création d'une nouvelle commande, et le bouton reste disponible si vous avez besoin de relancer l'envoi manuellement.
+
+17. Après la synchronisation d'au moins une commande, un lieu de stockage sera automatiquement créé en lien avec votre boutique. WooCommerce ne gérant pas nativement des lieux de stockage multiples, il s'agit d'un lieu virtuel initialisé automatiquement avec les informations disponibles. Les informations de ce lieu sont utilisées pour préremplir les données d'expéditeur lorsque vous créez une expédition depuis une commande WooCommerce dans le tableau de bord. Il est donc recommandé de vérifier et compléter ces informations depuis le tableau de bord.
+
+18. Si vous souhaitez désactiver la synchronisation, supprimez d'abord la connexion côté tableau de bord My Flying Box, puis repassez le mode de synchronisation à "Jamais" dans la configuration du module WooCommerce.
+
+
 
 ## Passage en production
 
