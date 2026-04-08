@@ -285,7 +285,7 @@ function add_async_defer_to_google_maps($tag, $handle, $src) {
     require_once('includes/meta-boxes/class-mfb-meta-box-order-shipping.php');
     require_once('includes/meta-boxes/class-mfb-meta-box-bulk-order.php');
 
-    $instance = My_Flying_Box::instance(__FILE__, '0.18.1');
+    $instance = My_Flying_Box::instance(__FILE__, '1.0.0');
 
     return $instance;
   }
