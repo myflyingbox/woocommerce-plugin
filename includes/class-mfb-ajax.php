@@ -32,7 +32,8 @@ class MFB_AJAX
 			'update_selected_offer'                           => false,
 			'download_labels'                                 => false,
 			'check_status'                                 => false,
-			'update_extended_cover_offer'                     => false
+			'update_extended_cover_offer'                     => false,
+			'sync_order_to_dashboard'                         => false
 		); //extended_cover
 		foreach ($ajax_events as $ajax_event => $nopriv) {
 			add_action('wp_ajax_mfb_' . $ajax_event, array(__CLASS__, $ajax_event));
@@ -717,6 +718,28 @@ class MFB_AJAX
 		header('Content-Disposition: attachment; filename="' . $filename . '"');
 		print($labels_content);
 		die();
+	}
+
+	/**
+	 * Manually trigger a webhook notification to the MFB dashboard for the given order.
+	 */
+	public static function sync_order_to_dashboard() {
+		check_ajax_referer( 'mfb-sync-to-dashboard', 'security' );
+
+		$order_id = intval( $_POST['order_id'] );
+		$order    = wc_get_order( $order_id );
+
+		if ( ! $order ) {
+			wp_send_json_error( array( 'message' => __( 'Order not found.', 'my-flying-box' ) ) );
+		}
+
+		$result = MFB_Webhooks::send_order_webhook( 'order/sync_requested', $order, true );
+
+		if ( $result ) {
+			wp_send_json_success( array( 'message' => __( 'Sync notification sent to dashboard.', 'my-flying-box' ) ) );
+		} else {
+			wp_send_json_error( array( 'message' => __( 'Failed to send sync notification. Check plugin settings.', 'my-flying-box' ) ) );
+		}
 	}
 }
 

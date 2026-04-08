@@ -28,7 +28,8 @@ jQuery( function ( $ ) {
 				.on( 'click',  'a.delete-shipment',						this.delete_shipment )
 				.on( 'click',  'button.add-return-shipment',	this.add_return_shipment )
 				.on( 'click',  'div.mfb-booked-offer button.trackthis',									this.trackthisExpedition )
-				.on( 'change', 'div.mfb-available-offers #mfb-admin-extended-cover-checkbox', this.update_extended_cover_offer );//extended_cover
+				.on( 'change', 'div.mfb-available-offers #mfb-admin-extended-cover-checkbox', this.update_extended_cover_offer )//extended_cover
+				.on( 'click',  'button.mfb-sync-to-dashboard', this.sync_to_dashboard );
 
 
 			$( '#myflyingbox-bulk-shipments' )
@@ -361,10 +362,39 @@ jQuery( function ( $ ) {
 				}
 			});
 			return false;
+		},
+
+		sync_to_dashboard: function() {
+			var btn = $( this );
+			var statusSpan = btn.siblings('.mfb-sync-status');
+			btn.prop('disabled', true);
+			statusSpan.text('…');
+
+			$.ajax({
+				url: mfb_js_resources.ajax_url,
+				data: {
+					action: 'mfb_sync_order_to_dashboard',
+					order_id: btn.data('order_id'),
+					security: mfb_js_resources.sync_nonce
+				},
+				type: 'POST',
+				success: function( response ) {
+					if (response.success) {
+						statusSpan.text(response.data.message).css('color', 'green');
+					} else {
+						statusSpan.text(response.data.message).css('color', 'red');
+					}
+					btn.prop('disabled', false);
+				},
+				error: function() {
+					statusSpan.text('Network error').css('color', 'red');
+					btn.prop('disabled', false);
+				}
+			});
+			return false;
 		}
 
 	};
 
 	mfb_meta_boxes_order.init();
-
 });

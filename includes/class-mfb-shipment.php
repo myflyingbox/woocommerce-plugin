@@ -837,10 +837,18 @@ class MFB_Shipment
 				}
 				//extended_cover
 				$offer->extended_cover_available = $api_offer->extended_cover_available;
-				$offer->price_with_extended_cover = $api_offer->price_with_extended_cover->amount_in_cents;
-				$offer->price_vat_with_extended_cover = $api_offer->price_vat_with_extended_cover->amount_in_cents;
-				$offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover->amount_in_cents;
-				$offer->extended_cover_max_liability = $api_offer->extended_cover_max_liability->amount_in_cents;
+				$offer->price_with_extended_cover = $api_offer->price_with_extended_cover ? $api_offer->price_with_extended_cover->amount_in_cents : null;
+				$offer->price_vat_with_extended_cover = $api_offer->price_vat_with_extended_cover ? $api_offer->price_vat_with_extended_cover->amount_in_cents : null;
+				$offer->total_price_with_extended_cover = $api_offer->total_price_with_extended_cover ? $api_offer->total_price_with_extended_cover->amount_in_cents : null;
+				$offer->extended_cover_max_liability = $api_offer->extended_cover_max_liability ? $api_offer->extended_cover_max_liability->amount_in_cents : null;
+
+				// electronic customs
+				if (isset($api_offer->support_electronic_customs)) {
+					$offer->support_electronic_customs = (bool) $api_offer->support_electronic_customs;
+				}
+				if (isset($api_offer->mandatory_electronic_customs)) {
+					$offer->mandatory_electronic_customs = (bool) $api_offer->mandatory_electronic_customs;
+				}
 
 				$offer->save();
 			}
@@ -862,6 +870,9 @@ class MFB_Shipment
 		if (!$this->offer) return false;
 
 		$params = array(
+			'ecommerce_order_platform' => 'woocommerce',
+			'ecommerce_order_identifier' => $this->wc_order_id,
+			'ecommerce_order_reference' => $this->wc_order_id,
 			'shipper' => array(
 				'company' => $this->shipper->company,
 				'name' => $this->shipper->name,

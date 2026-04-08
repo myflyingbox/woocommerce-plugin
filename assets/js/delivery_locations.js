@@ -6,6 +6,7 @@
 	var geocoder = null;
 	var markers = [];
 	var locations_data = [];
+	var selected_delivery_location = null;
 
 
 	$(window).on("load", function () {
@@ -157,11 +158,15 @@
 				const $parentOption = $selectedInput.closest('.wc-block-components-radio-control__option');
 				const $locationInput = $parentOption.find('input[name="_delivery_location"]');
 
-				return $locationInput.val() || null;
+				if ($locationInput.length && $locationInput.val()) {
+					return $locationInput.val();
+				}
 			}
 		}
 
-		return null;
+		// Fallback: use the value stored when the user selected a location,
+		// in case WooCommerce Blocks re-rendered the DOM and destroyed the hidden input.
+		return selected_delivery_location;
 	}
 
 	function load_map() {
@@ -345,6 +350,7 @@
 	function select_location(source) {
 		code = mfb_locations[$(source.target).attr('data')].code;
 		name = mfb_locations[$(source.target).attr('data')].company;
+		selected_delivery_location = code;
 		$('#input_' + service_code).html('<input type="hidden" name="_delivery_location" value="' + code + '"/>');
 		if ($(".wc-block-checkout").length) {
 			$('#mfb-location-client_' + service_code).html(name);

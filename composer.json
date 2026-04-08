@@ -1,11 +1,11 @@
 {
-    "name" : "mfb-woocommerce-plugin",
+    "name" : "myflyingbox/woocommerce-plugin",
     "description" : "A WooCommerce extension that provides shipment features with MyFlyingBox",
-    "homepage" : "https://github.com/lce/php-lce",
+    "homepage" : "https://github.com/myflyingbox/woocommerce-plugin",
     "license" : "MIT",
-    "type" : "extension",
+    "type" : "library",
     "keywords" : [],
-    "version" : "0.0.1-dev",    
+    "version" : "1.0.0",    
     "authors": [
         {
             "name" : "Thomas Belliard",
@@ -13,8 +13,13 @@
         }
     ],
     "require-dev": {
-       "squizlabs/php_codesniffer": "*",
-       "wimg/php-compatibility": "dev-master",
-       "simplyadmire/composer-plugins" : "@dev"
+       "squizlabs/php_codesniffer": "^3.9",
+       "phpcompatibility/php-compatibility": "^9.0",
+       "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }
