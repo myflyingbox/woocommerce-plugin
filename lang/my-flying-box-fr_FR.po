@@ -21,6 +21,24 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 
+#: includes/class-mfb-ajax.php:57
+msgid "The shipping service is temporarily unavailable. Please try again shortly."
+msgstr ""
+"Le service de livraison est temporairement indisponible. Veuillez réessayer "
+"dans quelques instants."
+
+#: includes/class-mfb-ajax.php:266
+msgid "Delivery locations are currently unavailable. Please try again shortly or choose another shipping method."
+msgstr ""
+"Les points relais sont actuellement indisponibles. Veuillez réessayer dans "
+"quelques instants ou choisir un autre mode de livraison."
+
+#: includes/class-mfb-shipping-method.php:626
+msgid "Shipping rates are temporarily unavailable. Please try again shortly or choose another shipping method."
+msgstr ""
+"Les tarifs de livraison sont temporairement indisponibles. Veuillez réessayer "
+"dans quelques instants ou choisir un autre mode de livraison."
+
 #: includes/class-mfb-admin-menus.php:24
 msgid "My Flying Box"
 msgstr "My Flying Box"

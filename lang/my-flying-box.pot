@@ -18,6 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
+#: includes/class-mfb-ajax.php:57
+msgid "The shipping service is temporarily unavailable. Please try again shortly."
+msgstr ""
+
+#: includes/class-mfb-ajax.php:266
+msgid "Delivery locations are currently unavailable. Please try again shortly or choose another shipping method."
+msgstr ""
+
+#: includes/class-mfb-shipping-method.php:626
+msgid "Shipping rates are temporarily unavailable. Please try again shortly or choose another shipping method."
+msgstr ""
+
 #: includes/class-mfb-admin-menus.php:24
 msgid "My Flying Box"
 msgstr ""
