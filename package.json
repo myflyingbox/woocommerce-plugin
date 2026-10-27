@@ -1,7 +1,7 @@
 {
   "name": "my-flying-box-woocommerce",
   "title": "My Flying Box WooCommerce Plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://github.com/myflyingbox/woocommerce-plugin",
   "main": "Gruntfile.js",
   "engines": {

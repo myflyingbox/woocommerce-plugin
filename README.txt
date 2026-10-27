@@ -2,11 +2,11 @@
 Contributors: tbelliard
 Tags: wordpress, plugin, template, woocommerce
 Requires at least: 6.0
-Tested up to: 6.9
+Tested up to: 7.1
 WC requires at least: 7.3
-WC tested up to: 10.6
+WC tested up to: 11.2
 Requires PHP: 8.1
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: MIT
 License URI: http://opensource.org/licenses/MIT
 

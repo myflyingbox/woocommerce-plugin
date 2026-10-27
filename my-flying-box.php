@@ -1,15 +1,15 @@
 <?php
 /*
  * Plugin Name: My Flying Box
- * Version: 1.0.0
+ * Version: 1.1.0
  * Plugin URI: http://www.myflyingbox.com
  * Description: Integrated Shipping services through My Flying Box API.
  * Author: Thomas Belliard (My Flying Box)
  * Author URI: http://github.com/myflyingbox
  * Requires at least: 6.0
- * Tested up to: 6.9
+ * Tested up to: 7.1
  * WC requires at least: 7.3
- * WC tested up to: 10.6
+ * WC tested up to: 11.2
  * Requires PHP: 8.1
  *
  * Text Domain: my-flying-box
@@ -285,7 +285,7 @@ function add_async_defer_to_google_maps($tag, $handle, $src) {
     require_once('includes/meta-boxes/class-mfb-meta-box-order-shipping.php');
     require_once('includes/meta-boxes/class-mfb-meta-box-bulk-order.php');
 
-    $instance = My_Flying_Box::instance(__FILE__, '1.0.0');
+    $instance = My_Flying_Box::instance(__FILE__, '1.1.0');
 
     return $instance;
   }
