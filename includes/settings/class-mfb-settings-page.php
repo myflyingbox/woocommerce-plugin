@@ -27,10 +27,10 @@ abstract class MFB_Settings_Page extends WC_Settings_Page {
 	 * Constructor
 	 */
 	public function __construct() {
-		add_filter( 'woocommerce_settings_tabs_array', array( $this, 'add_settings_page' ), 20 );
-		add_action( 'woocommerce_sections_' . $this->id, array( $this, 'output_sections' ) );
-		add_action( 'woocommerce_settings_' . $this->id, array( $this, 'output' ) );
-		add_action( 'woocommerce_settings_save_' . $this->id, array( $this, 'save' ) );
+		add_filter( 'mfb_settings_tabs_array', array( $this, 'add_settings_page' ), 20 );
+		add_action( 'mfb_sections_' . $this->id, array( $this, 'output_sections' ) );
+		add_action( 'mfb_settings_' . $this->id, array( $this, 'output' ) );
+		add_action( 'mfb_settings_save_' . $this->id, array( $this, 'save' ) );
 	}
 
 	/**
@@ -102,7 +102,7 @@ abstract class MFB_Settings_Page extends WC_Settings_Page {
 		My_Flying_Box_Settings::save_fields( $settings );
 
 		if ( $current_section ) {
-			do_action( 'woocommerce_update_options_' . $this->id . '_' . $current_section );
+			do_action( 'mfb_update_options_' . $this->id . '_' . $current_section );
 		}
 	}
 }

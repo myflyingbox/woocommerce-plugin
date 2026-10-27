@@ -20,9 +20,9 @@ class MFB_Settings_Shipper extends MFB_Settings_Page {
 		$this->id    = 'shipper';
 		$this->label = __( 'Shipper settings', 'my-flying-box' );
 		
-		add_filter( 'woocommerce_settings_tabs_array', array( $this, 'add_settings_page' ), 20 );
-		add_action( 'woocommerce_settings_' . $this->id, array( $this, 'output' ) );
-		add_action( 'woocommerce_settings_save_' . $this->id, array( $this, 'save' ) );
+		add_filter( 'mfb_settings_tabs_array', array( $this, 'add_settings_page' ), 20 );
+		add_action( 'mfb_settings_' . $this->id, array( $this, 'output' ) );
+		add_action( 'mfb_settings_save_' . $this->id, array( $this, 'save' ) );
 	}
 	
 	/**

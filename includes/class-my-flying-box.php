@@ -22,6 +22,8 @@ class My_Flying_Box  extends WC_Shipping_Method {
 	 */
 	public $settings = null;
 
+	public $admin = null;
+
 	/**
 	 * The version number.
 	 * @var     string

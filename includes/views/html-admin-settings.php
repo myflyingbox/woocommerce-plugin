@@ -16,15 +16,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 				foreach ( $tabs as $name => $label )
 					echo '<a href="' . admin_url( 'admin.php?page=my-flying-box-settings&tab=' . $name ) . '" class="nav-tab ' . ( $current_tab == $name ? 'nav-tab-active' : '' ) . '">' . $label . '</a>';
 
-				do_action( 'woocommerce_settings_tabs' );
+				do_action( 'mfb_settings_tabs' );
 			?>
 		</h2>
 
 		<div style="cleart:both">
 		<?php
-			do_action( 'woocommerce_sections_' . $current_tab );
-			do_action( 'woocommerce_settings_' . $current_tab );
-			// do_action( 'woocommerce_settings_tabs_' . $current_tab ); // @deprecated hook
+			do_action( 'mfb_sections_' . $current_tab );
+			do_action( 'mfb_settings_' . $current_tab );
 		?>
 		</div>
       <p class="submit">

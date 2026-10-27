@@ -41,7 +41,7 @@ class My_Flying_Box_Settings {
 			self::$setting_instances['shipper'] = new MFB_Settings_Shipper();
 			self::$setting_instances['carriers'] = new MFB_Settings_Carriers();
 
-			self::$settings = apply_filters( 'woocommerce_get_settings_pages', $settings );
+			self::$settings = apply_filters( 'mfb_get_settings_pages', $settings );
 		}
 
 		return self::$settings;
@@ -58,9 +58,9 @@ class My_Flying_Box_Settings {
 		}
 
 		// Trigger actions
-		do_action( 'woocommerce_settings_save_' . $current_tab );
-		do_action( 'woocommerce_update_options_' . $current_tab );
-		do_action( 'woocommerce_update_options' );
+		do_action( 'mfb_settings_save_' . $current_tab );
+		do_action( 'mfb_update_options_' . $current_tab );
+		do_action( 'mfb_update_options' );
 
 		// Clear any unwanted data
 		delete_transient( 'woocommerce_cache_excluded_uris' );
@@ -69,7 +69,7 @@ class My_Flying_Box_Settings {
 
 		flush_rewrite_rules();
 
-		do_action( 'woocommerce_settings_saved' );
+		do_action( 'mfb_settings_saved' );
 	}
 
 	/**
@@ -114,7 +114,7 @@ class My_Flying_Box_Settings {
 
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		do_action( 'woocommerce_settings_start' );
+		do_action( 'mfb_settings_start' );
 
 		wp_enqueue_script( 'woocommerce_settings', WC()->plugin_url() . '/assets/js/admin/settings' . $suffix . '.js', array( 'jquery', 'jquery-ui-datepicker', 'jquery-ui-sortable', 'iris', 'select2' ), WC()->version, true );
 
@@ -146,7 +146,7 @@ class My_Flying_Box_Settings {
 		self::show_messages();
 
 		// Get tabs for the settings page
-		$tabs = apply_filters( 'woocommerce_settings_tabs_array', array() );
+		$tabs = apply_filters( 'mfb_settings_tabs_array', array() );
 
 		include 'views/html-admin-settings.php';
 	}
