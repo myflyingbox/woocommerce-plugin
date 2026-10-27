@@ -11,6 +11,7 @@
 class MFB_Dimension {
 
 	public $id = 0;
+	public $index = 0;
 	public $weight_from = 0;
 	public $weight_to = 0;
 	public $length = 0;

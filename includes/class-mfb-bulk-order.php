@@ -7,6 +7,7 @@
 class MFB_Bulk_Order {
 
   public $id = 0;
+  public $post = null;
 
   public $wc_order_ids = array(); // All orders that are part of this bulk shipping order
   public $orders = array();
