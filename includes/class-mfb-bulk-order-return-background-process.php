@@ -32,12 +32,14 @@ class MFB_Bulk_Order_Return_Background_Process extends WP_Background_Process {
         $latest = MFB_Shipment::get_last_booked_for_order( $wc_order->get_id() );
 
         if ( $latest && !$latest->is_return ) {
+          $shipment = null;
           try {
             $shipment = MFB_Shipment::create_from_shipment( $latest->id, true, $bulk_order_id );
             if ( !$shipment->place_booking()) {
               $error = __('The return shipment could not be booked (probably no offer could be automatically selected)');
             }
           } catch (Exception $e) {
+            error_log($e->getMessage());
             $error = sprintf( __('Error while booking return shipment for Order %s: %s', 'my-flying-box'), $wc_order->get_order_number(), $e->getMessage());
           }
           // In case of issues during the booking, we record the error to display it later.

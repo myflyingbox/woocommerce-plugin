@@ -1,5 +1,14 @@
 jQuery( function ( $ ) {
 
+	function reload_after_update(response) {
+		if (response && response.data === 'error') {
+			$('#myflyingbox-order-shipping, #myflyingbox-bulk-shipments').find('.spinner').removeClass('is-active');
+			alert(response.message);
+			return;
+		}
+		window.location.reload();
+	}
+
 	/**
 	 * My Flying Box meta boxes functions
 	 *
@@ -52,10 +61,7 @@ jQuery( function ( $ ) {
 				url:  mfb_js_resources.ajax_url,
 				data: data,
 				type: 'POST',
-				success: function( response ) {
-					// At some point it would be nice to have a clean element replace...
-					window.location.reload();
-				}
+				success: reload_after_update
 			});
 			return false;
 		},
@@ -72,7 +78,8 @@ jQuery( function ( $ ) {
 			var insurance = '0';
 			var extended_cover = '0';
 
-			$( this ).find( '.spinner' ).addClass( 'is-active' );
+			var spinner = $( this ).find( '.spinner' );
+			spinner.addClass( 'is-active' );
 			if ( date_selector ) {
 				pickup_date = date_selector.val();
 			}
@@ -107,6 +114,9 @@ jQuery( function ( $ ) {
 					} else {
 						alert(response.data.message);
 					}
+				},
+				complete: function() {
+					spinner.removeClass('is-active');
 				}
 			});
 			return false;
@@ -157,9 +167,7 @@ jQuery( function ( $ ) {
 				data: data,
 				type: 'POST',
 				dataType: 'json',
-				success: function( response ) {
-					window.location.reload();
-				}
+				success: reload_after_update
 			});
 			return false;
 		},
@@ -174,9 +182,7 @@ jQuery( function ( $ ) {
 				url:  mfb_js_resources.ajax_url,
 				data: data,
 				type: 'POST',
-				success: function( response ) {
-					window.location.reload();
-				}
+				success: reload_after_update
 			});
 			return false;
 		},
@@ -191,9 +197,7 @@ jQuery( function ( $ ) {
 				url:  mfb_js_resources.ajax_url,
 				data: data,
 				type: 'POST',
-				success: function( response ) {
-					window.location.reload();
-				}
+				success: reload_after_update
 			});
 			return false;
 		},
@@ -247,9 +251,7 @@ jQuery( function ( $ ) {
 				url:  mfb_js_resources.ajax_url,
 				data: $( this ).closest('div.recipient_form_container').find('input, textarea, select').serialize()+'&action='+action+'&shipment_id='+shipment_id,
 				type: 'POST',
-				success: function( response ) {
-					window.location.reload();
-				}
+				success: reload_after_update
 			});
 			return false;
 		},
@@ -262,9 +264,7 @@ jQuery( function ( $ ) {
 				url:  mfb_js_resources.ajax_url,
 				data: $( this ).closest('div.shipper_form_container').find('input, textarea, select').serialize()+'&action='+action+'&shipment_id='+shipment_id,
 				type: 'POST',
-				success: function( response ) {
-					window.location.reload();
-				}
+				success: reload_after_update
 			});
 			return false;
 		},
@@ -278,9 +278,7 @@ jQuery( function ( $ ) {
 				url:  mfb_js_resources.ajax_url,
 				data: $( this ).closest('div.parcel-form').find('input, select').serialize()+'&action='+action+'&shipment_id='+shipment_id+"&parcel_index="+parcel_index,
 				type: 'POST',
-				success: function( response ) {
-					window.location.reload();
-				}
+				success: reload_after_update
 			});
 			return false;
 		},
@@ -295,9 +293,7 @@ jQuery( function ( $ ) {
 				url:  mfb_js_resources.ajax_url,
 				data: 'action='+action+'&shipment_id='+shipment_id+"&parcel_index="+parcel_index,
 				type: 'POST',
-				success: function( response ) {
-					window.location.reload();
-				}
+				success: reload_after_update
 			});
 			return false;
 		},
@@ -330,7 +326,7 @@ jQuery( function ( $ ) {
 							window.location.reload();
 						}
 					} else {
-						_this.closest(".shipment").find('.last-status').text("");
+						_this.closest(".shipment").find('.last-status').text(response.message || "");
 					}
 				}
 			});
@@ -357,7 +353,7 @@ jQuery( function ( $ ) {
 						var status = response.status;
 						_this.closest(".woocommerce-order-data").find('#last-status').html(status);
 					} else {
-						_this.closest(".woocommerce-order-data").find('#last-status').text("");
+						_this.closest(".woocommerce-order-data").find('#last-status').text(response.message || "");
 					}
 				}
 			});

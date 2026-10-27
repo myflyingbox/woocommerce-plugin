@@ -619,7 +619,16 @@ class MFB_Shipping_Method extends WC_Shipping_Method
 				'parcels' => $parcels
 			);
 
-			$api_quote = Lce\Resource\Quote::request($params);
+			try {
+				$api_quote = Lce\Resource\Quote::request($params);
+			} catch (Lce\Exception\LceException $e) {
+				error_log($e->getMessage());
+				$message = __('Shipping rates are temporarily unavailable. Please try again shortly or choose another shipping method.', 'my-flying-box');
+				if (!wc_has_notice($message, 'notice')) {
+					wc_add_notice($message, 'notice');
+				}
+				return false;
+			}
 
 			$quote = new MFB_Quote();
 			$quote->api_quote_uuid = $api_quote->id;

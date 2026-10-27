@@ -241,8 +241,8 @@ class MFB_Offer {
 	 * Expects an array containing 'street' and 'city', to pass to the request.
 	 */
 	public function get_delivery_locations($params) {
-		$api_offer = Lce\Resource\Offer::find($this->api_offer_uuid);
 		try {
+			$api_offer = Lce\Resource\Offer::find($this->api_offer_uuid);
 			$res = $api_offer->available_delivery_locations($params);
 		} catch ( Lce\Exception\LceException $e) {
 			error_log( print_r($e->getMessage(), true));

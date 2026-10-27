@@ -129,7 +129,7 @@ if ( $shipment ) {
       <br/>
       <?php
         if ( $shipment->last_booking_error ) {
-          echo $shipment->last_booking_error;
+          echo esc_html($shipment->last_booking_error);
         }
       ?>
     </div>

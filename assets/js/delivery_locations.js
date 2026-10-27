@@ -285,6 +285,10 @@
 	 * Now that we have all the parcel points, we display them
 	 */
 	function show_locations(data) {
+		if (data.data !== 'success') {
+			alert(data.message || lang['Unable to load delivery locations']);
+			return;
+		}
 		mfb_locations = data.locations;
 
 		init_gmap();

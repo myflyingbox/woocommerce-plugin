@@ -33,12 +33,14 @@ class MFB_Bulk_Order_Background_Process extends WP_Background_Process {
 
         // Checking that this order doesn't have another booked shipment
         if ( MFB_Shipment::get_last_booked_for_order( $wc_order->get_id() ) == null) {
+          $shipment = null;
           try {
             $shipment = MFB_Shipment::create_from_order( $wc_order, $bulk_order_id );
             if ( !$shipment->place_booking()) {
               $error = __('The shipment could not be booked (probably no offer could be automatically selected)');
             }
           } catch (Exception $e) {
+            error_log($e->getMessage());
             $error = sprintf( __('Error while booking shipment for Order %s: %s', 'my-flying-box'), $wc_order->get_order_number(), $e->getMessage());
           }
           // In case of issues during the booking, we record the error to display it later.

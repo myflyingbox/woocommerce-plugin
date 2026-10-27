@@ -36,10 +36,35 @@ class MFB_AJAX
 			'sync_order_to_dashboard'                         => false
 		); //extended_cover
 		foreach ($ajax_events as $ajax_event => $nopriv) {
-			add_action('wp_ajax_mfb_' . $ajax_event, array(__CLASS__, $ajax_event));
+			$callback = static function () use ($ajax_event) {
+				self::dispatch($ajax_event);
+			};
+			add_action('wp_ajax_mfb_' . $ajax_event, $callback);
 
 			if ($nopriv) {
-				add_action('wp_ajax_nopriv_mfb_' . $ajax_event, array(__CLASS__, $ajax_event));
+				add_action('wp_ajax_nopriv_mfb_' . $ajax_event, $callback);
+			}
+		}
+	}
+
+	public static function dispatch($ajax_event)
+	{
+		try {
+			self::$ajax_event();
+		} catch (Lce\Exception\LceException $e) {
+			error_log($e->getMessage());
+			$message = $ajax_event === 'get_delivery_locations'
+				? __('The shipping service is temporarily unavailable. Please try again shortly.', 'my-flying-box')
+				: $e->getMessage();
+			if ($ajax_event === 'download_labels') {
+				wp_die(esc_html($message), '', array('response' => 503));
+				return;
+			}
+			$response = array('data' => 'error', 'message' => $message);
+			if ($ajax_event === 'book_offer') {
+				wp_send_json_error($response);
+			} else {
+				wp_send_json($response);
 			}
 		}
 	}
@@ -238,7 +263,7 @@ class MFB_AJAX
 			$response['locations'] = $locations;
 		} else {
 			$response['data'] = 'error';
-			$response['message'] = 'Failed to load locations';
+			$response['message'] = __('Delivery locations are currently unavailable. Please try again shortly or choose another shipping method.', 'my-flying-box');
 		}
 
 		// Whatever the outcome, send the Response back
@@ -309,6 +334,7 @@ class MFB_AJAX
 			try {
 				$shipment->place_booking();
 			} catch (Lce\Exception\LceException $e) {
+				error_log($e->getMessage());
 				$error = true;
 				$error_message = $e->getMessage();
 			}
@@ -464,7 +490,8 @@ class MFB_AJAX
 			$status = $last_event;
 		} catch (Lce\Exception\LceException $e) {
 			error_log(print_r($e->getMessage(), true));
-			$status = "";
+			wp_send_json(array('success' => 'false', 'message' => $e->getMessage()));
+			return;
 		}
 		if ($status) {
 			$response['success'] = 'true';

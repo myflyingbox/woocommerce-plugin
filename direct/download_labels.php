@@ -6,8 +6,14 @@ require_once(WP_PLUGIN_DIR.'/woocommerce/woocommerce.php');
 $shipment_id = intval( $_GET['shipment_id'] );
 $shipment = MFB_Shipment::get( $shipment_id );
 
-$booking = Lce\Resource\Order::find($shipment->api_order_uuid);
-$labels_content = $booking->labels();
+try {
+	$booking = Lce\Resource\Order::find($shipment->api_order_uuid);
+	$labels_content = $booking->labels();
+} catch (Lce\Exception\LceException $e) {
+	error_log($e->getMessage());
+	wp_die(esc_html($e->getMessage()), '', array('response' => 503));
+	exit;
+}
 $filename = 'labels_'.$booking->id.'.pdf';
 
 header('Content-type: application/pdf');

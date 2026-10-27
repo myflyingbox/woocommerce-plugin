@@ -232,7 +232,12 @@ class MFB_Carrier extends WC_Shipping_Method {
 	 * products sent by the API.
 	 */
 	public static function refresh_from_api() {
-		$products = Lce\Resource\Product::findAll();
+		try {
+			$products = Lce\Resource\Product::findAll();
+		} catch (Lce\Exception\LceException $e) {
+			error_log($e->getMessage());
+			return $e->getMessage();
+		}
 
 		foreach($products as $product) {
 			if (in_array( My_Flying_Box_Settings::get_option('mfb_shipper_country_code'), $product->export_from ) ) {

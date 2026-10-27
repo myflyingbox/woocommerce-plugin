@@ -180,7 +180,13 @@ class My_Flying_Box_Multiple_Shipment  extends WC_Shipping_Method {
 		}
 
 		if ( !empty( $uuid_list ) ){
-			$labels = Lce\Resource\Order::multiple_labels($uuid_list);
+			try {
+				$labels = Lce\Resource\Order::multiple_labels($uuid_list);
+			} catch (Lce\Exception\LceException $e) {
+				error_log($e->getMessage());
+				wp_die(esc_html($e->getMessage()), '', array('response' => 503));
+				return;
+			}
 			$filename = 'MFB-labels.pdf';
 
 			header('Content-type: application/pdf');
@@ -207,7 +213,13 @@ class My_Flying_Box_Multiple_Shipment  extends WC_Shipping_Method {
 		}
 
 		if ( !empty( $uuid_list ) ){
-			$labels = Lce\Resource\Order::multiple_labels($uuid_list);
+			try {
+				$labels = Lce\Resource\Order::multiple_labels($uuid_list);
+			} catch (Lce\Exception\LceException $e) {
+				error_log($e->getMessage());
+				wp_die(esc_html($e->getMessage()), '', array('response' => 503));
+				return;
+			}
 			$filename = 'MFB-labels.pdf';
 
 			header('Content-type: application/pdf');

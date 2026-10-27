@@ -132,7 +132,12 @@ class MFB_Shipment
 			}
 		}
 		if ($this->api_order_uuid) {
-			$this->tracking = Lce\Resource\Order::track($this->api_order_uuid);
+			try {
+				$this->tracking = Lce\Resource\Order::track($this->api_order_uuid);
+			} catch (Lce\Exception\LceException $e) {
+				error_log($e->getMessage());
+				$this->tracking = null;
+			}
 		}
 	}
 
